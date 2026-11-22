@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# KYC-onboarding
 
-## Getting Started
+Local-only, synthetic-data AML investigation prototype. This is incomplete and is not a compliance control. All records are fictional. Analysts remain responsible for review and action.
 
-First, run the development server:
+## Start
 
-```bash
+Requires Node.js 24 and npm. From this folder:
+
+```sh
+npm install
+cp .env.example .env
+npm run db:migrate
+npm run db:seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://127.0.0.1:3000. The server binds to loopback. `npm run db:seed` refuses to overwrite an existing database. To delete all demo reviews and restore the seed intentionally, run `npm run db:reset`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Current capabilities
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The dashboard and case workbench use SQLite. Cases contain synthetic transactions, KYC extracts, and selected ownership records. Analysts can generate explicitly labeled fixture drafts, save notes, request information, and escalate; events are stored in SQLite. Requests are local records and are not sent. The fixture is prewritten and is not an AI model output. No alert can be automatically closed.
 
-## Learn More
+## Known gaps
 
-To learn more about Next.js, take a look at the following resources:
+Verified internal regulatory mappings, full audit metadata, richer evidence coverage, deterministic monitoring rules, and browser/end-to-end tests are not implemented. Do not use real customer data. The demo role selector is not authentication, and production identity and audit security are absent; SQLite is not tamper-proof. Fixture text must be checked against evidence. npm audit currently reports four high-severity findings in Prisma tooling dependencies.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Checks
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```sh
+npm test
+npm run typecheck
+npm run lint
+npm run build
+```
 
-## Deploy on Vercel
+## Optional live analysis
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Set `OPENAI_API_KEY` and `OPENAI_MODEL` in `.env`, then restart the server. Live mode sends the selected fictional case context to OpenAI, validates the structured output and rejects unknown citations. Failures do not silently switch to fixtures. Live calls have not yet been verified with an API key. Never enter real client data.

@@ -1,0 +1,16 @@
+import { z } from 'zod';
+const finding = z.object({description:z.string(),evidence_ids:z.array(z.string()).min(1)});
+export const analysisSchema = z.object({case_summary:z.string(),observed_facts:z.array(finding),risk_indicators:z.array(finding),mitigating_factors:z.array(finding),missing_information:z.array(z.string()),relevant_controls:z.array(z.object({control_id:z.string(),explanation:z.string()})),suggested_action:z.enum(['review','request_information','escalate']),draft_case_note:z.string(),limitations:z.array(z.string())});
+export type Analysis = z.infer<typeof analysisSchema>;
+export function validateAnalysis(value:unknown, evidenceIds:string[], controlIds:string[]) {
+ const parsed = analysisSchema.safeParse(value);
+ if (!parsed.success) return {success:false as const,error:'Invalid analysis structure'};
+ const findings = [...parsed.data.observed_facts,...parsed.data.risk_indicators,...parsed.data.mitigating_factors];
+ if(findings.some(f=>f.evidence_ids.some(id=>!evidenceIds.includes(id))) || parsed.data.relevant_controls.some(c=>!controlIds.includes(c.control_id))) return {success:false as const,error:'Analysis cites an unavailable record'};
+ return {success:true as const,data:parsed.data};
+}
+export function fixtureAnalysis(scenario:string, transactionId:string, documentId?:string, clientId?:string, relationshipId?:string):Analysis {
+ const fact={description:'The triggering transaction is included in the case evidence.',evidence_ids:[transactionId]};
+ const text:Record<string,string>={rapid_movement:'The incoming transfer is unusually large relative to the expected monthly activity. Review subsequent outward movements and request the purpose of funds.',wealth_gap:'A source-of-wealth comparison is required. The declared sale amount must be corroborated against supporting documents.',linked_ownership:'Review ownership records to determine whether a shared beneficial owner links related accounts.',documented_sale:'A property sale is a possible explanation for the incoming funds. Verify the contract and payment trail before a human decision.'};
+ return {case_summary:text[scenario]??'Review the case evidence.',observed_facts:[fact],risk_indicators:scenario==='rapid_movement'?[{description:'The incoming payment exceeds the expected activity range.',evidence_ids:[transactionId,...(clientId?[clientId]:[])]}]:scenario==='wealth_gap'&&documentId?[{description:'The declared sale amount exceeds the corroborated amount by SGD 5 million.',evidence_ids:[documentId,...(clientId?[clientId]:[])]}]:scenario==='linked_ownership'&&relationshipId?[{description:'An ownership record identifies a beneficial owner of the holding entity; examine other linked accounts.',evidence_ids:[relationshipId]}]:[],mitigating_factors:scenario==='documented_sale'&&documentId?[{description:'The property-sale agreement records proceeds matching the incoming payment.',evidence_ids:[documentId,transactionId]}]:[],missing_information:['Review the supporting source-of-funds documentation.'],relevant_controls:[],suggested_action:'review',draft_case_note:text[scenario]??'Review the evidence.',limitations:['Fixture demonstration; this is not a live AI response.','Additional supporting documents may be required.']};
+}

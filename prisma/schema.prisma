@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+model Client {
+  id String @id
+  name String
+  expectedMonthlyMin Int
+  expectedMonthlyMax Int
+  declaredWealth Int
+  profile String
+  transactions Transaction[]
+  alerts Alert[]
+  documents KYCDocument[]
+  relationships Relationship[]
+}
+model Transaction {
+  id String @id
+  clientId String
+  client Client @relation(fields: [clientId], references: [id])
+  date String
+  amount Int
+  currency String
+  counterparty String
+}
+model Alert {
+  id String @id
+  clientId String
+  client Client @relation(fields: [clientId], references: [id])
+  scenario String
+  title String
+  priority String
+  status String
+  triggerTransactionId String
+  notes String @default("")
+  version Int @default(0)
+  analyses Analysis[]
+  events AuditEvent[]
+}
+model Analysis {
+  id Int @id @default(autoincrement())
+  alertId String
+  alert Alert @relation(fields: [alertId], references: [id])
+  mode String
+  model String @default("fixture")
+  promptVersion String @default("v1")
+  validation String @default("passed")
+  output String
+  createdAt DateTime @default(now())
+}
+model AuditEvent {
+  id Int @id @default(autoincrement())
+  alertId String
+  alert Alert @relation(fields: [alertId], references: [id])
+  actor String
+  action String
+  detail String
+  createdAt DateTime @default(now())
+}
+
+model KYCDocument {
+ id String @id
+ clientId String
+ client Client @relation(fields:[clientId], references:[id])
+ kind String
+ title String
+ summary String
+ corroboratedAmount Int
+}
+model Relationship {
+ id String @id
+ clientId String
+ client Client @relation(fields:[clientId], references:[id])
+ owner String
+ entity String
+ description String
+}

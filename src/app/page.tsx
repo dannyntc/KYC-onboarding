@@ -1,69 +1,10 @@
-import Image from "next/image";
-
-export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+import Link from 'next/link';
+import { db } from '@/lib/db';
+export const dynamic='force-dynamic';
+export default async function Dashboard({searchParams}:{searchParams:Promise<{q?:string;priority?:string;status?:string}>}) {
+ const {q='',priority='',status=''}=await searchParams;
+ const alerts=await db.alert.findMany({include:{client:true},orderBy:{id:'asc'}});
+ const filtered=alerts.filter(a=>(!q||`${a.id} ${a.client.name} ${a.title}`.toLowerCase().includes(q.toLowerCase()))&&(!priority||a.priority===priority)&&(!status||a.status===status));
+ const high=alerts.filter(a=>a.priority==='High').length; const review=alerts.filter(a=>a.status!=='Open').length;
+ return <><div className="heading"><div><p className="eyebrow">INVESTIGATION OVERVIEW</p><h1>Alert dashboard</h1><p>Review monitoring alerts and follow the evidence through to a human decision.</p></div><div className="asof">DEMO DATASET<br/><strong>{alerts.length} seeded alerts</strong></div></div><div className="metrics"><div><span>OPEN ALERTS</span><strong>{alerts.filter(a=>a.status==='Open').length}</strong><small>Across all priorities</small></div><div><span>HIGH PRIORITY</span><strong>{high}</strong><small>Require closer review</small></div><div><span>IN PROGRESS</span><strong>{review}</strong><small>With analyst activity</small></div><div className="metric-note"><strong>Human-led by design</strong><p>AI drafts support review. Analysts remain responsible for every action.</p></div></div><section className="panel"><div className="panelhead"><div><h2>Alert queue</h2><p>{filtered.length} of {alerts.length} cases shown</p></div><span className="count">LIVE DATABASE</span></div><form className="filters"><input name="q" defaultValue={q} placeholder="Search client, case, or trigger" aria-label="Search alerts"/><select name="priority" defaultValue={priority} aria-label="Priority"><option value="">All priorities</option><option>High</option><option>Medium</option><option>Low</option></select><select name="status" defaultValue={status} aria-label="Status"><option value="">All statuses</option><option>Open</option><option>In review</option><option>Information requested</option><option>Escalated</option></select><button>Apply filters</button></form><div className="tablewrap"><table><thead><tr><th>CASE</th><th>CLIENT</th><th>MONITORING TRIGGER</th><th>PRIORITY</th><th>STATUS</th><th></th></tr></thead><tbody>{filtered.map(a=><tr key={a.id}><td><Link className="caseid" href={`/cases/${a.id}`}>{a.id}</Link></td><td><strong>{a.client.name}</strong><small>{a.client.id}</small></td><td>{a.title}</td><td><span className={`badge ${a.priority.toLowerCase()}`}>{a.priority}</span></td><td>{a.status}</td><td><Link className="open" href={`/cases/${a.id}`}>Open case</Link></td></tr>)}</tbody></table>{!filtered.length&&<p className="empty">No cases match these filters. Try broadening your search.</p>}</div></section></>;
 }
