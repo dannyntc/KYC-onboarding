@@ -4,7 +4,9 @@ import { CaseForm } from '@/components/case-form';
 import { EvidenceLink } from '@/components/evidence-link';
 import { OnboardingNote } from '@/components/onboarding-note';
 import { currentRole } from '@/lib/demo-role';
+import { db } from '@/lib/db';
 import { loadOnboardingFile } from '@/lib/onboarding-file';
+import { onboardingAnalysisSchema } from '@/lib/onboarding-analysis';
 import {
   approvalBlockers,
   SENIOR_APPROVAL_BLOCKER,
@@ -23,6 +25,14 @@ const riskClass = (rating: string) => rating.toLowerCase();
 const identityClass = (status: string) => (status === 'Verified' ? 'low' : 'high');
 const screeningClass = (disposition: string) =>
   disposition === 'Confirmed match' ? 'high' : disposition === 'Potential match' ? 'medium' : 'low';
+const attemptLabel = (validation: string) =>
+  validation === 'passed'
+    ? 'Passed'
+    : validation === 'rejected'
+      ? 'Rejected'
+      : validation === 'provider_error'
+        ? 'Provider error'
+        : validation;
 const statusClass = (status: string) => (status === 'Approved' ? 'low' : status === 'Rejected' ? 'high' : 'medium');
 
 export default async function OnboardingFilePage({ params }: { params: Promise<{ id: string }> }) {
@@ -32,6 +42,21 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
   const { file, row, related } = loaded;
   const client = row.client;
   const role = await currentRole();
+
+  const live = Boolean(process.env.OPENAI_API_KEY);
+  const latest = await db.onboardingAnalysis.findFirst({
+    where: { onboardingCaseId: id, validation: 'passed' },
+    orderBy: { id: 'desc' }
+  });
+  let draft = null;
+  if (latest) {
+    try {
+      const parsed = onboardingAnalysisSchema.safeParse(JSON.parse(latest.output));
+      if (parsed.success) draft = parsed.data;
+    } catch {
+      draft = null;
+    }
+  }
 
   const suggestion = suggestRiskRating(file);
   const blockers = approvalBlockers(file, role);
@@ -343,8 +368,85 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
           </section>
 
           <section className="panel section">
-            <h2>KYC assistant</h2>
-            <p className="notice">KYC drafts arrive in a later stage. Nothing on this page is written by an AI.</p>
+            <div className="panelhead" style={{ padding: 0, marginBottom: 16 }}>
+              <div>
+                <h2>KYC assistant</h2>
+                <p>Evidence-grounded draft for analyst review</p>
+              </div>
+              <span className="badge low">{live ? 'LIVE MODE' : 'FIXTURE MODE'}</span>
+            </div>
+            <p className="notice">
+              {live
+                ? 'Live mode sends this fictional file to OpenAI for analysis. Review every finding.'
+                : 'Fixture mode uses prewritten demonstration text built from the checks on this page. No live AI analysis is represented here.'}
+            </p>
+            {role !== 'read-only' && (
+              <CaseForm action="/api/onboarding">
+                <input type="hidden" name="id" value={row.id} />
+                <button className="button" name="action" value="analyze">
+                  {live ? 'Generate live KYC draft' : 'Generate fixture KYC draft'}
+                </button>
+              </CaseForm>
+            )}
+            {latest && draft && (
+              <div>
+                <p className="notice">
+                  {latest.mode === 'fixture'
+                    ? 'Displayed draft: fixture (no model called)'
+                    : latest.mode === 'live'
+                      ? 'Displayed draft: live model response'
+                      : 'Displayed draft: origin unknown'}
+                </p>
+                <h3>Applicant summary</h3>
+                <p>{draft.applicant_summary}</p>
+                <FindingList title="Verified facts" findings={draft.verified_facts} />
+                <FindingList title="Risk factors" findings={draft.risk_factors} />
+                <FindingList title="Mitigating factors" findings={draft.mitigating_factors} />
+                {draft.outstanding_items.length > 0 && (
+                  <>
+                    <h3>Outstanding items</h3>
+                    <ul>
+                      {draft.outstanding_items.map(item => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                <h3>Suggestions for the analyst</h3>
+                <p>
+                  Suggested risk rating: <strong>{draft.suggested_risk_rating}</strong>
+                  <br />
+                  Suggested next step: <strong>{draft.suggested_next_step.replaceAll('_', ' ')}</strong>
+                </p>
+                <p className="muted">
+                  These are suggestions only. The analyst records the final rating and makes every decision.
+                </p>
+                <h3>Draft note</h3>
+                <p id="draft-note" style={{ whiteSpace: 'pre-line' }}>
+                  {draft.draft_note}
+                </p>
+                <h3>Limitations</h3>
+                <ul>
+                  {draft.limitations.map(item => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+                <details>
+                  <summary>View evidence used for this draft</summary>
+                  {latest.inputSnapshot ? (
+                    <>
+                      <p className="muted">Saved at generation time. Amounts are in cents; current records may have changed.</p>
+                      <pre className="audit-detail">{JSON.stringify(JSON.parse(latest.inputSnapshot), null, 2)}</pre>
+                    </>
+                  ) : (
+                    <p className="muted">Evidence snapshots were not recorded for this draft.</p>
+                  )}
+                </details>
+                <p className="muted">
+                  Generated {latest.createdAt.toISOString()} · {latest.mode} · {latest.model} · prompt {latest.promptVersion}
+                </p>
+              </div>
+            )}
           </section>
 
           <section className="panel section">
@@ -370,7 +472,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
             {canEdit && (
               <CaseForm action="/api/onboarding" className="formstack">
                 <input type="hidden" name="id" value={row.id} />
-                <OnboardingNote initialNote={row.notes} initialVersion={row.version} />
+                <OnboardingNote initialNote={row.notes} initialVersion={row.version} draft={draft?.draft_note} />
                 <button className="button" name="action" value="approve" disabled={approveDisabled}>
                   {approveLabel}
                 </button>
@@ -392,7 +494,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
               <ul className="events">
                 {row.analyses.map(item => (
                   <li key={item.id}>
-                    <strong>{item.validation}</strong> · {item.mode} · {item.model} · prompt {item.promptVersion}
+                    <strong>{attemptLabel(item.validation)}</strong> · {item.mode} · {item.model} · prompt {item.promptVersion}
                     <time>{item.createdAt.toISOString()}</time>
                     <Link className="caseid" href={`/onboarding/${row.id}/analyses/${item.id}`}>
                       View attempt {item.id}
@@ -424,6 +526,25 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
           </section>
         </div>
       </div>
+    </>
+  );
+}
+
+function FindingList({ title, findings }: { title: string; findings: { description: string; evidence_ids: string[] }[] }) {
+  if (findings.length === 0) return null;
+  return (
+    <>
+      <h3>{title}</h3>
+      {findings.map((finding, index) => (
+        <p key={index}>
+          {finding.description}{' '}
+          {finding.evidence_ids.map(evidenceId => (
+            <span key={evidenceId}>
+              <EvidenceLink id={evidenceId} />{' '}
+            </span>
+          ))}
+        </p>
+      ))}
     </>
   );
 }

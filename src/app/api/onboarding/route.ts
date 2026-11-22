@@ -2,10 +2,25 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { isLocalOrigin } from '@/lib/origin';
 import { actorName, currentRole } from '@/lib/demo-role';
-import { loadOnboardingFile } from '@/lib/onboarding-file';
+import { acquireAnalysisLock, releaseAnalysisLock } from '@/lib/analysis-lock';
+import {
+  AnalysisValidationError,
+  modelInput,
+  ONBOARDING_ANALYSIS,
+  ONBOARDING_PROMPT_VERSION,
+  runLiveAnalysis
+} from '@/lib/live-analysis';
+import { evidenceIdsFor, loadOnboardingFile, type LoadedOnboardingFile } from '@/lib/onboarding-file';
+import {
+  ONBOARDING_FIXTURE_VERSION,
+  onboardingFixture,
+  validateOnboardingAnalysis,
+  type OnboardingAnalysis
+} from '@/lib/onboarding-analysis';
 import {
   onboardingTransition,
   OnboardingRuleError,
+  type DemoRole,
   type OnboardingAction,
   type OnboardingFile
 } from '@/lib/onboarding-rules';
@@ -23,6 +38,97 @@ function text(form: FormData, name: string): string {
   return String(form.get(name) ?? '').trim();
 }
 
+// Generates a KYC draft: a template by default, or a live model answer when OPENAI_API_KEY is set.
+// A failed live attempt is recorded and reported; it is never replaced by the template.
+async function generateDraft(loaded: LoadedOnboardingFile, role: DemoRole, origin: string) {
+  const id = loaded.row.id;
+  const lease = await acquireAnalysisLock(id);
+  if (!lease) return new Response('A KYC draft is already being generated for this file. Wait and try again.', { status: 409 });
+  try {
+    const live = Boolean(process.env.OPENAI_API_KEY);
+    const model = process.env.OPENAI_MODEL;
+    if (live && !model) return new Response('Set OPENAI_MODEL to use live analysis.', { status: 503 });
+
+    const { file, row, related } = loaded;
+    const evidenceIds = evidenceIdsFor(loaded);
+    const context = {
+      onboarding: {
+        id: row.id,
+        applicationDate: row.applicationDate,
+        purpose: row.purpose,
+        status: row.status,
+        riskRating: row.riskRating,
+        riskRationale: row.riskRationale
+      },
+      client: row.client,
+      relatedRelationships: related
+    };
+    // Regulatory references for onboarding are added in a later stage, so no controls are supplied yet.
+    const controls: { id: string; title: string }[] = [];
+    const savedInput = modelInput(context, evidenceIds, controls);
+    const inputSnapshot = JSON.stringify(
+      live ? { ...savedInput, recorded_control_reviews: [] } : { ...savedInput, fixture: ONBOARDING_FIXTURE_VERSION }
+    );
+
+    const mode = live ? 'live' : 'fixture';
+    const modelName = live ? model! : 'fixture';
+    const promptVersion = live ? ONBOARDING_PROMPT_VERSION : ONBOARDING_FIXTURE_VERSION;
+    const label = live ? 'Live' : 'Fixture';
+    const actor = actorName(role);
+
+    async function saveAttempt(validation: string, output: string, rawResponse: string | null, extra = '') {
+      await db.$transaction(async tx => {
+        const attempt = await tx.onboardingAnalysis.create({
+          data: { onboardingCaseId: id, mode, model: modelName, promptVersion, validation, output, rawResponse, inputSnapshot }
+        });
+        const passed = validation === 'passed';
+        const detail = passed && !live
+          ? `Attempt ID: ${attempt.id}; Synthetic fixture; no model was called. Version: ${ONBOARDING_FIXTURE_VERSION}; validation: passed.`
+          : `Attempt ID: ${attempt.id}; Model: ${modelName}; prompt: ${promptVersion}; validation: ${validation}${extra}`;
+        await tx.onboardingEvent.create({
+          data: {
+            onboardingCaseId: id,
+            actor,
+            action: passed ? `${label} KYC draft generated` : `${label} KYC draft failed`,
+            detail
+          }
+        });
+      });
+    }
+
+    let draft: OnboardingAnalysis;
+    let rawResponse: string | null = null;
+    try {
+      if (live) {
+        const result = await runLiveAnalysis(
+          { caseId: id, model: model!, evidenceIds, context, controls },
+          undefined,
+          ONBOARDING_ANALYSIS
+        );
+        draft = result.draft;
+        rawResponse = result.rawResponse;
+      } else {
+        draft = onboardingFixture(file);
+      }
+    } catch (error) {
+      const rejected = error instanceof AnalysisValidationError;
+      const validation = rejected ? 'rejected' : live ? 'provider_error' : 'fixture_error';
+      await saveAttempt(validation, rejected ? (JSON.stringify(error.output) ?? '') : '', rejected ? error.rawResponse : null);
+      return new Response('KYC draft failed or contained invalid citations. Previous drafts are preserved; try again.', { status: 502 });
+    }
+
+    const checked = validateOnboardingAnalysis(draft, evidenceIds, controls.map(control => control.id));
+    if (!checked.success) {
+      await saveAttempt('rejected', JSON.stringify(draft) ?? '', rawResponse, `; ${checked.error}`);
+      return new Response(checked.error, { status: 422 });
+    }
+    await saveAttempt('passed', JSON.stringify(checked.data), rawResponse);
+    return NextResponse.redirect(new URL(`/onboarding/${id}`, origin), 303);
+  } finally {
+    await releaseAnalysisLock(id, lease);
+  }
+}
+
 export async function POST(request: Request) {
   const origin = request.headers.get('origin');
   if (!isLocalOrigin(origin, request.headers.get('host'))) return new Response('Invalid origin', { status: 403 });
@@ -37,7 +143,7 @@ export async function POST(request: Request) {
   const loaded = await loadOnboardingFile(id);
   if (!loaded) return new Response('Onboarding file not found', { status: 404 });
 
-  if (action === 'analyze') return new Response('KYC drafts arrive in a later stage', { status: 501 });
+  if (action === 'analyze') return generateDraft(loaded, role, origin!);
   if (!CHANGE_ACTIONS.includes(action as OnboardingAction)) return new Response('Unknown action', { status: 400 });
 
   const version = Number(form.get('version'));

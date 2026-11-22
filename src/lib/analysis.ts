@@ -9,12 +9,18 @@ export function validateAnalysis(value:unknown, evidenceIds:string[], controlIds
  if (!parsed.success) return {success:false as const,error:'Invalid analysis structure'};
  const findings = [...parsed.data.observed_facts,...parsed.data.risk_indicators,...parsed.data.mitigating_factors];
  const textFields=[parsed.data.case_summary,parsed.data.draft_case_note,...findings.flatMap(f=>[f.description,...f.evidence_ids]),...parsed.data.missing_information,...parsed.data.limitations,...parsed.data.relevant_controls.flatMap(c=>[c.control_id,c.explanation])];
- if(textFields.some(value=>!value.trim())) return {success:false as const,error:'Analysis contains an empty field'};
- const narrative=textFields.join('\n');
- const prohibited=[/\b(?:client|customer|account holder)\s+is\s+guilty\b/i,/\b(?:alert|case)\s+(?:has been|is|was)\s+(?:automatically\s+)?closed\b/i,/\b(?:funds|account)\s+(?:has been|have been|is|are|was|were)\s+frozen\b/i,/\b(?:suspicious transaction report|STR)\s+(?:has been|was|is)\s+filed\b/i];
- if(prohibited.some(pattern=>pattern.test(narrative))) return {success:false as const,error:'Analysis contains a prohibited final determination'};
- if(findings.some(f=>f.evidence_ids.some(id=>!evidenceIds.includes(id))) || parsed.data.relevant_controls.some(c=>!controlIds.includes(c.control_id))) return {success:false as const,error:'Analysis cites an unavailable record'};
+ const grounded=checkGrounding({findings,textFields,controls:parsed.data.relevant_controls},evidenceIds,controlIds);
+ if(!grounded.success) return grounded;
  return {success:true as const,data:parsed.data};
+}
+const baseProhibited=[/\b(?:client|customer|account holder)\s+is\s+guilty\b/i,/\b(?:alert|case)\s+(?:has been|is|was)\s+(?:automatically\s+)?closed\b/i,/\b(?:funds|account)\s+(?:has been|have been|is|are|was|were)\s+frozen\b/i,/\b(?:suspicious transaction report|STR)\s+(?:has been|was|is)\s+filed\b/i];
+// Checks shared by every draft type, in this order: empty fields, prohibited determinations, unknown citations.
+export function checkGrounding(parts:{findings:{evidence_ids:string[]}[];textFields:string[];controls:{control_id:string}[]},evidenceIds:string[],controlIds:string[],extraProhibited:RegExp[]=[]) {
+ if(parts.textFields.some(value=>!value.trim())) return {success:false as const,error:'Analysis contains an empty field'};
+ const narrative=parts.textFields.join('\n');
+ if([...baseProhibited,...extraProhibited].some(pattern=>pattern.test(narrative))) return {success:false as const,error:'Analysis contains a prohibited final determination'};
+ if(parts.findings.some(f=>f.evidence_ids.some(id=>!evidenceIds.includes(id))) || parts.controls.some(c=>!controlIds.includes(c.control_id))) return {success:false as const,error:'Analysis cites an unavailable record'};
+ return {success:true as const};
 }
 type FixtureContext = {
  scenario:string;
