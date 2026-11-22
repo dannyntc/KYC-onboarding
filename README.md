@@ -43,6 +43,14 @@ The application uses SQLite locally and Prisma Postgres on Vercel (`DATABASE_ENG
 
 The hosted site is deployed from the lowercase Vercel project `kyc-onboarding-dannyntc`. Once Vercel environment variables are available, use `npm run db:migrate:postgres` and `npm run db:seed:postgres` for the hosted schema and synthetic fixtures.
 
+## Guided tour and online look-only mode
+
+A 13-step pop-up tour explains the demo from the queue to the audit trail. It opens automatically on a browser's first visit to the queue, and can be restarted any time from **Guided tour** in the sidebar. The current step is kept in the address (`?tour=N`), so it needs no database. Its text is in `src/lib/tour-steps.ts`, and the pop-ups are drawn by [driver.js](https://driverjs.com) (MIT).
+
+When the app is not opened from `127.0.0.1` or `localhost`, it runs in **look-only mode**: the top bar says ONLINE DEMO · LOOK-ONLY, every saving button is disabled with a caption, the role switch is off, and the KYC and alert assistants show an unsaved preview of the template draft instead of a Generate button. Nothing is written to the database. This only changes what the screen shows; the save routes keep refusing non-local requests on their own.
+
+Set `KYC_ONBOARDING_PUBLIC_DEMO=1` to see look-only mode on your own computer (`KYC_ONBOARDING_PUBLIC_DEMO=1 npm run dev`), or `=0` to force it off.
+
 ## Known gaps
 
 - There is no real identity verification, document upload or ID scanning. Documents, screening results (PEP, sanctions and adverse media) and ownership records are fictional text.
@@ -50,7 +58,7 @@ The hosted site is deployed from the lowercase Vercel project `kyc-onboarding-da
 - The risk rating rules and blockers are simplified demonstrations, not a bank's policy. A potential PEP or adverse-media match does not change the suggested rating until an analyst decides it.
 - The regulatory library links candidate references to specific paragraphs of MAS Notice 626. They were checked against the official PDF when added, but the associations with checks are illustrative, not approved internal policy mappings. The review register starts empty, so no references are supplied to live AI analysis until an eligible review is recorded. Compliance review remains outstanding. See [control review instructions](docs/control-review.md).
 - Fixture text must be checked against evidence. Live API responses received by the application are stored for audit, including responses rejected during parsing or validation. Provider errors and timeouts with no returned response cannot be captured. New drafts also retain the supplied context and evidence IDs; open "View evidence used for this draft" on a KYC file, or use the draft history to inspect earlier drafts and failed attempts. These records may contain synthetic information and are stored locally without tamper protection.
-- The hosted Vercel deployment blocks saving, because the local-origin check accepts only loopback addresses, so it is view-only. Do not use real customer data.
+- The hosted Vercel deployment blocks saving, because the local-origin check accepts only loopback addresses, so it is view-only (the screen now says so, see above). Do not use real customer data.
 
 ## Checks
 
@@ -62,9 +70,10 @@ npm run build
 npx playwright install chromium  # once, for browser tests
 npm run test:e2e
 npm run test:e2e:live
+npm run test:e2e:public
 ```
 
-Both end-to-end suites use temporary SQLite databases and do not reset the demo database. The live-path suite uses a local simulated OpenAI-compatible server and a test-only key; it makes no live model call. The `effect` override patches a Prisma CLI dependency that Prisma pins to an affected version. Recheck the override on Prisma upgrades.
+All three end-to-end suites use temporary SQLite databases and do not reset the demo database. The live-path suite uses a local simulated OpenAI-compatible server and a test-only key; it makes no live model call. The public suite runs the app in look-only mode and checks that no rows are written. The `effect` override patches a Prisma CLI dependency that Prisma pins to an affected version. Recheck the override on Prisma upgrades.
 
 ## Optional live analysis
 

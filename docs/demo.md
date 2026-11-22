@@ -2,6 +2,8 @@
 
 This script takes approximately 8–10 minutes. It follows new applicants through KYC onboarding, with the AML funding check as one section of each file. All names, relationships, records and amounts are fictional. The prototype supports an analyst; it does not make compliance decisions, verify real identities, screen against real lists or file reports.
 
+The app also has a built-in guided tour (the **Guided tour** link in the sidebar) that follows the same story in about three minutes. It is a good way to introduce the demo, or to let someone explore the online look-only version by themselves.
+
 ## Before the session
 
 1. From the project folder, run `npm run db:migrate` and `npm run dev`, then open <http://127.0.0.1:3000>. If the database has never been seeded, run `npm run db:seed` first. If it was seeded before onboarding existed, run `npm run db:seed:onboarding` once after the migration. Do not reset an existing database just to run the demo: `npm run db:reset` deliberately deletes all demo analyses, reviews and audit events.
