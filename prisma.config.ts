@@ -1,4 +1,10 @@
 import 'dotenv/config';
 import {defineConfig} from 'prisma/config';
-import {databaseUrl} from './src/lib/database-url';
-export default defineConfig({schema:'prisma/schema.prisma',migrations:{path:'prisma/migrations'},datasource:{url:databaseUrl(process.env.DATABASE_URL ?? 'file:./dev.db',process.cwd())}});
+import {databaseUrl, isPostgresDatabaseUrl} from './src/lib/database-url';
+const configuredUrl = process.env.DATABASE_URL ?? 'file:./dev.db';
+const usePostgres = process.env.DATABASE_ENGINE === 'postgres' || isPostgresDatabaseUrl(configuredUrl);
+export default defineConfig({
+ schema:usePostgres?'prisma/schema.postgres.prisma':'prisma/schema.prisma',
+ migrations:{path:usePostgres?'prisma/migrations-postgres':'prisma/migrations'},
+ datasource:{url:databaseUrl(configuredUrl,process.cwd())}
+});

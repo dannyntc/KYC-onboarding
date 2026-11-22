@@ -20,7 +20,9 @@ For a guided walkthrough and a blank measurement protocol, see [the demonstratio
 
 ## Current capabilities
 
-The dashboard and case workbench use SQLite. Cases contain synthetic accounts, transactions, KYC extracts, and ownership records. Matching owner-and-entity records from related clients are included as separately traceable evidence. Analysts can generate explicitly labeled fixture drafts, save notes, request information, and escalate; events are stored in SQLite with database triggers preventing ordinary updates or deletion. Requests are local records and are not sent. New analysis audit events include the attempt ID; older events are preserved without backfilling. The fixture is prewritten and is not an AI model output. No alert can be automatically closed.
+The dashboard and case workbench use SQLite locally and Prisma Postgres on Vercel (`DATABASE_ENGINE=postgres`). Cases contain synthetic accounts, transactions, KYC extracts, and ownership records. Matching owner-and-entity records from related clients are included as separately traceable evidence. Analysts can generate explicitly labeled fixture drafts, save notes, request information, and escalate; events are stored with database triggers preventing ordinary updates or deletion. Requests are local records and are not sent. New analysis audit events include the attempt ID; older events are preserved without backfilling. The fixture is prewritten and is not an AI model output. No alert can be automatically closed.
+
+The hosted dashboard is deployed from the lowercase Vercel project `kyc-onboarding-dannyntc`. Once Vercel environment variables are available, use `npm run db:migrate:postgres` and `npm run db:seed:postgres` for the hosted schema and synthetic fixtures.
 
 ## Known gaps
 
