@@ -1,10 +1,152 @@
 import Link from 'next/link';
 import { db } from '@/lib/db';
-export const dynamic='force-dynamic';
-export default async function Dashboard({searchParams}:{searchParams:Promise<{q?:string;priority?:string;status?:string}>}) {
- const {q='',priority='',status=''}=await searchParams;
- const alerts=await db.alert.findMany({include:{client:true},orderBy:{id:'asc'}});
- const filtered=alerts.filter(a=>(!q||`${a.id} ${a.client.name} ${a.title}`.toLowerCase().includes(q.toLowerCase()))&&(!priority||a.priority===priority)&&(!status||a.status===status));
- const high=alerts.filter(a=>a.priority==='High').length; const review=alerts.filter(a=>a.status!=='Open').length;
- return <><div className="heading"><div><p className="eyebrow">INVESTIGATION OVERVIEW</p><h1>Alert dashboard</h1><p>Review monitoring alerts and follow the evidence through to a human decision.</p></div><div className="asof">DEMO DATASET<br/><strong>{alerts.length} seeded alerts</strong></div></div><div className="metrics"><div><span>OPEN ALERTS</span><strong>{alerts.filter(a=>a.status==='Open').length}</strong><small>Across all priorities</small></div><div><span>HIGH PRIORITY</span><strong>{high}</strong><small>Require closer review</small></div><div><span>IN PROGRESS</span><strong>{review}</strong><small>With analyst activity</small></div><div className="metric-note"><strong>Human-led by design</strong><p>AI drafts support review. Analysts remain responsible for every action.</p></div></div><section className="panel"><div className="panelhead"><div><h2>Alert queue</h2><p>{filtered.length} of {alerts.length} cases shown</p></div><span className="count">LIVE DATABASE</span></div><form className="filters"><input name="q" defaultValue={q} placeholder="Search client, case, or trigger" aria-label="Search alerts"/><select name="priority" defaultValue={priority} aria-label="Priority"><option value="">All priorities</option><option>High</option><option>Medium</option><option>Low</option></select><select name="status" defaultValue={status} aria-label="Status"><option value="">All statuses</option><option>Open</option><option>In review</option><option>Information requested</option><option>Escalated</option></select><button>Apply filters</button></form><div className="tablewrap"><table><thead><tr><th>CASE</th><th>CLIENT</th><th>MONITORING TRIGGER</th><th>PRIORITY</th><th>STATUS</th><th></th></tr></thead><tbody>{filtered.map(a=><tr key={a.id}><td><Link className="caseid" href={`/cases/${a.id}`}>{a.id}</Link></td><td><strong>{a.client.name}</strong><small>{a.client.id}</small></td><td>{a.title}</td><td><span className={`badge ${a.priority.toLowerCase()}`}>{a.priority}</span></td><td>{a.status}</td><td><Link className="open" href={`/cases/${a.id}`}>Open case</Link></td></tr>)}</tbody></table>{!filtered.length&&<p className="empty">No cases match these filters. Try broadening your search.</p>}</div></section></>;
+import { loadOnboardingFile } from '@/lib/onboarding-file';
+import { approvalBlockers, suggestRiskRating } from '@/lib/onboarding-rules';
+
+export const dynamic = 'force-dynamic';
+
+const STATUSES = ['In progress', 'Information requested', 'Pending senior approval', 'Approved', 'Rejected'];
+
+export default async function OnboardingQueue({
+  searchParams
+}: {
+  searchParams: Promise<{ q?: string; risk?: string; status?: string }>;
+}) {
+  const { q = '', risk = '', status = '' } = await searchParams;
+
+  const cases = await db.onboardingCase.findMany({ select: { id: true }, orderBy: { id: 'asc' } });
+  const loaded = await Promise.all(cases.map(c => loadOnboardingFile(c.id)));
+  const rows = loaded.flatMap(item => {
+    if (!item) return [];
+    return [
+      {
+        id: item.row.id,
+        clientId: item.row.client.id,
+        clientName: item.row.client.name,
+        applicationDate: item.row.applicationDate,
+        status: item.row.status,
+        suggestedRisk: suggestRiskRating(item.file).rating,
+        outstanding: approvalBlockers(item.file, 'analyst').length
+      }
+    ];
+  });
+
+  const search = q.toLowerCase();
+  const filtered = rows.filter(
+    row =>
+      (!search || `${row.id} ${row.clientName} ${row.clientId}`.toLowerCase().includes(search)) &&
+      (!risk || row.suggestedRisk === risk) &&
+      (!status || row.status === status)
+  );
+  const count = (...wanted: string[]) => rows.filter(row => wanted.includes(row.status)).length;
+
+  return (
+    <>
+      <div className="heading">
+        <div>
+          <p className="eyebrow">CLIENT ONBOARDING</p>
+          <h1>Onboarding queue</h1>
+          <p>Check each new applicant before the bank accepts them, then record a human decision.</p>
+        </div>
+        <div className="asof">
+          DEMO DATASET
+          <br />
+          <strong>{rows.length} synthetic applicants</strong>
+        </div>
+      </div>
+
+      <div className="metrics">
+        <div>
+          <span>APPLICATIONS IN PROGRESS</span>
+          <strong>{count('In progress')}</strong>
+          <small>Checks still being completed</small>
+        </div>
+        <div>
+          <span>PENDING SENIOR APPROVAL</span>
+          <strong>{count('Pending senior approval')}</strong>
+          <small>High-risk, waiting for a second approver</small>
+        </div>
+        <div>
+          <span>INFORMATION REQUESTED</span>
+          <strong>{count('Information requested')}</strong>
+          <small>Waiting for the applicant</small>
+        </div>
+        <div>
+          <span>DECIDED</span>
+          <strong>{count('Approved', 'Rejected')}</strong>
+          <small>Approved or rejected by a person</small>
+        </div>
+      </div>
+
+      <section className="panel">
+        <div className="panelhead">
+          <div>
+            <h2>Applications</h2>
+            <p>
+              {filtered.length} of {rows.length} files shown
+            </p>
+          </div>
+          <span className="count">LIVE DATABASE</span>
+        </div>
+        <form className="filters">
+          <input name="q" defaultValue={q} placeholder="Search applicant, file, or client ID" aria-label="Search applications" />
+          <select name="risk" defaultValue={risk} aria-label="Suggested risk">
+            <option value="">All suggested risk</option>
+            <option>High</option>
+            <option>Medium</option>
+            <option>Low</option>
+          </select>
+          <select name="status" defaultValue={status} aria-label="Status">
+            <option value="">All statuses</option>
+            {STATUSES.map(name => (
+              <option key={name}>{name}</option>
+            ))}
+          </select>
+          <button>Apply filters</button>
+        </form>
+        <div className="tablewrap">
+          <table>
+            <thead>
+              <tr>
+                <th>FILE</th>
+                <th>APPLICANT</th>
+                <th>APPLICATION DATE</th>
+                <th>SUGGESTED RISK</th>
+                <th>OUTSTANDING ITEMS</th>
+                <th>STATUS</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map(row => (
+                <tr key={row.id}>
+                  <td>
+                    <Link className="caseid" href={`/onboarding/${row.id}`}>
+                      {row.id}
+                    </Link>
+                  </td>
+                  <td>
+                    <strong>{row.clientName}</strong>
+                    <small>{row.clientId}</small>
+                  </td>
+                  <td>{row.applicationDate}</td>
+                  <td>
+                    <span className={`badge ${row.suggestedRisk.toLowerCase()}`}>{row.suggestedRisk}</span>
+                  </td>
+                  <td>{row.outstanding === 0 ? 'None' : row.outstanding}</td>
+                  <td>{row.status}</td>
+                  <td>
+                    <Link className="open" href={`/onboarding/${row.id}`}>
+                      Open file
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {!filtered.length && <p className="empty">No files match these filters. Try broadening your search.</p>}
+        </div>
+      </section>
+    </>
+  );
 }

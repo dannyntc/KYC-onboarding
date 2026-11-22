@@ -8,7 +8,7 @@ test('all twelve alerts open with their client and stored case evidence', async 
   include: { client: { include: { accounts: true, transactions: true, documents: true, relationships: true } } },
  });
  expect(alerts).toHaveLength(12);
- await page.goto('/');
+ await page.goto('/alerts');
  for (const alert of alerts) await expect(page.getByRole('link', { name: alert.id, exact: true })).toBeVisible();
  for (const alert of alerts) {
   const response = await page.goto(`/cases/${alert.id}`);

@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 test('analyst reviews grounded fixture and sees a persistent audit event',async({page})=>{
- await page.goto('/');
+ await page.goto('/alerts');
  await expect(page.getByRole('link',{name:'ALT-002'})).toBeVisible();
  await page.getByRole('link',{name:'ALT-002'}).click();
  await page.getByRole('button',{name:'Generate fixture draft'}).click();
@@ -15,7 +15,7 @@ test('analyst reviews grounded fixture and sees a persistent audit event',async(
  await expect(page.getByText(/Request sale proceeds confirmation/).last()).toBeVisible();
 });
 test('read-only role rejects mutations',async({page})=>{
- await page.goto('/');
+ await page.goto('/alerts');
  await page.getByLabel('Demo role (not authentication)').selectOption('read-only');
  await page.getByRole('button',{name:'Switch role'}).click();
  const response=await page.request.post('/api/action',{headers:{origin:'http://127.0.0.1:3105'},form:{id:'ALT-001',action:'analyze'}});
