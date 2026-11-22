@@ -17,6 +17,9 @@ model Client {
   alerts Alert[]
   documents KYCDocument[]
   relationships Relationship[]
+  onboarding OnboardingCase?
+  identityDocuments IdentityDocument[]
+  screeningResults ScreeningResult[]
 }
 model Account {
   id String @id
@@ -93,4 +96,66 @@ model AnalysisLock {
  alertId String @id
  token String
  expiresAt DateTime
+}
+
+model OnboardingCase {
+  id              String               @id
+  clientId        String               @unique
+  client          Client               @relation(fields: [clientId], references: [id])
+  applicationDate String
+  purpose         String
+  status          String               @default("In progress")
+  riskRating      String?
+  riskRationale   String               @default("")
+  notes           String               @default("")
+  version         Int                  @default(0)
+  events          OnboardingEvent[]
+  analyses        OnboardingAnalysis[]
+}
+
+model IdentityDocument {
+  id        String  @id
+  clientId  String
+  client    Client  @relation(fields: [clientId], references: [id])
+  kind      String
+  title     String
+  status    String
+  expiresOn String?
+  summary   String
+}
+
+model ScreeningResult {
+  id                String @id
+  clientId          String
+  client            Client @relation(fields: [clientId], references: [id])
+  list              String
+  matchedName       String
+  matchStrength     String
+  summary           String
+  disposition       String @default("Potential match")
+  dispositionReason String @default("")
+}
+
+model OnboardingEvent {
+  id               Int            @id @default(autoincrement())
+  onboardingCaseId String
+  onboardingCase   OnboardingCase @relation(fields: [onboardingCaseId], references: [id])
+  actor            String
+  action           String
+  detail           String
+  createdAt        DateTime       @default(now())
+}
+
+model OnboardingAnalysis {
+  id               Int            @id @default(autoincrement())
+  onboardingCaseId String
+  onboardingCase   OnboardingCase @relation(fields: [onboardingCaseId], references: [id])
+  mode             String
+  model            String         @default("fixture")
+  promptVersion    String         @default("v1")
+  validation       String         @default("passed")
+  output           String
+  rawResponse      String?
+  inputSnapshot    String?
+  createdAt        DateTime       @default(now())
 }

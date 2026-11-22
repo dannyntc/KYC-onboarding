@@ -15,11 +15,25 @@ async function main() {
   if (process.env.KYC_ONBOARDING_RESET !== '1') {
    const counts = await Promise.all([
     prisma.client.count(), prisma.account.count(), prisma.transaction.count(), prisma.alert.count(),
-    prisma.analysis.count(), prisma.auditEvent.count(), prisma.kYCDocument.count(), prisma.relationship.count(), prisma.analysisLock.count()
+    prisma.analysis.count(), prisma.auditEvent.count(), prisma.kYCDocument.count(), prisma.relationship.count(), prisma.analysisLock.count(),
+    prisma.onboardingCase.count(), prisma.identityDocument.count(), prisma.screeningResult.count(), prisma.onboardingEvent.count(), prisma.onboardingAnalysis.count()
    ]);
    if (counts.some(count => count > 0)) throw new Error('Existing demo data found. Use KYC_ONBOARDING_RESET=1 only when an explicit reset is intended.');
   }
   if (process.env.KYC_ONBOARDING_RESET === '1') {
+   // Onboarding tables reference clients, so they are cleared first. The append-only triggers on
+   // OnboardingEvent are dropped and recreated in one transaction (Postgres DDL is transactional).
+   await prisma.$transaction(async tx => {
+    await tx.$executeRawUnsafe('DROP TRIGGER IF EXISTS onboarding_event_no_update ON "OnboardingEvent"');
+    await tx.$executeRawUnsafe('DROP TRIGGER IF EXISTS onboarding_event_no_delete ON "OnboardingEvent"');
+    await tx.onboardingEvent.deleteMany();
+    await tx.$executeRawUnsafe('CREATE TRIGGER onboarding_event_no_update BEFORE UPDATE ON "OnboardingEvent" FOR EACH ROW EXECUTE FUNCTION onboarding_event_append_only_guard()');
+    await tx.$executeRawUnsafe('CREATE TRIGGER onboarding_event_no_delete BEFORE DELETE ON "OnboardingEvent" FOR EACH ROW EXECUTE FUNCTION onboarding_event_append_only_guard()');
+   });
+   await prisma.onboardingAnalysis.deleteMany();
+   await prisma.screeningResult.deleteMany();
+   await prisma.identityDocument.deleteMany();
+   await prisma.onboardingCase.deleteMany();
    await prisma.analysisLock.deleteMany();
    await prisma.relationship.deleteMany();
    await prisma.kYCDocument.deleteMany();
@@ -36,6 +50,9 @@ async function main() {
   await prisma.alert.createMany({data:data.alerts});
   await prisma.kYCDocument.createMany({data:data.documents});
   await prisma.relationship.createMany({data:data.relationships});
+  await prisma.onboardingCase.createMany({data:data.onboardingCases});
+  await prisma.identityDocument.createMany({data:data.identityDocuments});
+  await prisma.screeningResult.createMany({data:data.screeningResults});
  }
  console.log(`Seeded ${data.clients.length} clients, ${data.transactions.length} transactions and ${data.alerts.length} alerts.`);
 }
