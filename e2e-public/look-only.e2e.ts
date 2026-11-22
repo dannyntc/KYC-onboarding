@@ -1,0 +1,96 @@
+import { test, expect, type Page } from '@playwright/test';
+import { db } from '../src/lib/db';
+
+const ONLINE_ORIGIN = 'https://kyc-onboarding-dannyntc.vercel.app';
+
+// Counts the tables a save would change. Look-only mode must leave all four untouched.
+async function rowCounts() {
+  return {
+    analysis: await db.analysis.count(),
+    onboardingAnalysis: await db.onboardingAnalysis.count(),
+    onboardingEvent: await db.onboardingEvent.count(),
+    auditEvent: await db.auditEvent.count()
+  };
+}
+
+// Every button inside a form on the page is switched off, and each form explains why.
+async function expectSaveButtonsDisabled(page: Page) {
+  const buttons = page.locator('.content form button');
+  const total = await buttons.count();
+  expect(total).toBeGreaterThan(0);
+  for (let i = 0; i < total; i++) await expect(buttons.nth(i)).toBeDisabled();
+  const forms = await page.locator('.content form:has(button)').count();
+  await expect(page.locator('.content .lookonly-note')).toHaveCount(forms);
+  await expect(page.locator('.content .lookonly-note').first()).toHaveText('Disabled in the online demo');
+}
+
+test('the online demo shows the look-only banner, badge and a disabled role switch', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByTestId('look-only-banner')).toContainText('saving is turned off');
+  await expect(page.locator('.topbar .demo')).toContainText('ONLINE DEMO · LOOK-ONLY');
+  await expect(page.locator('#role')).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Switch role' })).toBeDisabled();
+  await expect(page.getByText('Role switching works when run locally.')).toBeVisible();
+});
+
+test('KYC file save buttons are disabled with a caption, and the draft is an unsaved preview', async ({ page }) => {
+  const before = await rowCounts();
+
+  await page.goto('/onboarding/ONB-002');
+  await expectSaveButtonsDisabled(page);
+  await expect(page.getByRole('button', { name: 'Generate fixture KYC draft' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Add draft to note' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Approve', exact: true })).toBeDisabled();
+
+  const draft = page.locator('.draft');
+  await expect(draft).toContainText('Preview of the template draft (not saved)');
+  await expect(draft).toContainText('SGD 5,000,000');
+  await expect(draft.locator('a.evidence-link', { hasText: 'DOC-002' }).first()).toBeVisible();
+
+  await page.goto('/onboarding/ONB-009');
+  await expectSaveButtonsDisabled(page);
+  await expect(page.getByRole('button', { name: 'Clear as false positive' })).toBeDisabled();
+
+  expect(await rowCounts()).toEqual(before);
+});
+
+test('the alert page is look-only too, with an unsaved draft preview', async ({ page }) => {
+  const before = await rowCounts();
+  await page.goto('/cases/ALT-001');
+  await expectSaveButtonsDisabled(page);
+  await expect(page.getByRole('button', { name: 'Generate fixture draft' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Save review' })).toBeDisabled();
+  await expect(page.locator('.notice', { hasText: 'Preview of the template draft (not saved)' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Suggested action' })).toBeVisible();
+  expect(await rowCounts()).toEqual(before);
+});
+
+test('opening every KYC file and alert page writes nothing to the database', async ({ page }) => {
+  const before = await rowCounts();
+  const cases = await db.onboardingCase.findMany({ select: { id: true }, orderBy: { id: 'asc' } });
+  const alerts = await db.alert.findMany({ select: { id: true }, orderBy: { id: 'asc' } });
+  expect(cases.length).toBe(12);
+  for (const { id } of cases) {
+    await page.goto(`/onboarding/${id}`);
+    await expect(page.locator('.draft')).toContainText('Preview of the template draft (not saved)');
+  }
+  for (const { id } of alerts) {
+    await page.goto(`/cases/${id}`);
+    await expect(page.locator('.notice', { hasText: 'Preview of the template draft (not saved)' })).toBeVisible();
+  }
+  expect(await rowCounts()).toEqual(before);
+});
+
+test('direct saves from an online origin are still refused', async ({ request }) => {
+  const before = await rowCounts();
+  const headers = { origin: ONLINE_ORIGIN };
+  const draft = await request.post('/api/onboarding', { headers, form: { id: 'ONB-002', action: 'analyze' } });
+  expect(draft.status()).toBe(403);
+  const approve = await request.post('/api/onboarding', { headers, form: { id: 'ONB-006', action: 'approve' } });
+  expect(approve.status()).toBe(403);
+  const alertDraft = await request.post('/api/action', { headers, form: { id: 'ALT-001', action: 'analyze' } });
+  expect(alertDraft.status()).toBe(403);
+  const role = await request.post('/api/role', { headers, form: { role: 'senior-approver' } });
+  expect(role.status()).toBe(403);
+  expect(await rowCounts()).toEqual(before);
+});

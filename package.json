@@ -20,7 +20,8 @@
     "vercel-build": "DATABASE_ENGINE=postgres prisma generate --schema prisma/schema.postgres.prisma && next build",
     "test:e2e": "node scripts/e2e.mjs",
     "postinstall": "prisma generate",
-    "test:e2e:live": "node scripts/e2e-live.mjs"
+    "test:e2e:live": "node scripts/e2e-live.mjs",
+    "test:e2e:public": "node scripts/e2e-public.mjs"
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.10.1",

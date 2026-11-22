@@ -6,11 +6,13 @@ import { useRef, useState } from 'react';
 export function OnboardingNote({
   initialNote,
   initialVersion,
-  draft
+  draft,
+  disabled = false
 }: {
   initialNote: string;
   initialVersion: number;
   draft?: string;
+  disabled?: boolean;
 }) {
   const note = useRef<HTMLTextAreaElement>(null);
   const [version] = useState(initialVersion);
@@ -29,7 +31,7 @@ export function OnboardingNote({
       </label>
       <textarea ref={note} className="field" id="decision-note" name="note" defaultValue={initialNote} />
       {draft && (
-        <button type="button" className="button secondary" onClick={addDraft}>
+        <button type="button" className="button secondary" onClick={addDraft} disabled={disabled}>
           Add draft to note
         </button>
       )}

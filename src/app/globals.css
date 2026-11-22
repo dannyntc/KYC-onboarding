@@ -12,3 +12,9 @@
 
 .button:disabled{opacity:.45;cursor:not-allowed}
 .draft h3{font-size:15px;font-weight:700;margin:20px 0 6px}
+
+.lookonly-banner{background:#fff6e0;border-bottom:1px solid #ecd9a6;color:#6b4a00;padding:11px 42px;font-size:13px;line-height:1.5}
+.lookonly-note{display:block;color:var(--muted);font-size:12px;line-height:1.4}
+.sidefoot .lookonly-note{color:#b9ccd7}
+.sidefoot select:disabled,.sidefoot button:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:900px){.lookonly-banner{padding:11px 20px}}

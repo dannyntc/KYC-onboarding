@@ -2,11 +2,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CaseForm } from '@/components/case-form';
 import { EvidenceLink } from '@/components/evidence-link';
+import { LookOnlyCaption } from '@/components/look-only-banner';
 import { OnboardingNote } from '@/components/onboarding-note';
 import { currentRole } from '@/lib/demo-role';
 import { db } from '@/lib/db';
 import { loadOnboardingFile } from '@/lib/onboarding-file';
-import { onboardingAnalysisSchema } from '@/lib/onboarding-analysis';
+import { onboardingAnalysisSchema, onboardingFixture } from '@/lib/onboarding-analysis';
+import { isPublicDemo } from '@/lib/public-demo';
 import { referencesForScenario } from '@/lib/regulatory-references';
 import {
   approvalBlockers,
@@ -43,6 +45,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
   const { file, row, related } = loaded;
   const client = row.client;
   const role = await currentRole();
+  const lookOnly = await isPublicDemo();
 
   const live = Boolean(process.env.OPENAI_API_KEY);
   const latest = await db.onboardingAnalysis.findFirst({
@@ -58,6 +61,11 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
       draft = null;
     }
   }
+
+  // Online (look-only) there is no Generate button, so show the template draft computed on the fly.
+  // It is never saved: onboardingFixture only reads the file it is given.
+  const preview = lookOnly && !draft ? onboardingFixture(file) : null;
+  const shown = draft ?? preview;
 
   const suggestion = suggestRiskRating(file);
   const blockers = approvalBlockers(file, role);
@@ -211,12 +219,13 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                       REASON FOR DECISION
                     </label>
                     <textarea className="field" id={`reason-${result.id}`} name="reason" />
-                    <button className="button secondary" name="disposition" value="Cleared – false positive">
+                    <button className="button secondary" name="disposition" value="Cleared – false positive" disabled={lookOnly}>
                       Clear as false positive
                     </button>
-                    <button className="button secondary" name="disposition" value="Confirmed match">
+                    <button className="button secondary" name="disposition" value="Confirmed match" disabled={lookOnly}>
                       Confirm match
                     </button>
+                    {lookOnly && <LookOnlyCaption />}
                   </CaseForm>
                 )}
               </div>
@@ -367,7 +376,10 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                   REASONS FOR RATING
                 </label>
                 <textarea className="field" id="risk-rationale" name="riskRationale" defaultValue={row.riskRationale} />
-                <button className="button">Save risk rating</button>
+                <button className="button" disabled={lookOnly}>
+                  Save risk rating
+                </button>
+                {lookOnly && <LookOnlyCaption />}
               </CaseForm>
             )}
             <ReferenceList keys={['risk_assessment']} />
@@ -389,30 +401,33 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
             {role !== 'read-only' && (
               <CaseForm action="/api/onboarding">
                 <input type="hidden" name="id" value={row.id} />
-                <button className="button" name="action" value="analyze">
+                <button className="button" name="action" value="analyze" disabled={lookOnly}>
                   {live ? 'Generate live KYC draft' : 'Generate fixture KYC draft'}
                 </button>
+                {lookOnly && <LookOnlyCaption />}
               </CaseForm>
             )}
-            {latest && draft && (
+            {shown && (
               <div className="draft">
                 <p className="notice">
-                  {latest.mode === 'fixture'
-                    ? 'Displayed draft: fixture (no model called)'
-                    : latest.mode === 'live'
-                      ? 'Displayed draft: live model response'
-                      : 'Displayed draft: origin unknown'}
+                  {!latest
+                    ? 'Preview of the template draft (not saved). Nothing is stored; it is built from the checks on this page.'
+                    : latest.mode === 'fixture'
+                      ? 'Displayed draft: fixture (no model called)'
+                      : latest.mode === 'live'
+                        ? 'Displayed draft: live model response'
+                        : 'Displayed draft: origin unknown'}
                 </p>
                 <h3>Applicant summary</h3>
-                <p>{draft.applicant_summary}</p>
-                <FindingList title="Verified facts" findings={draft.verified_facts} />
-                <FindingList title="Risk factors" findings={draft.risk_factors} />
-                <FindingList title="Mitigating factors" findings={draft.mitigating_factors} />
-                {draft.outstanding_items.length > 0 && (
+                <p>{shown.applicant_summary}</p>
+                <FindingList title="Verified facts" findings={shown.verified_facts} />
+                <FindingList title="Risk factors" findings={shown.risk_factors} />
+                <FindingList title="Mitigating factors" findings={shown.mitigating_factors} />
+                {shown.outstanding_items.length > 0 && (
                   <>
                     <h3>Outstanding items</h3>
                     <ul>
-                      {draft.outstanding_items.map(item => (
+                      {shown.outstanding_items.map(item => (
                         <li key={item}>{item}</li>
                       ))}
                     </ul>
@@ -420,37 +435,41 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                 )}
                 <h3>Suggestions for the analyst</h3>
                 <p>
-                  Suggested risk rating: <strong>{draft.suggested_risk_rating}</strong>
+                  Suggested risk rating: <strong>{shown.suggested_risk_rating}</strong>
                   <br />
-                  Suggested next step: <strong>{draft.suggested_next_step.replaceAll('_', ' ')}</strong>
+                  Suggested next step: <strong>{shown.suggested_next_step.replaceAll('_', ' ')}</strong>
                 </p>
                 <p className="muted">
                   These are suggestions only. The analyst records the final rating and makes every decision.
                 </p>
                 <h3>Draft note</h3>
                 <p id="draft-note" style={{ whiteSpace: 'pre-line' }}>
-                  {draft.draft_note}
+                  {shown.draft_note}
                 </p>
                 <h3>Limitations</h3>
                 <ul>
-                  {draft.limitations.map(item => (
+                  {shown.limitations.map(item => (
                     <li key={item}>{item}</li>
                   ))}
                 </ul>
-                <details>
-                  <summary>View evidence used for this draft</summary>
-                  {latest.inputSnapshot ? (
-                    <>
-                      <p className="muted">Saved at generation time. Amounts are in cents; current records may have changed.</p>
-                      <pre className="audit-detail">{JSON.stringify(JSON.parse(latest.inputSnapshot), null, 2)}</pre>
-                    </>
-                  ) : (
-                    <p className="muted">Evidence snapshots were not recorded for this draft.</p>
-                  )}
-                </details>
-                <p className="muted">
-                  Generated {latest.createdAt.toISOString()} · {latest.mode} · {latest.model} · prompt {latest.promptVersion}
-                </p>
+                {latest && (
+                  <>
+                    <details>
+                      <summary>View evidence used for this draft</summary>
+                      {latest.inputSnapshot ? (
+                        <>
+                          <p className="muted">Saved at generation time. Amounts are in cents; current records may have changed.</p>
+                          <pre className="audit-detail">{JSON.stringify(JSON.parse(latest.inputSnapshot), null, 2)}</pre>
+                        </>
+                      ) : (
+                        <p className="muted">Evidence snapshots were not recorded for this draft.</p>
+                      )}
+                    </details>
+                    <p className="muted">
+                      Generated {latest.createdAt.toISOString()} · {latest.mode} · {latest.model} · prompt {latest.promptVersion}
+                    </p>
+                  </>
+                )}
               </div>
             )}
           </section>
@@ -478,16 +497,17 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
             {canEdit && (
               <CaseForm action="/api/onboarding" className="formstack">
                 <input type="hidden" name="id" value={row.id} />
-                <OnboardingNote initialNote={row.notes} initialVersion={row.version} draft={draft?.draft_note} />
-                <button className="button" name="action" value="approve" disabled={approveDisabled}>
+                <OnboardingNote initialNote={row.notes} initialVersion={row.version} draft={shown?.draft_note} disabled={lookOnly} />
+                <button className="button" name="action" value="approve" disabled={approveDisabled || lookOnly}>
                   {approveLabel}
                 </button>
-                <button className="button secondary" name="action" value="reject">
+                <button className="button secondary" name="action" value="reject" disabled={lookOnly}>
                   Reject
                 </button>
-                <button className="button secondary" name="action" value="request-info">
+                <button className="button secondary" name="action" value="request-info" disabled={lookOnly}>
                   Request information
                 </button>
+                {lookOnly && <LookOnlyCaption />}
               </CaseForm>
             )}
           </section>
