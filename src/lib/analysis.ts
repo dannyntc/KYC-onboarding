@@ -6,6 +6,9 @@ export function validateAnalysis(value:unknown, evidenceIds:string[], controlIds
  const parsed = analysisSchema.safeParse(value);
  if (!parsed.success) return {success:false as const,error:'Invalid analysis structure'};
  const findings = [...parsed.data.observed_facts,...parsed.data.risk_indicators,...parsed.data.mitigating_factors];
+ const narrative=[parsed.data.case_summary,parsed.data.draft_case_note,...findings.map(f=>f.description),...parsed.data.missing_information,...parsed.data.limitations,...parsed.data.relevant_controls.map(c=>c.explanation)].join('\n');
+ const prohibited=[/\b(?:client|customer|account holder)\s+is\s+guilty\b/i,/\b(?:alert|case)\s+(?:has been|is|was)\s+(?:automatically\s+)?closed\b/i,/\b(?:funds|account)\s+(?:has been|have been|is|are|was|were)\s+frozen\b/i,/\b(?:suspicious transaction report|STR)\s+(?:has been|was|is)\s+filed\b/i];
+ if(prohibited.some(pattern=>pattern.test(narrative))) return {success:false as const,error:'Analysis contains a prohibited final determination'};
  if(findings.some(f=>f.evidence_ids.some(id=>!evidenceIds.includes(id))) || parsed.data.relevant_controls.some(c=>!controlIds.includes(c.control_id))) return {success:false as const,error:'Analysis cites an unavailable record'};
  return {success:true as const,data:parsed.data};
 }

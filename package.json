@@ -43,5 +43,6 @@
     "@prisma/config": {
       "effect": "3.22.5"
     }
-  }
+  },
+  "type": "module"
 }

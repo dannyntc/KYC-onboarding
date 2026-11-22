@@ -5,6 +5,7 @@ import { isLocalOrigin } from '@/lib/origin';
 import { cookies } from 'next/headers';
 import { AnalysisValidationError, runLiveAnalysis } from '@/lib/live-analysis';
 import { reviewChange } from '@/lib/review';
+import { acquireAnalysisLock,releaseAnalysisLock } from '@/lib/analysis-lock';
 export async function POST(request:Request){
  const origin=request.headers.get('origin');
  if(!isLocalOrigin(origin,request.headers.get('host'))) return new Response('Invalid origin',{status:403});
@@ -13,6 +14,9 @@ export async function POST(request:Request){
  const alert=await db.alert.findUnique({where:{id},include:{client:{include:{transactions:true,documents:true,relationships:true}}}});
  if(!alert) return new Response('Case not found',{status:404});
  if(action==='analyze'){
+  const lease=await acquireAnalysisLock(id);
+  if(!lease) return new Response('An analysis is already running for this case. Wait and try again.',{status:409});
+  try {
   const live=Boolean(process.env.OPENAI_API_KEY); const model=process.env.OPENAI_MODEL;
   if(live&&!model) return new Response('Set OPENAI_MODEL to use live analysis.',{status:503});
   const evidenceIds=[alert.client.id,...alert.client.transactions.map(t=>t.id),...alert.client.documents.map(d=>d.id),...alert.client.relationships.map(r=>r.id)];
@@ -29,6 +33,7 @@ export async function POST(request:Request){
   if(!checked.success) return new Response(checked.error,{status:422});
   const mode=live?'live':'fixture';
   await db.$transaction([db.analysis.create({data:{alertId:id,mode,model:live?model!:'fixture',promptVersion:'v1',validation:'passed',output:JSON.stringify(checked.data)}}),db.auditEvent.create({data:{alertId:id,actor:'Demo analyst',action:live?'Live analysis generated':'Fixture analysis generated',detail:live?`Model: ${model}; prompt: v1; validation: passed`:'Synthetic fixture; no model was called. Validation: passed.'}})]);
+  } finally {await releaseAnalysisLock(id,lease);}
  }else if(['save','request','escalate'].includes(action)){
   const notes=String(form.get('notes')??'').trim(); const version=Number(form.get('version'));
   if(!notes||notes.length>10000||!Number.isInteger(version)) return new Response('A note and valid case version are required.',{status:400});

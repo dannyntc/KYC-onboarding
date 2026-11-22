@@ -78,3 +78,8 @@ model Relationship {
  entity String
  description String
 }
+model AnalysisLock {
+ alertId String @id
+ token String
+ expiresAt DateTime
+}

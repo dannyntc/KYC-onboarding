@@ -30,3 +30,8 @@ it('retains rejected structured output for an auditable validation failure',asyn
  try {await runLiveAnalysis({caseId:'ALT-001',evidenceIds:['TXN-002'],context:{},model:'test'},async()=>draft); throw new Error('unexpected success');}
  catch(error){expect(error).toBeInstanceOf(AnalysisValidationError);expect((error as InstanceType<typeof AnalysisValidationError>).output).toEqual(draft);}
 });
+it('rejects explicit autonomous case determinations while allowing uncertain language',()=>{
+ expect(validateAnalysis({...draft,draft_case_note:'The client is guilty of money laundering.'},['TXN-001'],[]).success).toBe(false);
+ expect(validateAnalysis({...draft,draft_case_note:'The alert has been automatically closed.'},['TXN-001'],[]).success).toBe(false);
+ expect(validateAnalysis({...draft,draft_case_note:'There is insufficient evidence to determine whether activity is suspicious.'},['TXN-001'],[]).success).toBe(true);
+});

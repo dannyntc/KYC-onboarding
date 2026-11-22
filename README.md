@@ -14,7 +14,7 @@ npm run db:seed
 npm run dev
 ```
 
-Open http://127.0.0.1:3000. The server binds to loopback. `npm run db:seed` refuses to overwrite an existing database. To delete all demo reviews and restore the seed intentionally, run `npm run db:reset`.
+Open http://127.0.0.1:3000. The server binds to loopback. After updating the application, run `npm run db:migrate` to apply additive schema migrations before starting it. `npm run db:seed` refuses to overwrite an existing database. To delete all demo reviews and restore the seed intentionally, run `npm run db:reset`.
 
 ## Current capabilities
 
@@ -39,4 +39,4 @@ The end-to-end suite creates and removes its own temporary SQLite database; it d
 
 ## Optional live analysis
 
-Set `OPENAI_API_KEY` and `OPENAI_MODEL` in `.env`, then restart the server. Live mode sends the selected fictional case context to OpenAI, validates the structured output and rejects unknown citations. Failures do not silently switch to fixtures. Live calls have not yet been verified with an API key. Never enter real client data.
+Set `OPENAI_API_KEY` and `OPENAI_MODEL` in `.env`, then restart the server. Live mode sends the selected fictional case context to OpenAI, validates the structured output and rejects unknown citations. Failures do not silently switch to fixtures. A case can have only one analysis request in progress; an abandoned lease expires after two minutes. Validation rejects unknown citations and a small set of explicit autonomous conclusions, but cannot establish factual accuracy or catch every unsupported claim. Live calls have not yet been verified with an API key. Never enter real client data.
