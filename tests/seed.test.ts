@@ -134,6 +134,14 @@ describe('KYC onboarding seed', () => {
     expect(data.identityDocuments.filter(d => d.kind === 'passport').every(d => d.expiresOn !== null)).toBe(true);
   });
 
+  it('applies before any activity on the account, so money never moves before the application', () => {
+    const data = createSeed();
+    for (const onboarding of data.onboardingCases) {
+      const dates = data.transactions.filter(t => t.clientId === onboarding.clientId).map(t => t.date);
+      expect(dates.every(date => date > onboarding.applicationDate), onboarding.id).toBe(true);
+    }
+  });
+
   it('uses only new document kinds for supplemental documents and matches declared wealth', () => {
     const data = createSeed();
     expect(data.supplementalDocuments.map(d => d.id)).toEqual(

@@ -37,18 +37,18 @@ type Applicant = {
 };
 
 const applicants: Applicant[] = [
-  {caseId:'ONB-001',clientId:'CLI-001',applicationDate:'2026-11-02',purpose:'Day-to-day private banking and treasury management',passport:'Verified',proofOfAddress:'Verified'},
-  {caseId:'ONB-002',clientId:'CLI-002',applicationDate:'2026-11-03',purpose:'Wealth management of company sale proceeds',passport:'Verified',proofOfAddress:'Verified'},
-  {caseId:'ONB-003',clientId:'CLI-003',applicationDate:'2026-11-04',purpose:'Investment management for a family holding structure',passport:'Verified',proofOfAddress:'Verified'},
-  {caseId:'ONB-004',clientId:'CLI-004',applicationDate:'2026-11-05',purpose:'Wealth management following a property sale',passport:'Verified',proofOfAddress:'Verified'},
-  {caseId:'ONB-005',clientId:'CLI-007',applicationDate:'2026-11-06',purpose:'Investment management for a family holding structure',passport:'Verified',proofOfAddress:'Verified'},
-  {caseId:'ONB-006',clientId:'CLI-013',applicationDate:'2026-11-09',purpose:'Wealth management of employment income and savings',passport:'Verified',proofOfAddress:'Verified'},
-  {caseId:'ONB-007',clientId:'CLI-014',applicationDate:'2026-11-10',purpose:'Wealth management of an inheritance',passport:'Expired',proofOfAddress:'Verified'},
-  {caseId:'ONB-008',clientId:'CLI-015',applicationDate:'2026-11-11',purpose:'Private banking and long-term investment',passport:'Verified',proofOfAddress:'Verified'},
-  {caseId:'ONB-009',clientId:'CLI-016',applicationDate:'2026-11-12',purpose:'Private banking and long-term investment',passport:'Verified',proofOfAddress:'Verified'},
-  {caseId:'ONB-010',clientId:'CLI-017',applicationDate:'2026-11-13',purpose:'Private banking and long-term investment',passport:'Verified',proofOfAddress:'Verified'},
-  {caseId:'ONB-011',clientId:'CLI-018',applicationDate:'2026-11-16',purpose:'Wealth management of investment portfolio proceeds',passport:'Verified',proofOfAddress:'Missing'},
-  {caseId:'ONB-012',clientId:'CLI-019',applicationDate:'2026-11-17',purpose:'Wealth management of employment income and savings',passport:'Verified',proofOfAddress:'Verified'}
+  {caseId:'ONB-001',clientId:'CLI-001',applicationDate:'2025-12-15',purpose:'Day-to-day private banking and treasury management',passport:'Verified',proofOfAddress:'Verified'},
+  {caseId:'ONB-002',clientId:'CLI-002',applicationDate:'2025-12-16',purpose:'Wealth management of company sale proceeds',passport:'Verified',proofOfAddress:'Verified'},
+  {caseId:'ONB-003',clientId:'CLI-003',applicationDate:'2025-12-17',purpose:'Investment management for a family holding structure',passport:'Verified',proofOfAddress:'Verified'},
+  {caseId:'ONB-004',clientId:'CLI-004',applicationDate:'2025-12-18',purpose:'Wealth management following a property sale',passport:'Verified',proofOfAddress:'Verified'},
+  {caseId:'ONB-005',clientId:'CLI-007',applicationDate:'2025-12-19',purpose:'Investment management for a family holding structure',passport:'Verified',proofOfAddress:'Verified'},
+  {caseId:'ONB-006',clientId:'CLI-013',applicationDate:'2025-12-22',purpose:'Wealth management of employment income and savings',passport:'Verified',proofOfAddress:'Verified'},
+  {caseId:'ONB-007',clientId:'CLI-014',applicationDate:'2025-12-23',purpose:'Wealth management of an inheritance',passport:'Expired',proofOfAddress:'Verified'},
+  {caseId:'ONB-008',clientId:'CLI-015',applicationDate:'2025-12-24',purpose:'Private banking and long-term investment',passport:'Verified',proofOfAddress:'Verified'},
+  {caseId:'ONB-009',clientId:'CLI-016',applicationDate:'2025-12-26',purpose:'Private banking and long-term investment',passport:'Verified',proofOfAddress:'Verified'},
+  {caseId:'ONB-010',clientId:'CLI-017',applicationDate:'2025-12-29',purpose:'Private banking and long-term investment',passport:'Verified',proofOfAddress:'Verified'},
+  {caseId:'ONB-011',clientId:'CLI-018',applicationDate:'2025-12-30',purpose:'Wealth management of investment portfolio proceeds',passport:'Verified',proofOfAddress:'Missing'},
+  {caseId:'ONB-012',clientId:'CLI-019',applicationDate:'2025-12-31',purpose:'Wealth management of employment income and savings',passport:'Verified',proofOfAddress:'Verified'}
 ];
 
 function createOnboardingCases() {
@@ -65,7 +65,7 @@ function createOnboardingCases() {
   }));
 }
 
-const expiredPassportDate = '2026-03-14';
+const expiredPassportDate = '2025-09-14';
 
 function createIdentityDocuments() {
   return applicants.flatMap((a, index) => {
@@ -94,7 +94,7 @@ function createIdentityDocuments() {
         expiresOn: null as string | null,
         summary: missing
           ? 'No proof of address has been supplied with the application.'
-          : 'Synthetic utility bill dated October 2026 confirms the declared Singapore residential address.'
+          : 'Synthetic utility bill dated November 2025 confirms the declared Singapore residential address.'
       }
     ];
   });

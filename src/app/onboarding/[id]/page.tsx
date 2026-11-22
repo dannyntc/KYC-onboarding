@@ -7,6 +7,7 @@ import { currentRole } from '@/lib/demo-role';
 import { db } from '@/lib/db';
 import { loadOnboardingFile } from '@/lib/onboarding-file';
 import { onboardingAnalysisSchema } from '@/lib/onboarding-analysis';
+import { referencesForScenario } from '@/lib/regulatory-references';
 import {
   approvalBlockers,
   SENIOR_APPROVAL_BLOCKER,
@@ -145,6 +146,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                 <p className="muted">{d.summary}</p>
               </div>
             ))}
+            <ReferenceList keys={['identity_verification']} />
           </section>
 
           <section className="panel section">
@@ -184,6 +186,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                 <span className="muted">{r.description}</span>
               </p>
             ))}
+            <ReferenceList keys={['beneficial_ownership']} />
           </section>
 
           <section className="panel section">
@@ -218,6 +221,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                 )}
               </div>
             ))}
+            <ReferenceList keys={['screening', 'pep']} />
           </section>
 
           <section className="panel section">
@@ -247,10 +251,11 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                 ' · Declared wealth is fully corroborated.'
               )}
             </p>
+            <ReferenceList keys={['source_of_wealth']} />
           </section>
 
           <section className="panel section">
-            <h2>Initial funding &amp; activity checks (AML)</h2>
+            <h2>Initial funding &amp; activity since application (AML)</h2>
             <p className="muted">Funding alerts raised on this applicant&apos;s first activity. Each opens the alert investigation page.</p>
             {client.alerts.length === 0 ? (
               <p className="muted">No funding alerts raised</p>
@@ -365,6 +370,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                 <button className="button">Save risk rating</button>
               </CaseForm>
             )}
+            <ReferenceList keys={['risk_assessment']} />
           </section>
 
           <section className="panel section">
@@ -389,7 +395,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
               </CaseForm>
             )}
             {latest && draft && (
-              <div>
+              <div className="draft">
                 <p className="notice">
                   {latest.mode === 'fixture'
                     ? 'Displayed draft: fixture (no model called)'
@@ -546,5 +552,24 @@ function FindingList({ title, findings }: { title: string; findings: { descripti
         </p>
       ))}
     </>
+  );
+}
+
+// Candidate MAS Notice 626 references for a check. They are suggestions for a human, not conclusions.
+function ReferenceList({ keys }: { keys: string[] }) {
+  const references = [...new Map(keys.flatMap(key => referencesForScenario(key)).map(r => [r.id, r])).values()];
+  if (references.length === 0) return null;
+  return (
+    <div>
+      <p className="label">CANDIDATE REGULATORY REFERENCES</p>
+      {references.map(reference => (
+        <p key={reference.id}>
+          <Link className="caseid" href={`/controls#${reference.id}`}>
+            {reference.id}
+          </Link>{' '}
+          · {reference.title}
+        </p>
+      ))}
+    </div>
   );
 }

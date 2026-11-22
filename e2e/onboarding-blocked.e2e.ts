@@ -5,6 +5,7 @@ test('an expired passport blocks approval, even for a direct request, and inform
   await page.goto('/onboarding/ONB-007');
   await expect(page.getByTestId('blockers')).toContainText('Passport IDV-013 is Expired');
   await expect(page.getByRole('button', { name: 'Approve', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Approve', exact: true })).toHaveCSS('cursor', 'not-allowed');
 
   const before = await db.onboardingCase.findUniqueOrThrow({ where: { id: 'ONB-007' } });
   const response = await page.request.post('/api/onboarding', {

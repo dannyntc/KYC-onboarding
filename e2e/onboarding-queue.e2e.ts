@@ -40,4 +40,9 @@ test('the funding alerts page still lists all twelve alerts and links to onboard
   await expect(page.getByRole('heading', { name: 'Initial funding & activity alerts' })).toBeVisible();
   await expect(page.locator('tbody tr')).toHaveCount(12);
   await expect(page.getByRole('link', { name: 'KYC file ONB-002' })).toBeVisible();
+  await expect(page.locator('.sidebar nav a[aria-current="page"]')).toHaveText(/Funding alerts/);
+  await page.goto('/');
+  await expect(page.locator('.sidebar nav a[aria-current="page"]')).toHaveText(/Onboarding queue/);
+  await page.goto('/controls');
+  await expect(page.locator('.sidebar nav a[aria-current="page"]')).toHaveText(/Regulatory library/);
 });

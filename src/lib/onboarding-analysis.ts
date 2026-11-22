@@ -137,8 +137,9 @@ export function onboardingFixture(file: OnboardingFile): OnboardingAnalysis {
 
   const needsDocuments = blockers.some(b => /^(Passport|National ID|Proof of address|Identity document)/.test(b));
   const hasWealthGap = suggestion.factors.some(f => f.description.endsWith('of declared wealth not corroborated'));
+  const hasUndecidedScreening = file.screeningResults.some(r => r.disposition === SCREENING_DISPOSITION.potential);
   const suggested_next_step: OnboardingAnalysis['suggested_next_step'] =
-    needsDocuments || hasWealthGap
+    needsDocuments || hasWealthGap || hasUndecidedScreening
       ? 'request_information'
       : suggestion.rating === 'High'
         ? 'refer_for_senior_review'

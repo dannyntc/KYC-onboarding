@@ -337,3 +337,11 @@ export function onboardingTransition(
       throw new OnboardingRuleError('Unsupported onboarding action');
   }
 }
+
+// The check keys that apply to a file. Regulatory references are tagged with these keys.
+export function onboardingCheckKeys(file: OnboardingFile): string[] {
+  const keys = ['identity_verification', 'screening', 'risk_assessment'];
+  if (file.relationships.length > 0) keys.push('beneficial_ownership');
+  if (file.screeningResults.some(r => r.list === 'PEP')) keys.push('pep', 'source_of_wealth');
+  return keys;
+}

@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { isLocalOrigin } from '@/lib/origin';
 import { actorName, currentRole } from '@/lib/demo-role';
 import { acquireAnalysisLock, releaseAnalysisLock } from '@/lib/analysis-lock';
+import { loadControlReviews, reviewedControlsForChecks } from '@/lib/control-review';
 import {
   AnalysisValidationError,
   modelInput,
@@ -18,6 +19,7 @@ import {
   type OnboardingAnalysis
 } from '@/lib/onboarding-analysis';
 import {
+  onboardingCheckKeys,
   onboardingTransition,
   OnboardingRuleError,
   type DemoRole,
@@ -63,11 +65,17 @@ async function generateDraft(loaded: LoadedOnboardingFile, role: DemoRole, origi
       client: row.client,
       relatedRelationships: related
     };
-    // Regulatory references for onboarding are added in a later stage, so no controls are supplied yet.
-    const controls: { id: string; title: string }[] = [];
+    // Only references with a current recorded review, for the checks that apply to this file, go to a live model.
+    const { reviews } = await loadControlReviews();
+    const controls = live
+      ? reviewedControlsForChecks(reviews, onboardingCheckKeys(file), new Date().toISOString().slice(0, 10))
+      : [];
+    const attestedReviews = reviews.filter(review => controls.some(control => control.id === review.id));
     const savedInput = modelInput(context, evidenceIds, controls);
     const inputSnapshot = JSON.stringify(
-      live ? { ...savedInput, recorded_control_reviews: [] } : { ...savedInput, fixture: ONBOARDING_FIXTURE_VERSION }
+      live
+        ? { ...savedInput, recorded_control_reviews: attestedReviews }
+        : { ...savedInput, fixture: ONBOARDING_FIXTURE_VERSION }
     );
 
     const mode = live ? 'live' : 'fixture';

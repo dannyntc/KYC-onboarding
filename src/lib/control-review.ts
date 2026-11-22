@@ -23,6 +23,12 @@ export function reviewedControlsForScenario(entries:unknown,scenario:string,asOf
   return [{...reference,sourceVersion,sourceUrl:referenceUrl(reference.page),reviewedOn:review.reviewedOn,expiresOn:review.expiresOn}];
  });
 }
+// Reviewed references for several check keys at once (used by onboarding drafts), each reference once.
+export function reviewedControlsForChecks(entries:unknown,keys:string[],asOf:string) {
+ const found=new Map<string,ReturnType<typeof reviewedControlsForScenario>[number]>();
+ for(const key of keys) for(const control of reviewedControlsForScenario(entries,key,asOf)) found.set(control.id,control);
+ return [...found.values()];
+}
 export async function loadControlReviews():Promise<{reviews:Review[];error:boolean}> {
  try {
   const raw=await readFile(/*turbopackIgnore: true*/ process.env.KYC_ONBOARDING_CONTROL_REVIEWS_FILE ?? 'control-reviews.json','utf8');

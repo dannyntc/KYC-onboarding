@@ -58,8 +58,22 @@ describe('template draft', () => {
   it('suggests the documented next step for blocked, high-risk and clean files', () => {
     expect(onboardingFixture(buildFile('ONB-007')).suggested_next_step).toBe('request_information');
     expect(onboardingFixture(buildFile('ONB-011')).suggested_next_step).toBe('request_information');
-    expect(onboardingFixture(buildFile('ONB-009')).suggested_next_step).toBe('refer_for_senior_review');
     expect(onboardingFixture(buildFile('ONB-006')).suggested_next_step).toBe('ready_for_human_decision');
+  });
+
+  it('asks for information while any screening hit is still a potential match', () => {
+    for (const caseId of ['ONB-008', 'ONB-009', 'ONB-010']) {
+      expect(onboardingFixture(buildFile(caseId)).suggested_next_step, caseId).toBe('request_information');
+    }
+  });
+
+  it('refers a High file for senior review, and is ready once a false positive is cleared', () => {
+    const confirmed = buildFile('ONB-008');
+    confirmed.screeningResults[0].disposition = 'Confirmed match';
+    expect(onboardingFixture(confirmed).suggested_next_step).toBe('refer_for_senior_review');
+    const cleared = buildFile('ONB-009');
+    cleared.screeningResults[0].disposition = 'Cleared – false positive';
+    expect(onboardingFixture(cleared).suggested_next_step).toBe('ready_for_human_decision');
   });
 
   it('describes an unresolved PEP hit as a potential match and cites it', () => {
