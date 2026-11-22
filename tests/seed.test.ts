@@ -35,3 +35,27 @@ it('derives scenario alerts from the evidence rather than the client position',a
  expect(detectScenarios(client,[inflow],[],[{owner:'Owner',entity:'Holding',clientId:'A'},{owner:'Owner',entity:'Holding',clientId:'B'}])).toEqual(['linked_ownership']);
  expect(detectScenarios(client,[inflow],[{kind:'property_sale',corroboratedAmount:1200}],[])).toEqual(['documented_sale']);
 });
+it('assigns every fictional transaction to an account owned by the same client',()=>{
+ const {clients,accounts,transactions}=createSeed();
+ expect(accounts).toHaveLength(clients.length);
+ expect(new Set(accounts.map(a=>a.id)).size).toBe(accounts.length);
+ for(const transaction of transactions) expect(accounts.find(a=>a.id===transaction.accountId)?.clientId).toBe(transaction.clientId);
+});
+it('records that the wealth-gap client declares the company sale as the source of SGD 8 million',()=>{
+ const data=createSeed();
+ const client=data.clients.find(c=>c.id==='CLI-002')!;
+ expect(client.declaredWealth).toBe(800000000);
+ expect(client.profile).toMatch(/declares.*SGD 8 million.*company sale/i);
+ expect(data.documents.find(d=>d.clientId===client.id)?.corroboratedAmount).toBe(300000000);
+});
+it('provides property-sale details consistent with the documented-sale transaction',()=>{
+ const data=createSeed();
+ const client=data.clients.find(c=>c.id==='CLI-004')!;
+ const doc=data.documents.find(d=>d.id==='DOC-004')!;
+ const txn=data.transactions.find(t=>t.id==='TXN-055')!;
+ expect(doc.summary).toContain(client.name);
+ expect(doc.summary).toContain(txn.counterparty);
+ expect(doc.summary).toContain(txn.date);
+ expect(doc.corroboratedAmount).toBe(txn.amount);
+ expect(doc.summary).toMatch(/settlement trail.*not supplied/i);
+});

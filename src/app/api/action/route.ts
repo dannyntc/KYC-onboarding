@@ -1,17 +1,19 @@
 import { db } from '@/lib/db';
-import { fixtureAnalysis, validateAnalysis } from '@/lib/analysis';
+import { FIXTURE_VERSION, fixtureAnalysis, validateAnalysis } from '@/lib/analysis';
 import { NextResponse } from 'next/server';
 import { isLocalOrigin } from '@/lib/origin';
 import { cookies } from 'next/headers';
-import { AnalysisValidationError, runLiveAnalysis } from '@/lib/live-analysis';
+import { AnalysisValidationError, LIVE_PROMPT_VERSION, modelInput, runLiveAnalysis } from '@/lib/live-analysis';
 import { reviewChange } from '@/lib/review';
 import { acquireAnalysisLock,releaseAnalysisLock } from '@/lib/analysis-lock';
+import { relatedRelationships } from '@/lib/related-relationships';
+import {loadControlReviews,reviewedControlsForScenario} from '@/lib/control-review';
 export async function POST(request:Request){
  const origin=request.headers.get('origin');
  if(!isLocalOrigin(origin,request.headers.get('host'))) return new Response('Invalid origin',{status:403});
  if((await cookies()).get('demo-role')?.value==='read-only') return new Response('Read-only demo role cannot change cases.',{status:403});
  const form=await request.formData(); const id=String(form.get('id')??''); const action=String(form.get('action')??'');
- const alert=await db.alert.findUnique({where:{id},include:{client:{include:{transactions:true,documents:true,relationships:true}}}});
+ const alert=await db.alert.findUnique({where:{id},include:{client:{include:{transactions:true,accounts:true,documents:true,relationships:true}}}});
  if(!alert) return new Response('Case not found',{status:404});
  if(action==='analyze'){
   const lease=await acquireAnalysisLock(id);
@@ -19,20 +21,41 @@ export async function POST(request:Request){
   try {
   const live=Boolean(process.env.OPENAI_API_KEY); const model=process.env.OPENAI_MODEL;
   if(live&&!model) return new Response('Set OPENAI_MODEL to use live analysis.',{status:503});
-  const evidenceIds=[alert.client.id,...alert.client.transactions.map(t=>t.id),...alert.client.documents.map(d=>d.id),...alert.client.relationships.map(r=>r.id)];
-  let draft;
+  const related=await relatedRelationships(alert.client.id,alert.client.relationships);
+  const evidenceIds=[...related.flatMap(r=>[r.id,...r.client.accounts.map(account=>account.id)]),alert.client.id,...alert.client.accounts.map(account=>account.id),...alert.client.transactions.map(t=>t.id),...alert.client.documents.map(d=>d.id),...alert.client.relationships.map(r=>r.id)];
+  const context={alert:{id:alert.id,title:alert.title,triggerTransactionId:alert.triggerTransactionId},client:alert.client,relatedRelationships:related};
+  const {reviews}=await loadControlReviews();
+  const controls=live?reviewedControlsForScenario(reviews,alert.scenario,new Date().toISOString().slice(0,10)):[];
+  const savedInput=modelInput(context,evidenceIds,controls);
+  const attestedReviews=reviews.filter(review=>controls.some(control=>control.id===review.id));
+  const inputSnapshot=JSON.stringify(live?{...savedInput,recorded_control_reviews:attestedReviews}:{...savedInput,fixture_scenario:alert.scenario});
+  let draft; let rawResponse:string|null=null;
   try {
-   draft=live?await runLiveAnalysis({caseId:id,model:model!,evidenceIds,context:{alert:{id:alert.id,title:alert.title,triggerTransactionId:alert.triggerTransactionId},client:alert.client}}):fixtureAnalysis(alert.scenario,alert.triggerTransactionId,alert.client.documents[0]?.id,alert.client.id,alert.client.relationships[0]?.id);
+   if(live){const result=await runLiveAnalysis({caseId:id,model:model!,evidenceIds,context,controls});draft=result.draft;rawResponse=result.rawResponse;}
+   else draft=fixtureAnalysis({scenario:alert.scenario,trigger:alert.client.transactions.find(t=>t.id===alert.triggerTransactionId),transactions:alert.client.transactions,client:alert.client,documents:alert.client.documents,relationships:alert.client.relationships,relatedRelationships:related});
   } catch(error) {
-   const validation=error instanceof AnalysisValidationError?'rejected':'provider_error';
-   const raw=error instanceof AnalysisValidationError?(JSON.stringify(error.output) ?? '').slice(0,100000):'';
-   await db.$transaction([db.analysis.create({data:{alertId:id,mode:'live',model:model ?? 'unconfigured',promptVersion:'v1',validation,output:raw}}),db.auditEvent.create({data:{alertId:id,actor:'Demo analyst',action:'Live analysis failed',detail:`Model: ${model}; prompt: v1; validation: ${validation}`}})]);
+   const validation=error instanceof AnalysisValidationError?'rejected':live?'provider_error':'fixture_error';
+   const raw=error instanceof AnalysisValidationError?(JSON.stringify(error.output) ?? ''):'';
+   const failedResponse=error instanceof AnalysisValidationError?error.rawResponse:null;
+   await db.$transaction(async tx=>{
+    const attempt=await tx.analysis.create({data:{alertId:id,mode:live?'live':'fixture',model:live?model!:'fixture',promptVersion:live?LIVE_PROMPT_VERSION:FIXTURE_VERSION,validation,output:raw,rawResponse:failedResponse,inputSnapshot}});
+    await tx.auditEvent.create({data:{alertId:id,actor:'Demo analyst',action:live?'Live analysis failed':'Fixture analysis failed',detail:`Attempt ID: ${attempt.id}; Model: ${live?model:'fixture'}; prompt: ${live?LIVE_PROMPT_VERSION:FIXTURE_VERSION}; validation: ${validation}`}});
+   });
    return new Response('Analysis failed or contained invalid citations. Previous drafts are preserved; try again.',{status:502});
   }
-  const checked=validateAnalysis(draft,evidenceIds,[]);
-  if(!checked.success) return new Response(checked.error,{status:422});
+  const checked=validateAnalysis(draft,evidenceIds,controls.map(control=>control.id));
+  if(!checked.success) {
+   await db.$transaction(async tx=>{
+    const attempt=await tx.analysis.create({data:{alertId:id,mode:live?'live':'fixture',model:live?model!:'fixture',promptVersion:live?LIVE_PROMPT_VERSION:FIXTURE_VERSION,validation:'rejected',output:JSON.stringify(draft) ?? '',rawResponse,inputSnapshot}});
+    await tx.auditEvent.create({data:{alertId:id,actor:'Demo analyst',action:live?'Live analysis failed':'Fixture analysis failed',detail:`Attempt ID: ${attempt.id}; Model: ${live?model:'fixture'}; prompt: ${live?LIVE_PROMPT_VERSION:FIXTURE_VERSION}; validation: rejected; ${checked.error}`}});
+   });
+   return new Response(checked.error,{status:422});
+  }
   const mode=live?'live':'fixture';
-  await db.$transaction([db.analysis.create({data:{alertId:id,mode,model:live?model!:'fixture',promptVersion:'v1',validation:'passed',output:JSON.stringify(checked.data)}}),db.auditEvent.create({data:{alertId:id,actor:'Demo analyst',action:live?'Live analysis generated':'Fixture analysis generated',detail:live?`Model: ${model}; prompt: v1; validation: passed`:'Synthetic fixture; no model was called. Validation: passed.'}})]);
+  await db.$transaction(async tx=>{
+   const attempt=await tx.analysis.create({data:{alertId:id,mode,model:live?model!:'fixture',promptVersion:live?LIVE_PROMPT_VERSION:FIXTURE_VERSION,validation:'passed',output:JSON.stringify(checked.data),rawResponse,inputSnapshot}});
+   await tx.auditEvent.create({data:{alertId:id,actor:'Demo analyst',action:live?'Live analysis generated':'Fixture analysis generated',detail:live?`Attempt ID: ${attempt.id}; Model: ${model}; prompt: ${LIVE_PROMPT_VERSION}; validation: passed`:`Attempt ID: ${attempt.id}; Synthetic fixture; no model was called. Version: ${FIXTURE_VERSION}; validation: passed.`}});
+  });
   } finally {await releaseAnalysisLock(id,lease);}
  }else if(['save','request','escalate'].includes(action)){
   const notes=String(form.get('notes')??'').trim(); const version=Number(form.get('version'));

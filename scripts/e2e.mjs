@@ -1,9 +1,11 @@
-import {mkdtempSync,rmSync} from 'node:fs';
+import {mkdtempSync,rmSync,writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
 const temp=mkdtempSync(join(tmpdir(),'kyc-onboarding-e2e-'));
-const env={...process.env,DATABASE_URL:`file:${join(temp,'test.db')}`,OPENAI_API_KEY:'',OPENAI_MODEL:''};
+const reviewFile=join(temp,'control-reviews.json');
+writeFileSync(reviewFile,'[]');
+const env={...process.env,KYC_ONBOARDING_CONTROL_REVIEWS_FILE:reviewFile,DATABASE_URL:`file:${join(temp,'test.db')}`,OPENAI_API_KEY:'',OPENAI_MODEL:''};
 let status=1;
 try {
  for(const [cmd,args] of [['npx',['prisma','migrate','deploy']],['npx',['tsx','prisma/seed.ts']],['npx',['playwright','test']]]) {

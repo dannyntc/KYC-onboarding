@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1",
     "build": "next build",
-    "start": "next start",
+    "start": "next start --hostname 127.0.0.1",
     "lint": "eslint",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
@@ -13,7 +13,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "KYC_ONBOARDING_RESET=1 tsx prisma/seed.ts",
     "test:e2e": "node scripts/e2e.mjs",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test:e2e:live": "node scripts/e2e-live.mjs"
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.10.1",
