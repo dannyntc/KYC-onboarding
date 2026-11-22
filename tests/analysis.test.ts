@@ -25,3 +25,8 @@ it('cites ownership evidence and property sale mitigation in scenario fixtures',
  expect(fixtureAnalysis('linked_ownership','TXN-041','DOC-003','CLI-003','REL-001').risk_indicators[0].evidence_ids).toContain('REL-001');
  expect(fixtureAnalysis('documented_sale','TXN-055','DOC-004','CLI-004').mitigating_factors[0].evidence_ids).toContain('DOC-004');
 });
+it('retains rejected structured output for an auditable validation failure',async()=>{
+ const {AnalysisValidationError}=await import('../src/lib/live-analysis');
+ try {await runLiveAnalysis({caseId:'ALT-001',evidenceIds:['TXN-002'],context:{},model:'test'},async()=>draft); throw new Error('unexpected success');}
+ catch(error){expect(error).toBeInstanceOf(AnalysisValidationError);expect((error as InstanceType<typeof AnalysisValidationError>).output).toEqual(draft);}
+});

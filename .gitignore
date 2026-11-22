@@ -43,3 +43,8 @@ next-env.d.ts
 /prisma/*.db
 /prisma/*.db-journal
 !.env.example
+
+/test-results/
+/playwright-report/
+
+/src/generated/

@@ -1,6 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import 'dotenv/config';
+import { PrismaClient } from '../src/generated/prisma/client';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { databaseUrl } from '../src/lib/database-url';
 import { createSeed } from '../src/lib/seed-data';
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({adapter:new PrismaBetterSqlite3({url:databaseUrl(process.env.DATABASE_URL ?? 'file:./dev.db',process.cwd())})});
 async function main() {
  const data = createSeed();
  if (await prisma.alert.count() > 0 && process.env.KYC_ONBOARDING_RESET !== "1") throw new Error("Existing demo data found. Use npm run db:reset to erase it explicitly.");

@@ -24,3 +24,14 @@ it('flags a rapid movement only when a large inflow is followed by an outflow wi
  expect(isRapidMovement(120000000,'2026-05-10',-85000000,'2026-05-13',10000000)).toBe(false);
  expect(isRapidMovement(9000000,'2026-05-10',-85000000,'2026-05-11',10000000)).toBe(false);
 });
+it('derives scenario alerts from the evidence rather than the client position',async()=>{
+ const {detectScenarios}=await import('../src/lib/rules');
+ const client={expectedMonthlyMax:100,declaredWealth:800};
+ const inflow={amount:1200,date:'2026-05-10',currency:'SGD'};
+ const outflow={amount:-850,date:'2026-05-11',currency:'SGD'};
+ expect(detectScenarios(client,[inflow,outflow],[],[])).toEqual(['rapid_movement']);
+ expect(detectScenarios(client,[{...inflow,amount:50}],[],[])).toEqual([]);
+ expect(detectScenarios(client,[inflow],[{kind:'company_sale',corroboratedAmount:300}],[])).toEqual(['wealth_gap']);
+ expect(detectScenarios(client,[inflow],[],[{owner:'Owner',entity:'Holding',clientId:'A'},{owner:'Owner',entity:'Holding',clientId:'B'}])).toEqual(['linked_ownership']);
+ expect(detectScenarios(client,[inflow],[{kind:'property_sale',corroboratedAmount:1200}],[])).toEqual(['documented_sale']);
+});

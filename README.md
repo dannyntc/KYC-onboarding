@@ -22,7 +22,7 @@ The dashboard and case workbench use SQLite. Cases contain synthetic transaction
 
 ## Known gaps
 
-Verified internal regulatory mappings, full audit metadata, richer evidence coverage, deterministic monitoring rules, and browser/end-to-end tests are not implemented. Do not use real customer data. The demo role selector is not authentication, and production identity and audit security are absent; SQLite is not tamper-proof. Fixture text must be checked against evidence. npm audit currently reports four high-severity findings in Prisma tooling dependencies.
+Verified internal regulatory mappings, complete model-response capture, and broader evidence coverage are not implemented. Monitoring rules are simplified demonstrations rather than bank controls. Do not use real customer data. The demo role selector is not authentication, and production identity and audit security are absent; SQLite is not tamper-proof. Fixture text must be checked against evidence. Rejected structured output is stored for audit, but responses that fail before structured parsing are not preserved.
 
 ## Checks
 
@@ -31,7 +31,11 @@ npm test
 npm run typecheck
 npm run lint
 npm run build
+npx playwright install chromium  # once, for browser tests
+npm run test:e2e
 ```
+
+The end-to-end suite creates and removes its own temporary SQLite database; it does not reset the demo database. The `effect` override patches a Prisma CLI dependency that Prisma pins to an affected version. Recheck the override on Prisma upgrades.
 
 ## Optional live analysis
 

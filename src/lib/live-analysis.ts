@@ -1,11 +1,14 @@
 import OpenAI from 'openai';
 import { zodTextFormat } from 'openai/helpers/zod';
 import { analysisSchema, validateAnalysis } from './analysis';
+export class AnalysisValidationError extends Error {
+ constructor(message:string,public output:unknown){super(message);this.name='AnalysisValidationError';}
+}
 export type LiveInput={caseId:string;evidenceIds:string[];context:unknown;model:string};
 export async function runLiveAnalysis(input:LiveInput, provider: (input:LiveInput)=>Promise<unknown> = callOpenAI) {
  const output=await provider(input);
  const result=validateAnalysis(output,input.evidenceIds,[]);
- if(!result.success) throw new Error(result.error);
+ if(!result.success) throw new AnalysisValidationError(result.error,output);
  return result.data;
 }
 async function callOpenAI(input:LiveInput) {
