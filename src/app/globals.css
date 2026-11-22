@@ -18,3 +18,15 @@
 .sidefoot .lookonly-note{color:#b9ccd7}
 .sidefoot select:disabled,.sidefoot button:disabled{opacity:.5;cursor:not-allowed}
 @media(max-width:900px){.lookonly-banner{padding:11px 20px}}
+
+.tourlink{display:block;margin:14px 0 0;padding:10px 12px;border:1px solid #395063;border-radius:7px;color:#7ad4c7;font-size:13px;font-weight:700}
+.tourlink:hover{background:#29445a;color:white}
+.driver-popover.wg-tour{max-width:340px;padding:18px;border-radius:10px;font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+.wg-tour .driver-popover-title{font-size:17px;color:var(--navy);padding-right:24px}
+.wg-tour .driver-popover-description{color:var(--muted);line-height:1.55}
+.wg-tour .driver-popover-progress-text{color:var(--teal);font-weight:700;font-size:12px}
+.wg-tour .driver-popover-footer-btn{padding:7px 12px;font-size:13px;font-weight:700;border-radius:6px;border-color:var(--teal);color:var(--teal)}
+.wg-tour .driver-popover-next-btn{background:var(--teal);color:white}
+.wg-tour .driver-popover-next-btn:hover,.wg-tour .driver-popover-next-btn:focus-visible{background:#0f635d}
+.wg-tour .driver-popover-prev-btn{margin-right:6px}
+.wg-tour .driver-popover-close-btn{font-size:20px}

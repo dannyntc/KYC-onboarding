@@ -141,7 +141,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
             <p className="muted">{client.profile}</p>
           </section>
 
-          <section className="panel section">
+          <section className="panel section" data-tour="identity">
             <h2>Identity &amp; documents</h2>
             {client.identityDocuments.length === 0 && <p className="muted">No identity documents recorded.</p>}
             {client.identityDocuments.map(d => (
@@ -197,7 +197,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
             <ReferenceList keys={['beneficial_ownership']} />
           </section>
 
-          <section className="panel section">
+          <section className="panel section" data-tour="screening">
             <h2>Screening</h2>
             {client.screeningResults.length === 0 && <p className="muted">No screening hits recorded.</p>}
             {client.screeningResults.map(result => (
@@ -233,7 +233,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
             <ReferenceList keys={['screening', 'pep']} />
           </section>
 
-          <section className="panel section">
+          <section className="panel section" data-tour="source-of-wealth">
             <h2>Source of wealth &amp; funds</h2>
             <p>
               Declared wealth: <strong>{money(client.declaredWealth)}</strong>.
@@ -263,7 +263,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
             <ReferenceList keys={['source_of_wealth']} />
           </section>
 
-          <section className="panel section">
+          <section className="panel section" data-tour="aml-funding">
             <h2>Initial funding &amp; activity since application (AML)</h2>
             <p className="muted">Funding alerts raised on this applicant&apos;s first activity. Each opens the alert investigation page.</p>
             {client.alerts.length === 0 ? (
@@ -385,7 +385,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
             <ReferenceList keys={['risk_assessment']} />
           </section>
 
-          <section className="panel section">
+          <section className="panel section" data-tour="assistant">
             <div className="panelhead" style={{ padding: 0, marginBottom: 16 }}>
               <div>
                 <h2>KYC assistant</h2>
@@ -474,7 +474,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
             )}
           </section>
 
-          <section className="panel section">
+          <section className="panel section" data-tour="decision-panel">
             <h2>Decision</h2>
             {decided ? (
               <p className="notice">Decision recorded: {row.status}. This file can no longer be changed.</p>

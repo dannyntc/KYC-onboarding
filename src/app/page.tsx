@@ -104,7 +104,7 @@ export default async function OnboardingQueue({
           </select>
           <button>Apply filters</button>
         </form>
-        <div className="tablewrap">
+        <div className="tablewrap" data-tour="queue-table">
           <table>
             <thead>
               <tr>
@@ -112,7 +112,7 @@ export default async function OnboardingQueue({
                 <th>APPLICANT</th>
                 <th>APPLICATION DATE</th>
                 <th>SUGGESTED RISK</th>
-                <th>OUTSTANDING ITEMS</th>
+                <th data-tour="outstanding-column">OUTSTANDING ITEMS</th>
                 <th>STATUS</th>
                 <th></th>
               </tr>
