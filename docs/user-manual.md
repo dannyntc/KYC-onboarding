@@ -70,13 +70,13 @@ There are two ways to use the demo.
 | | **Online demo** (live website) | **On your own computer** |
 |---|---|---|
 | How to open | Visit https://kyc-onboarding-dannyntc.vercel.app | Follow [section 14](#14-running-the-demo-on-your-own-computer) |
-| Badge at top right | Nothing | **SYNTHETIC DATA · LOCAL** |
 | Can you see everything? | Yes | Yes |
-| Can you click Approve, Save, etc.? | No: the buttons are greyed out | Yes: everything works |
-| Can you switch demo roles? | Yes (it changes the view only) | Yes |
-| KYC memo | Shown as a preview, marked "not saved" | Generated and saved when you click the button |
+| Can you click Approve, Save, etc.? | Yes: everything works | Yes: everything works |
+| Can you switch demo roles? | Yes | Yes |
+| Who sees your changes? | **Everyone** who visits the site (one shared database) | Only you |
+| Start again from fresh data | **Reset demo data** in the sidebar | **Reset demo data** in the sidebar, or `npm run db:reset` |
 
-Saving is turned off online because every visitor shares the same data. If saving were allowed, one person's approvals would change what the next visitor sees.
+Online, every visitor shares the same data, so another visitor may already have decided a file. Click **Reset demo data** in the sidebar (Analyst or Senior approver role) to restore the 12 starting applicants. It asks you to confirm, and it erases every saved review, memo and audit entry for everyone. Never enter real client information.
 
 ## 4. Finding your way around the screen
 
@@ -87,8 +87,8 @@ Saving is turned off online because every visitor shares the same data. If savin
 - **Regulatory library:** the Singapore regulations (MAS Notice 626) that relate to each check.
 - **▶ Guided tour:** starts the step-by-step pop-up tour.
 - **Demo role:** a drop-down to switch between *Read-only access*, *Analyst* and *Senior approver*, plus a **Switch role** button. This is a demo tool, not a real login.
+- **Reset demo data:** restores the 12 starting applicants and erases every saved review, memo and audit entry, for everyone (hidden for *Read-only access*).
 
-**Top bar:** shows whether you are on the online demo (look-only) or a local copy.
 
 **Links that look like `DOC-002`, `SCR-001` or `TXN-013`:** these are **record IDs**. Click one to jump to that record on the page.
 
@@ -172,7 +172,7 @@ A KYC file has the evidence on the left and the decision tools on the right. (On
 3. **Beneficial ownership.** Who really owns or controls the money. If the same owner appears behind *other* clients, they're listed here with links to their files.
 4. **Screening.** Watch-list matches (PEP, sanctions, adverse media), each showing the match strength and the list entry. An undecided match is shown as **Potential match**, and it blocks approval until an analyst decides.
 5. **Source of wealth & funds.** The declared wealth, each supporting document and how much it backs up, the corroborated total, and any amount **not corroborated**.
-6. **Initial funding & activity since application (AML).**
+6. **Initial Transactions & activity since application (AML).**
    - Any transaction alerts for this applicant. Click an alert ID to open its investigation page.
    - The account's transactions. Negative amounts are money going out.
 
@@ -188,8 +188,6 @@ Each section lists **candidate regulatory references** (e.g. `MAS-626-6.9`). Cli
 **Tip:** if a table is too wide for your screen, a line saying **"Scroll sideways to see all columns →"** appears above it. Scroll or swipe sideways to see the rest.
 
 ## 8. Step by step: recording a decision
-
-*This only works when running locally ([section 14](#14-running-the-demo-on-your-own-computer)). Online, the buttons are greyed out.*
 
 ### 8.1 Decide on a screening match (if there is one)
 
@@ -352,7 +350,7 @@ Running locally lets you click every button. You need **Node.js 24** and **npm**
 
 **Useful extras:**
 
-- **See the online look-only version locally:** `KYC_ONBOARDING_PUBLIC_DEMO=1 npm run dev`
+- **See the look-only version (nothing can be saved):** `KYC_ONBOARDING_PUBLIC_DEMO=1 npm run dev`
 - **Upgrade an existing older database:** `npm run db:migrate`, then `npm run db:seed:onboarding`
 - **Start again from fresh data:** `npm run db:reset`. **Warning:** this permanently deletes all your demo decisions and audit history.
 
@@ -360,7 +358,7 @@ Running locally lets you click every button. You need **Node.js 24** and **npm**
 
 | Problem | What to do |
 |---|---|
-| Buttons are greyed out | Expected on the live website. Run the demo locally to use them |
+| A file is already decided | Someone else decided it on the shared online demo. Click **Reset demo data** in the sidebar |
 | **Approve** stays greyed out locally | Read the **Outstanding before approval** box and resolve each item first |
 | "This file changed. Reload and try again." | Someone (or another tab) changed the file. Copy your note, reload the page, and try again |
 | "Read-only demo role cannot change cases." | Switch the demo role to Analyst |

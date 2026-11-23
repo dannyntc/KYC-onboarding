@@ -3,6 +3,7 @@ import { PrismaClient as PostgresPrismaClient } from '@/generated/prisma-postgre
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { databaseUrl, isPostgresDatabaseUrl } from './database-url';
+import type { Engine } from './demo-reset';
 
 // Both generated clients expose the same application model API. Keep the public
 // type anchored to the SQLite client so existing query code remains portable
@@ -11,6 +12,7 @@ type DatabaseClient = SQLitePrismaClient;
 const globalForPrisma = globalThis as unknown as { prisma?: DatabaseClient };
 const configuredUrl = process.env.DATABASE_URL ?? 'file:./dev.db';
 const usePostgres = process.env.DATABASE_ENGINE === 'postgres' || isPostgresDatabaseUrl(configuredUrl);
+export const databaseEngine: Engine = usePostgres ? 'postgres' : 'sqlite';
 
 function createDatabaseClient(): DatabaseClient {
  if (usePostgres) {

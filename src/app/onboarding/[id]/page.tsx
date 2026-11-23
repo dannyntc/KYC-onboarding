@@ -287,7 +287,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
           </section>
 
           <section className="panel section" data-tour="aml-funding">
-            <h2>Initial funding &amp; activity since application (AML)</h2>
+            <h2>Initial Transactions &amp; activity since application (AML)</h2>
             <p className="muted">Transaction alerts raised on this applicant&apos;s first activity. Each opens the alert investigation page.</p>
             {client.alerts.length === 0 ? (
               <p className="muted">No transaction alerts raised</p>

@@ -100,7 +100,16 @@ test('opening every KYC file and alert page writes nothing to the database', asy
   expect(await rowCounts()).toEqual(before);
 });
 
-test('direct saves from an online origin are still refused', async ({ request }) => {
+test('in look-only mode, saves and resets are refused even from the site itself', async ({ request, baseURL }) => {
+  const before = await rowCounts();
+  const own = { origin: baseURL! };
+  expect((await request.post('/api/onboarding', { headers: own, form: { id: 'ONB-006', action: 'analyze' } })).status()).toBe(403);
+  expect((await request.post('/api/action', { headers: own, form: { id: 'ALT-001', action: 'analyze' } })).status()).toBe(403);
+  expect((await request.post('/api/reset', { headers: own })).status()).toBe(403);
+  expect(await rowCounts()).toEqual(before);
+});
+
+test('direct saves from another website are refused', async ({ request }) => {
   const before = await rowCounts();
   const headers = { origin: ONLINE_ORIGIN };
   const draft = await request.post('/api/onboarding', { headers, form: { id: 'ONB-002', action: 'analyze' } });

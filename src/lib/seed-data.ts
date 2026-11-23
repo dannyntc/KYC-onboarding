@@ -6,7 +6,7 @@ export function createSeed() {
  const clients = names.map((name, i) => ({id:`CLI-${String(i+1).padStart(3,'0')}`, name, expectedMonthlyMin:5000000, expectedMonthlyMax:10000000, declaredWealth: i%4===1 ? 800000000 : 450000000, profile: i<12 && i%4===1 ? 'Private banking client; Singapore resident. Client declares SGD 8 million in wealth from a company sale.' : 'Private banking client; Singapore resident.'}));
  const accounts = clients.map(c=>({id:`ACC-${c.id}`,clientId:c.id}));
  const transactions = clients.flatMap((c,i) => Array.from({length:14},(_,j)=>({id:`TXN-${String(i*14+j+1).padStart(3,'0')}`,clientId:c.id,accountId:`ACC-${c.id}`,date:j===12?'2026-05-10':j===13?'2026-05-11':`2026-${String(1+Math.floor(j/3)).padStart(2,'0')}-${String(2+(j*3)%25).padStart(2,'0')}`,amount: j===12 && i<12 ? (i%4===0?120000000:i%4===3?250000000:21000000) : (j===13 && i%4===0 && i<12 ? -85000000 : (j%3===0?-1:1)*(200000+j*20000+i*1000)),currency:'SGD',counterparty:j===12&&i%4===3?'Harbour Property Buyer':j===12&&i%4===0?'New third party':'Regular counterparty'})));
- const documents = clients.slice(0,12).map((c,i)=>({id:`DOC-${String(i+1).padStart(3,'0')}`,clientId:c.id,kind:i%4===1?'company_sale':i%4===3?'property_sale':'profile',title:i%4===1?'Company sale extract':i%4===3?'Property sale agreement':'Client profile declaration',summary:i%4===1?'Synthetic sale extract corroborates SGD 3m against SGD 8m declared.':i%4===3?`Signed agreement summary for property PROP-${String(i+1).padStart(3,'0')}: seller ${c.name}; buyer Harbour Property Buyer; completion 2026-05-10; proceeds SGD 2,500,000. Settlement trail not supplied.`:'Synthetic profile information; additional corroboration may be required.',corroboratedAmount:i%4===1?300000000:i%4===3?250000000:0}));
+ const documents = clients.slice(0,12).map((c,i)=>({id:`DOC-${String(i+1).padStart(3,'0')}`,clientId:c.id,kind:i%4===1?'company_sale':i%4===3?'property_sale':'profile',title:i%4===1?'Company sale extract':i%4===3?'Property sale agreement':'Client profile declaration',summary:i%4===1?'Sale extract corroborates SGD 3m against SGD 8m declared.':i%4===3?`Signed agreement summary for property PROP-${String(i+1).padStart(3,'0')}: seller ${c.name}; buyer Harbour Property Buyer; completion 2026-05-10; proceeds SGD 2,500,000. Settlement trail not supplied.`:'Profile information; additional corroboration may be required.',corroboratedAmount:i%4===1?300000000:i%4===3?250000000:0}));
  const relationships = [{id:'REL-001',clientId:'CLI-003',owner:'Morgan Vale',entity:'Cedar Harbour Holdings',description:'Beneficial owner of holding entity.'},{id:'REL-002',clientId:'CLI-007',owner:'Morgan Vale',entity:'Cedar Harbour Holdings',description:'Beneficial owner of holding entity.'},{id:'REL-003',clientId:'CLI-011',owner:'Morgan Vale',entity:'Cedar Harbour Holdings',description:'Beneficial owner of holding entity.'}];
  const alerts = clients.flatMap(c=>{
   const ownTransactions=transactions.filter(t=>t.clientId===c.id);
@@ -82,8 +82,8 @@ function createIdentityDocuments() {
         status: a.passport as string,
         expiresOn: expired ? expiredPassportDate : validUntil,
         summary: expired
-          ? `Synthetic passport expired on ${expiredPassportDate}; a valid replacement has not been supplied.`
-          : 'Synthetic passport check passed: name and photograph are consistent with the application.'
+          ? `Passport expired on ${expiredPassportDate}; a valid replacement has not been supplied.`
+          : 'Passport check passed: name and photograph are consistent with the application.'
       },
       {
         id: `IDV-${String(first + 1).padStart(3, '0')}`,
@@ -94,7 +94,7 @@ function createIdentityDocuments() {
         expiresOn: null as string | null,
         summary: missing
           ? 'No proof of address has been supplied with the application.'
-          : 'Synthetic utility bill dated November 2025 confirms the declared Singapore residential address.'
+          : 'Utility bill dated November 2025 confirms the declared Singapore residential address.'
       }
     ];
   });
@@ -139,17 +139,17 @@ function createScreeningResults() {
 // inheritance are used, so the alert rules (which look at company_sale and property_sale) are unaffected.
 function createSupplementalDocuments() {
   const rows: {id: string; clientId: string; kind: string; title: string; summary: string; corroboratedAmount: number}[] = [
-    {id:'DOC-101',clientId:'CLI-001',kind:'employment_income',title:'Employment income statements',summary:'Synthetic payslips and tax assessments corroborate SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000},
-    {id:'DOC-102',clientId:'CLI-003',kind:'investment_portfolio',title:'Investment portfolio statement',summary:'Synthetic custodian statement corroborates SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000},
-    {id:'DOC-103',clientId:'CLI-004',kind:'employment_income',title:'Employment income statements',summary:'Synthetic payslips and tax assessments corroborate SGD 2m of the SGD 4.5m declared; the remaining SGD 2.5m is covered by the property sale agreement DOC-004.',corroboratedAmount:200000000},
-    {id:'DOC-104',clientId:'CLI-007',kind:'investment_portfolio',title:'Investment portfolio statement',summary:'Synthetic custodian statement corroborates SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000},
-    {id:'DOC-105',clientId:'CLI-013',kind:'employment_income',title:'Employment income statements',summary:'Synthetic payslips and tax assessments corroborate SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000},
-    {id:'DOC-106',clientId:'CLI-014',kind:'inheritance',title:'Estate distribution letter',summary:'Synthetic estate distribution letter corroborates SGD 8m of the SGD 8m declared.',corroboratedAmount:800000000},
-    {id:'DOC-107',clientId:'CLI-015',kind:'investment_portfolio',title:'Investment portfolio statement',summary:'Synthetic custodian statement corroborates SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000},
-    {id:'DOC-108',clientId:'CLI-016',kind:'employment_income',title:'Employment income statements',summary:'Synthetic payslips and tax assessments corroborate SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000},
-    {id:'DOC-109',clientId:'CLI-017',kind:'investment_portfolio',title:'Investment portfolio statement',summary:'Synthetic custodian statement corroborates SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000},
-    {id:'DOC-110',clientId:'CLI-018',kind:'investment_portfolio',title:'Investment portfolio statement',summary:'Synthetic custodian statement corroborates SGD 8m of the SGD 8m declared.',corroboratedAmount:800000000},
-    {id:'DOC-111',clientId:'CLI-019',kind:'employment_income',title:'Employment income statements',summary:'Synthetic payslips and tax assessments corroborate SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000}
+    {id:'DOC-101',clientId:'CLI-001',kind:'employment_income',title:'Employment income statements',summary:'Payslips and tax assessments corroborate SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000},
+    {id:'DOC-102',clientId:'CLI-003',kind:'investment_portfolio',title:'Investment portfolio statement',summary:'Custodian statement corroborates SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000},
+    {id:'DOC-103',clientId:'CLI-004',kind:'employment_income',title:'Employment income statements',summary:'Payslips and tax assessments corroborate SGD 2m of the SGD 4.5m declared; the remaining SGD 2.5m is covered by the property sale agreement DOC-004.',corroboratedAmount:200000000},
+    {id:'DOC-104',clientId:'CLI-007',kind:'investment_portfolio',title:'Investment portfolio statement',summary:'Custodian statement corroborates SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000},
+    {id:'DOC-105',clientId:'CLI-013',kind:'employment_income',title:'Employment income statements',summary:'Payslips and tax assessments corroborate SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000},
+    {id:'DOC-106',clientId:'CLI-014',kind:'inheritance',title:'Estate distribution letter',summary:'Estate distribution letter corroborates SGD 8m of the SGD 8m declared.',corroboratedAmount:800000000},
+    {id:'DOC-107',clientId:'CLI-015',kind:'investment_portfolio',title:'Investment portfolio statement',summary:'Custodian statement corroborates SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000},
+    {id:'DOC-108',clientId:'CLI-016',kind:'employment_income',title:'Employment income statements',summary:'Payslips and tax assessments corroborate SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000},
+    {id:'DOC-109',clientId:'CLI-017',kind:'investment_portfolio',title:'Investment portfolio statement',summary:'Custodian statement corroborates SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000},
+    {id:'DOC-110',clientId:'CLI-018',kind:'investment_portfolio',title:'Investment portfolio statement',summary:'Custodian statement corroborates SGD 8m of the SGD 8m declared.',corroboratedAmount:800000000},
+    {id:'DOC-111',clientId:'CLI-019',kind:'employment_income',title:'Employment income statements',summary:'Payslips and tax assessments corroborate SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000}
   ];
   return rows;
 }

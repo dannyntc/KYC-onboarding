@@ -141,32 +141,32 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <td>Follow <a href="#14-running-the-demo-on-your-own-computer">section 14</a></td>
 </tr>
 <tr>
-<td>Badge at top right</td>
-<td>Nothing</td>
-<td><strong>SYNTHETIC DATA · LOCAL</strong></td>
-</tr>
-<tr>
 <td>Can you see everything?</td>
 <td>Yes</td>
 <td>Yes</td>
 </tr>
 <tr>
 <td>Can you click Approve, Save, etc.?</td>
-<td>No: the buttons are greyed out</td>
+<td>Yes: everything works</td>
 <td>Yes: everything works</td>
 </tr>
 <tr>
 <td>Can you switch demo roles?</td>
-<td>Yes (it changes the view only)</td>
+<td>Yes</td>
 <td>Yes</td>
 </tr>
 <tr>
-<td>KYC memo</td>
-<td>Shown as a preview, marked &quot;not saved&quot;</td>
-<td>Generated and saved when you click the button</td>
+<td>Who sees your changes?</td>
+<td><strong>Everyone</strong> who visits the site (one shared database)</td>
+<td>Only you</td>
+</tr>
+<tr>
+<td>Start again from fresh data</td>
+<td><strong>Reset demo data</strong> in the sidebar</td>
+<td><strong>Reset demo data</strong> in the sidebar, or <code>npm run db:reset</code></td>
 </tr>
 </tbody></table>
-<p>Saving is turned off online because every visitor shares the same data. If saving were allowed, one person&#39;s approvals would change what the next visitor sees.</p>
+<p>Online, every visitor shares the same data, so another visitor may already have decided a file. Click <strong>Reset demo data</strong> in the sidebar (Analyst or Senior approver role) to restore the 12 starting applicants. It asks you to confirm, and it erases every saved review, memo and audit entry for everyone. Never enter real client information.</p>
 <h2 id="4-finding-your-way-around-the-screen">4. Finding your way around the screen</h2>
 <p><strong>Left sidebar</strong> (on phones, at the top of the screen):</p>
 <ul>
@@ -175,8 +175,8 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <li><strong>Regulatory library:</strong> the Singapore regulations (MAS Notice 626) that relate to each check.</li>
 <li><strong>▶ Guided tour:</strong> starts the step-by-step pop-up tour.</li>
 <li><strong>Demo role:</strong> a drop-down to switch between <em>Read-only access</em>, <em>Analyst</em> and <em>Senior approver</em>, plus a <strong>Switch role</strong> button. This is a demo tool, not a real login.</li>
+<li><strong>Reset demo data:</strong> restores the 12 starting applicants and erases every saved review, memo and audit entry, for everyone (hidden for <em>Read-only access</em>).</li>
 </ul>
-<p><strong>Top bar:</strong> shows whether you are on the online demo (look-only) or a local copy.</p>
 <p><strong>Links that look like <code>DOC-002</code>, <code>SCR-001</code> or <code>TXN-013</code>:</strong> these are <strong>record IDs</strong>. Click one to jump to that record on the page.</p>
 <table>
 <thead>
@@ -355,7 +355,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <li><strong>Beneficial ownership.</strong> Who really owns or controls the money. If the same owner appears behind <em>other</em> clients, they&#39;re listed here with links to their files.</li>
 <li><strong>Screening.</strong> Watch-list matches (PEP, sanctions, adverse media), each showing the match strength and the list entry. An undecided match is shown as <strong>Potential match</strong>, and it blocks approval until an analyst decides.</li>
 <li><strong>Source of wealth &amp; funds.</strong> The declared wealth, each supporting document and how much it backs up, the corroborated total, and any amount <strong>not corroborated</strong>.</li>
-<li><strong>Initial funding &amp; activity since application (AML).</strong><ul>
+<li><strong>Initial Transactions &amp; activity since application (AML).</strong><ul>
 <li>Any transaction alerts for this applicant. Click an alert ID to open its investigation page.</li>
 <li>The account&#39;s transactions. Negative amounts are money going out.</li>
 </ul>
@@ -371,7 +371,6 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 </ol>
 <p><strong>Tip:</strong> if a table is too wide for your screen, a line saying <strong>&quot;Scroll sideways to see all columns →&quot;</strong> appears above it. Scroll or swipe sideways to see the rest.</p>
 <h2 id="8-step-by-step-recording-a-decision">8. Step by step: recording a decision</h2>
-<p><em>This only works when running locally (<a href="#14-running-the-demo-on-your-own-computer">section 14</a>). Online, the buttons are greyed out.</em></p>
 <h3 id="81-decide-on-a-screening-match-if-there-is-one">8.1 Decide on a screening match (if there is one)</h3>
 <ol>
 <li>In <strong>Screening</strong>, read the list entry and compare it with the applicant&#39;s details.</li>
@@ -610,7 +609,7 @@ npm run db:seed
 </ol>
 <p><strong>Useful extras:</strong></p>
 <ul>
-<li><strong>See the online look-only version locally:</strong> <code>KYC_ONBOARDING_PUBLIC_DEMO=1 npm run dev</code></li>
+<li><strong>See the look-only version (nothing can be saved):</strong> <code>KYC_ONBOARDING_PUBLIC_DEMO=1 npm run dev</code></li>
 <li><strong>Upgrade an existing older database:</strong> <code>npm run db:migrate</code>, then <code>npm run db:seed:onboarding</code></li>
 <li><strong>Start again from fresh data:</strong> <code>npm run db:reset</code>. <strong>Warning:</strong> this permanently deletes all your demo decisions and audit history.</li>
 </ul>
@@ -623,8 +622,8 @@ npm run db:seed
 </tr>
 </thead>
 <tbody><tr>
-<td>Buttons are greyed out</td>
-<td>Expected on the live website. Run the demo locally to use them</td>
+<td>A file is already decided</td>
+<td>Someone else decided it on the shared online demo. Click <strong>Reset demo data</strong> in the sidebar</td>
 </tr>
 <tr>
 <td><strong>Approve</strong> stays greyed out locally</td>

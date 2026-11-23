@@ -18,7 +18,7 @@ export function CaseForm({children,className,action='/api/action'}:{children:Rea
    if(data.get('action')==='analyze'){router.refresh();return;}
    if(response.redirected){window.location.assign(response.url);return;}
    window.location.reload();
-  } catch {setError('Could not reach the local server. Your note is still here; check the connection and try again.');}
+  } catch {setError('Could not reach the server. Your note is still here; check the connection and try again.');}
   finally {setPending(false);}
  }
  return <form action={action} method="post" className={className} onSubmit={submit}><fieldset disabled={pending} className="case-form-fields">{children}</fieldset>{pending&&<p role="status" className="muted">Working…</p>}{error&&<p role="alert" className="form-error">{error}{(error.includes('This case changed')||error.includes('This file changed'))&&' Copy your unsaved note before reloading the case.'}</p>}</form>;

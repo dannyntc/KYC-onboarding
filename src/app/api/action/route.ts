@@ -1,7 +1,8 @@
 import { db } from '@/lib/db';
 import { FIXTURE_VERSION, fixtureAnalysis, validateAnalysis } from '@/lib/analysis';
 import { NextResponse } from 'next/server';
-import { isLocalOrigin } from '@/lib/origin';
+import { isSameOrigin } from '@/lib/origin';
+import { isLookOnly } from '@/lib/public-demo';
 import { cookies } from 'next/headers';
 import { AnalysisValidationError, LIVE_PROMPT_VERSION, modelInput, runLiveAnalysis } from '@/lib/live-analysis';
 import { reviewChange } from '@/lib/review';
@@ -10,7 +11,8 @@ import { relatedRelationships } from '@/lib/related-relationships';
 import {loadControlReviews,reviewedControlsForScenario} from '@/lib/control-review';
 export async function POST(request:Request){
  const origin=request.headers.get('origin');
- if(!isLocalOrigin(origin,request.headers.get('host'))) return new Response('Invalid origin',{status:403});
+ if(!isSameOrigin(origin,request.headers.get('host'))) return new Response('Invalid origin',{status:403});
+ if(isLookOnly()) return new Response('Saving is turned off in look-only mode.',{status:403});
  if((await cookies()).get('demo-role')?.value==='read-only') return new Response('Read-only demo role cannot change cases.',{status:403});
  const form=await request.formData(); const id=String(form.get('id')??''); const action=String(form.get('action')??'');
  const alert=await db.alert.findUnique({where:{id},include:{client:{include:{transactions:true,accounts:true,documents:true,relationships:true}}}});

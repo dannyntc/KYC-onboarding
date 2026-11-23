@@ -68,14 +68,14 @@ function fingerprint(value: unknown) {
 describe('KYC onboarding seed', () => {
   it('keeps the original alert seed byte-for-byte identical and only appends', () => {
     const data = createSeed();
-    // Fingerprints taken from the seed before the onboarding data was added, updated once when the
-    // word "Fictional" was removed from record text (the data was otherwise byte-for-byte identical).
+    // Fingerprints taken from the seed before the onboarding data was added, updated when the words
+    // "Fictional" and "Synthetic" were removed from record text (the data was otherwise byte-for-byte identical).
     expect(fingerprint(data.clients)).toBe('0ce098e2ebba4e179fcd12b1008cfaea1f2f9d3f3ad47dbf3c4add0b216f426a');
     expect(fingerprint(data.accounts)).toBe('1ef64955462c84be8b7e21e7a9ee2e7acf08d908103f1972ae9f5abef70bedd4');
     expect(fingerprint(data.transactions)).toBe('5e7c68288fc0fdccda148483b808145b5a9229d36beaa4102edcef985e62fceb');
     expect(fingerprint(data.alerts)).toBe('6bdfa9af64519fb1e14e98693dfa87a28cb4f24f9c704573037f88e9f7e41fbd');
     expect(fingerprint(data.relationships)).toBe('a0e0d17ff21095ead7f68194a177f141e27ab0805600304707ee37ea40f1e20a');
-    expect(fingerprint(data.documents.slice(0, 12))).toBe('3dafce4fc7aff33131640f94fea2b6b2de914547d4dbb589eeaa00d95574b331');
+    expect(fingerprint(data.documents.slice(0, 12))).toBe('5924f435612ad63b80e04aa0d19b662fee2bb105d9865abe50ab9710783f270a');
     expect(data.documents.slice(12)).toEqual(data.supplementalDocuments);
   });
 

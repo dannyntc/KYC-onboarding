@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { isLocalOrigin } from '@/lib/origin';
+import { isSameOrigin } from '@/lib/origin';
+import { isLookOnly } from '@/lib/public-demo';
 import { actorName, currentRole } from '@/lib/demo-role';
 import { acquireAnalysisLock, releaseAnalysisLock } from '@/lib/analysis-lock';
 import { loadControlReviews, reviewedControlsForChecks } from '@/lib/control-review';
@@ -139,7 +140,8 @@ async function generateDraft(loaded: LoadedOnboardingFile, role: DemoRole, origi
 
 export async function POST(request: Request) {
   const origin = request.headers.get('origin');
-  if (!isLocalOrigin(origin, request.headers.get('host'))) return new Response('Invalid origin', { status: 403 });
+  if (!isSameOrigin(origin, request.headers.get('host'))) return new Response('Invalid origin', { status: 403 });
+  if (isLookOnly()) return new Response('Saving is turned off in look-only mode.', { status: 403 });
 
   const role = await currentRole();
   if (role === 'read-only') return new Response('Read-only demo role cannot change onboarding files.', { status: 403 });

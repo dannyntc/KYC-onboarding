@@ -47,7 +47,7 @@ The app also has a built-in guided tour (the **Guided tour** link in the sidebar
 
 ## 8–9 minutes: the transaction alert inside a file (ONB-001, Amelia Tan)
 
-- Open `ONB-001`. In **Initial funding & activity since application (AML)**, `ALT-001` is open: `TXN-013` is an incoming SGD 1,200,000 and `TXN-014` an outgoing SGD 850,000 the next day, against expected activity of SGD 50,000–100,000 per month. These are indicators for review, not findings.
+- Open `ONB-001`. In **Initial Transactions & activity since application (AML)**, `ALT-001` is open: `TXN-013` is an incoming SGD 1,200,000 and `TXN-014` an outgoing SGD 850,000 the next day, against expected activity of SGD 50,000–100,000 per month. These are indicators for review, not findings.
 - **Approve** is greyed out and the outstanding item reads "Alert ALT-001 has not been reviewed". Select `ALT-001` to open the existing investigation page, add a note and select **Save review**.
 - Use the link **Back to KYC file ONB-001**. The alert no longer blocks approval and the suggested rating falls from Medium to Low.
 

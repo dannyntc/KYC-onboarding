@@ -59,7 +59,7 @@ export const TOUR_STEPS: TourStep[] = [
     page: '/onboarding/ONB-006',
     target: 'decision-panel',
     title: 'The decision',
-    text: 'The analyst saves a final risk rating with reasons, then approves. Try it here: save a rating and the Approve button unlocks. Changes stay in your local demo database.',
+    text: 'The analyst saves a final risk rating with reasons, then approves. Try it here: save a rating and the Approve button unlocks. Changes are saved to the shared demo database; use Reset demo data in the sidebar to start over.',
     onlineText: 'The analyst saves a final risk rating with reasons, then approves.',
     side: 'left'
   },
