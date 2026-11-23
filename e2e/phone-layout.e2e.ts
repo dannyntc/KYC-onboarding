@@ -74,7 +74,7 @@ test.describe('on a phone', () => {
     for (const path of ['/cases/ALT-001', '/onboarding/ONB-006']) {
       await page.goto(path);
       await expect(page.locator('.swipe-hint').first(), path).toBeVisible();
-      await expect(page.locator('.swipe-hint').first()).toHaveText('Swipe sideways to see all columns →');
+      await expect(page.locator('.swipe-hint').first()).toHaveText('Scroll sideways to see all columns →');
     }
   });
 });

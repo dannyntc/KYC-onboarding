@@ -308,7 +308,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                     <th>REFERENCE</th>
                     <th>DATE</th>
                     <th>COUNTERPARTY</th>
-                    <th>AMOUNT</th>
+                    <th className="amount">AMOUNT</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -319,8 +319,8 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                         {client.alerts.some(alert => alert.triggerTransactionId === t.id) && <small>Alert trigger</small>}
                       </td>
                       <td>{t.date}</td>
-                      <td>{t.counterparty}</td>
-                      <td>{transactionAmount(t.amount, t.currency)}</td>
+                      <td className="counterparty">{t.counterparty}</td>
+                      <td className="amount">{transactionAmount(t.amount, t.currency)}</td>
                     </tr>
                   ))}
                 </tbody>
