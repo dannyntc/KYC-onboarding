@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('an open funding alert blocks approval until it is reviewed on the alert page', async ({ page }) => {
+test('an open transaction alert blocks approval until it is reviewed on the alert page', async ({ page }) => {
   await page.goto('/onboarding/ONB-001');
   await expect(page.getByTestId('blockers')).toContainText('Alert ALT-001 has not been reviewed');
   await expect(page.getByRole('button', { name: 'Approve', exact: true })).toBeDisabled();

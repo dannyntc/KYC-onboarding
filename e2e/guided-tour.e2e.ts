@@ -23,6 +23,17 @@ test('a first-time visitor is offered step 1 once, and closing it keeps it close
   expect(problems).toEqual([]);
 });
 
+test('a new visit (a fresh tab) offers the tour again', async ({ page, context }) => {
+  await page.goto('/');
+  await expectStep(page, 1, false);
+  await popover(page).locator('.driver-popover-close-btn').click();
+  await expect(popover(page)).toHaveCount(0);
+
+  const freshTab = await context.newPage();
+  await freshTab.goto('/');
+  await expectStep(freshTab, 1, false);
+});
+
 test('Next walks all 14 steps across the pages and Finish ends the tour', async ({ page }) => {
   await walkWholeTour(page, false);
 });

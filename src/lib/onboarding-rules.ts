@@ -139,7 +139,7 @@ export function suggestRiskRating(file: OnboardingFile): RiskSuggestion {
   for (const alert of file.alerts) {
     if (alert.status === 'Open' || alert.status === 'Escalated') {
       factors.push({
-        description: `Initial-funding alert ${alert.id} requires review`,
+        description: `Initial transaction alert ${alert.id} requires review`,
         evidenceIds: [alert.id],
         weight: 'Medium'
       });

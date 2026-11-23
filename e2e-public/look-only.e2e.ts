@@ -13,21 +13,19 @@ async function rowCounts() {
   };
 }
 
-// Every button inside a form on the page is switched off, and each form explains why.
+// Every button inside a form on the page is switched off, with no extra caption.
 async function expectSaveButtonsDisabled(page: Page) {
   const buttons = page.locator('.content form button');
   const total = await buttons.count();
   expect(total).toBeGreaterThan(0);
   for (let i = 0; i < total; i++) await expect(buttons.nth(i)).toBeDisabled();
-  const forms = await page.locator('.content form:has(button)').count();
-  await expect(page.locator('.content .lookonly-note')).toHaveCount(forms);
-  await expect(page.locator('.content .lookonly-note').first()).toHaveText('Disabled in the online demo');
+  await expect(page.locator('.content .lookonly-note')).toHaveCount(0);
 }
 
-test('the online demo shows the look-only banner and badge, and the role switch is on', async ({ page }) => {
+test('the online demo shows no look-only banner or badge, and the role switch is on', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByTestId('look-only-banner')).toContainText('saving is turned off');
-  await expect(page.locator('.topbar .demo')).toContainText('ONLINE DEMO · LOOK-ONLY');
+  await expect(page.getByText("You're viewing the online demo.")).toHaveCount(0);
+  await expect(page.locator('.topbar .demo')).toHaveCount(0);
   await expect(page.locator('#role')).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Switch role' })).toBeEnabled();
   await expect(page.getByText('Switching role changes the view only; saving stays off online.')).toBeVisible();

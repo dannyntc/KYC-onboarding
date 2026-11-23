@@ -33,7 +33,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <li><a href="#6-step-by-step-the-onboarding-queue">Step by step: the onboarding queue</a></li>
 <li><a href="#7-step-by-step-a-clients-kyc-file">Step by step: a client&#39;s KYC file</a></li>
 <li><a href="#8-step-by-step-recording-a-decision">Step by step: recording a decision</a></li>
-<li><a href="#9-step-by-step-investigating-a-funding-alert">Step by step: investigating a funding alert</a></li>
+<li><a href="#9-step-by-step-investigating-a-transaction-alert">Step by step: investigating a transaction alert</a></li>
 <li><a href="#10-demo-roles">Demo roles</a></li>
 <li><a href="#11-the-kyc-assistant-drafts">The KYC assistant (drafts)</a></li>
 <li><a href="#12-the-regulatory-library">The regulatory library</a></li>
@@ -105,7 +105,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <td>Anti-money laundering: checks that stop criminal money passing through the bank</td>
 </tr>
 <tr>
-<td><strong>Funding alert</strong></td>
+<td><strong>Transaction alert</strong></td>
 <td>An automatic warning about unusual money movement, e.g. a large payment that quickly leaves again</td>
 </tr>
 <tr>
@@ -142,7 +142,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 </tr>
 <tr>
 <td>Badge at top right</td>
-<td><strong>ONLINE DEMO · LOOK-ONLY</strong></td>
+<td>Nothing</td>
 <td><strong>SYNTHETIC DATA · LOCAL</strong></td>
 </tr>
 <tr>
@@ -152,7 +152,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 </tr>
 <tr>
 <td>Can you click Approve, Save, etc.?</td>
-<td>No: the buttons are greyed out, labelled &quot;Disabled in the online demo&quot;</td>
+<td>No: the buttons are greyed out</td>
 <td>Yes: everything works</td>
 </tr>
 <tr>
@@ -171,7 +171,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <p><strong>Left sidebar</strong> (on phones, at the top of the screen):</p>
 <ul>
 <li><strong>Onboarding queue:</strong> the list of all applicants. This is the home page.</li>
-<li><strong>Funding alerts:</strong> the list of AML alerts raised on applicants&#39; first money movements.</li>
+<li><strong>Transaction alerts:</strong> the list of AML alerts raised on applicants&#39; first money movements.</li>
 <li><strong>Regulatory library:</strong> the Singapore regulations (MAS Notice 626) that relate to each check.</li>
 <li><strong>▶ Guided tour:</strong> starts the step-by-step pop-up tour.</li>
 <li><strong>Demo role:</strong> a drop-down to switch between <em>Read-only access</em>, <em>Analyst</em> and <em>Senior approver</em>, plus a <strong>Switch role</strong> button. This is a demo tool, not a real login.</li>
@@ -219,7 +219,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 </tr>
 <tr>
 <td><code>ALT-</code></td>
-<td>Funding alert</td>
+<td>Transaction alert</td>
 </tr>
 <tr>
 <td><code>MAS-626-</code></td>
@@ -229,7 +229,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <h2 id="5-the-guided-tour">5. The guided tour</h2>
 <p>The quickest way to understand the demo is the built-in tour. It takes about 3 minutes.</p>
 <ol>
-<li>Open the demo. On your first visit, an <strong>About this demo</strong> bubble appears automatically.</li>
+<li>Open the demo. Each time you open the demo in a new tab, an <strong>About this demo</strong> bubble appears automatically.</li>
 <li>Click <strong>Start tour</strong>.</li>
 <li>Read each bubble. The highlighted part of the screen is what the bubble is about.</li>
 <li>Click <strong>Next</strong> to continue, or <strong>Back</strong> to go back. You can also use your keyboard&#39;s arrow keys. The tour moves between pages by itself.</li>
@@ -308,7 +308,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <tr>
 <td>13</td>
 <td>Alert ALT-001</td>
-<td>Investigating the funding alert</td>
+<td>Investigating the transaction alert</td>
 </tr>
 <tr>
 <td>14</td>
@@ -356,7 +356,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <li><strong>Screening.</strong> Watch-list matches (PEP, sanctions, adverse media), each showing the match strength and the list entry. An undecided match is shown as <strong>Potential match</strong>, and it blocks approval until an analyst decides.</li>
 <li><strong>Source of wealth &amp; funds.</strong> The declared wealth, each supporting document and how much it backs up, the corroborated total, and any amount <strong>not corroborated</strong>.</li>
 <li><strong>Initial funding &amp; activity since application (AML).</strong><ul>
-<li>Any funding alerts for this applicant. Click an alert ID to open its investigation page.</li>
+<li>Any transaction alerts for this applicant. Click an alert ID to open its investigation page.</li>
 <li>The account&#39;s transactions. Negative amounts are money going out.</li>
 </ul>
 </li>
@@ -416,18 +416,18 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <ul>
 <li>An identity document is expired or missing.</li>
 <li>A screening match is still undecided.</li>
-<li>A linked funding alert is still <strong>Open</strong> (not yet reviewed).</li>
+<li>A linked transaction alert is still <strong>Open</strong> (not yet reviewed).</li>
 <li>No final risk rating, or the reasons are too short.</li>
 <li>The rating is High and you are not a Senior approver.</li>
 <li>A downgraded rating hasn&#39;t been properly explained.</li>
 </ul>
 <p>The server enforces these rules, so they can&#39;t be bypassed.</p>
-<h2 id="9-step-by-step-investigating-a-funding-alert">9. Step by step: investigating a funding alert</h2>
-<p>Funding alerts are AML warnings about unusual first money movements.</p>
+<h2 id="9-step-by-step-investigating-a-transaction-alert">9. Step by step: investigating a transaction alert</h2>
+<p>Transaction alerts are AML warnings about unusual first money movements.</p>
 <ol>
 <li>Open an alert in either of two ways:<ul>
 <li>from a KYC file&#39;s <strong>Initial funding &amp; activity</strong> section, or</li>
-<li>from <strong>Funding alerts</strong> in the sidebar, then the alert ID (e.g. ALT-001).</li>
+<li>from <strong>Transaction alerts</strong> in the sidebar, then the alert ID (e.g. ALT-001).</li>
 </ul>
 </li>
 <li>Read the alert page:<ul>
@@ -587,7 +587,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <li>ONB-009: clear a false alarm</li>
 <li>ONB-008: PEP and senior approval</li>
 <li>ONB-002: the assistant&#39;s draft and the wealth gap</li>
-<li>ONB-001: the funding alert</li>
+<li>ONB-001: the transaction alert</li>
 <li>The audit history</li>
 </ol>
 <h2 id="14-running-the-demo-on-your-own-computer">14. Running the demo on your own computer</h2>
@@ -623,7 +623,7 @@ npm run db:seed
 </tr>
 </thead>
 <tbody><tr>
-<td>Buttons are greyed out with &quot;Disabled in the online demo&quot;</td>
+<td>Buttons are greyed out</td>
 <td>Expected on the live website. Run the demo locally to use them</td>
 </tr>
 <tr>

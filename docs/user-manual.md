@@ -19,7 +19,7 @@ A step-by-step guide to the KYC-onboarding demo. It assumes no compliance or tec
 6. [Step by step: the onboarding queue](#6-step-by-step-the-onboarding-queue)
 7. [Step by step: a client's KYC file](#7-step-by-step-a-clients-kyc-file)
 8. [Step by step: recording a decision](#8-step-by-step-recording-a-decision)
-9. [Step by step: investigating a funding alert](#9-step-by-step-investigating-a-funding-alert)
+9. [Step by step: investigating a transaction alert](#9-step-by-step-investigating-a-transaction-alert)
 10. [Demo roles](#10-demo-roles)
 11. [The KYC assistant (drafts)](#11-the-kyc-assistant-drafts)
 12. [The regulatory library](#12-the-regulatory-library)
@@ -57,7 +57,7 @@ The demo follows three principles:
 | **False positive** | A watch-list "match" that turns out to be a different person |
 | **Source of wealth** | How a person built up their total wealth (e.g. selling a company, a salary, an inheritance) |
 | **AML** | Anti-money laundering: checks that stop criminal money passing through the bank |
-| **Funding alert** | An automatic warning about unusual money movement, e.g. a large payment that quickly leaves again |
+| **Transaction alert** | An automatic warning about unusual money movement, e.g. a large payment that quickly leaves again |
 | **Risk rating** | Low, Medium or High: how closely the bank should watch this client |
 | **Senior approver** | A second, more senior person who must also approve high-risk clients ("four-eyes" approval) |
 | **Audit trail** | A permanent log of who did what, and when |
@@ -70,9 +70,9 @@ There are two ways to use the demo.
 | | **Online demo** (live website) | **On your own computer** |
 |---|---|---|
 | How to open | Visit https://kyc-onboarding-dannyntc.vercel.app | Follow [section 14](#14-running-the-demo-on-your-own-computer) |
-| Badge at top right | **ONLINE DEMO · LOOK-ONLY** | **SYNTHETIC DATA · LOCAL** |
+| Badge at top right | Nothing | **SYNTHETIC DATA · LOCAL** |
 | Can you see everything? | Yes | Yes |
-| Can you click Approve, Save, etc.? | No: the buttons are greyed out, labelled "Disabled in the online demo" | Yes: everything works |
+| Can you click Approve, Save, etc.? | No: the buttons are greyed out | Yes: everything works |
 | Can you switch demo roles? | Yes (it changes the view only) | Yes |
 | KYC assistant draft | Shown as a preview, marked "not saved" | Generated and saved when you click the button |
 
@@ -83,7 +83,7 @@ Saving is turned off online because every visitor shares the same data. If savin
 **Left sidebar** (on phones, at the top of the screen):
 
 - **Onboarding queue:** the list of all applicants. This is the home page.
-- **Funding alerts:** the list of AML alerts raised on applicants' first money movements.
+- **Transaction alerts:** the list of AML alerts raised on applicants' first money movements.
 - **Regulatory library:** the Singapore regulations (MAS Notice 626) that relate to each check.
 - **▶ Guided tour:** starts the step-by-step pop-up tour.
 - **Demo role:** a drop-down to switch between *Read-only access*, *Analyst* and *Senior approver*, plus a **Switch role** button. This is a demo tool, not a real login.
@@ -102,14 +102,14 @@ Saving is turned off online because every visitor shares the same data. If savin
 | `DOC-` | Supporting document (e.g. source of wealth) |
 | `REL-` | Ownership relationship |
 | `TXN-` | Transaction |
-| `ALT-` | Funding alert |
+| `ALT-` | Transaction alert |
 | `MAS-626-` | Regulation reference |
 
 ## 5. The guided tour
 
 The quickest way to understand the demo is the built-in tour. It takes about 3 minutes.
 
-1. Open the demo. On your first visit, an **About this demo** bubble appears automatically.
+1. Open the demo. Each time you open the demo in a new tab, an **About this demo** bubble appears automatically.
 2. Click **Start tour**.
 3. Read each bubble. The highlighted part of the screen is what the bubble is about.
 4. Click **Next** to continue, or **Back** to go back. You can also use your keyboard's arrow keys. The tour moves between pages by itself.
@@ -132,7 +132,7 @@ The quickest way to understand the demo is the built-in tour. It takes about 3 m
 | 10 | Aisha Malik | Senior approval and the role switch |
 | 11 | Daniel Lim (ONB-002) | The KYC assistant's draft |
 | 12 | Amelia Tan (ONB-001) | The AML funding check |
-| 13 | Alert ALT-001 | Investigating the funding alert |
+| 13 | Alert ALT-001 | Investigating the transaction alert |
 | 14 | Alert ALT-001 | The audit trail, and the end of the tour |
 
 ## 6. Step by step: the onboarding queue
@@ -173,7 +173,7 @@ A KYC file has the evidence on the left and the decision tools on the right. (On
 4. **Screening.** Watch-list matches (PEP, sanctions, adverse media), each showing the match strength and the list entry. An undecided match is shown as **Potential match**, and it blocks approval until an analyst decides.
 5. **Source of wealth & funds.** The declared wealth, each supporting document and how much it backs up, the corroborated total, and any amount **not corroborated**.
 6. **Initial funding & activity since application (AML).**
-   - Any funding alerts for this applicant. Click an alert ID to open its investigation page.
+   - Any transaction alerts for this applicant. Click an alert ID to open its investigation page.
    - The account's transactions. Negative amounts are money going out.
 
 Each section lists **candidate regulatory references** (e.g. `MAS-626-6.9`). Click one to see it in the regulatory library.
@@ -230,20 +230,20 @@ Approval is blocked if any of these are true:
 
 - An identity document is expired or missing.
 - A screening match is still undecided.
-- A linked funding alert is still **Open** (not yet reviewed).
+- A linked transaction alert is still **Open** (not yet reviewed).
 - No final risk rating, or the reasons are too short.
 - The rating is High and you are not a Senior approver.
 - A downgraded rating hasn't been properly explained.
 
 The server enforces these rules, so they can't be bypassed.
 
-## 9. Step by step: investigating a funding alert
+## 9. Step by step: investigating a transaction alert
 
-Funding alerts are AML warnings about unusual first money movements.
+Transaction alerts are AML warnings about unusual first money movements.
 
 1. Open an alert in either of two ways:
    - from a KYC file's **Initial funding & activity** section, or
-   - from **Funding alerts** in the sidebar, then the alert ID (e.g. ALT-001).
+   - from **Transaction alerts** in the sidebar, then the alert ID (e.g. ALT-001).
 2. Read the alert page:
    - **Client profile:** expected monthly activity and declared wealth.
    - **Transaction evidence:** every transaction. The one that caused the alert is marked **Alert trigger**.
@@ -325,7 +325,7 @@ Click **Regulatory library** in the sidebar.
 3. ONB-009: clear a false alarm
 4. ONB-008: PEP and senior approval
 5. ONB-002: the assistant's draft and the wealth gap
-6. ONB-001: the funding alert
+6. ONB-001: the transaction alert
 7. The audit history
 
 ## 14. Running the demo on your own computer
@@ -360,7 +360,7 @@ Running locally lets you click every button. You need **Node.js 24** and **npm**
 
 | Problem | What to do |
 |---|---|
-| Buttons are greyed out with "Disabled in the online demo" | Expected on the live website. Run the demo locally to use them |
+| Buttons are greyed out | Expected on the live website. Run the demo locally to use them |
 | **Approve** stays greyed out locally | Read the **Outstanding before approval** box and resolve each item first |
 | "This file changed. Reload and try again." | Someone (or another tab) changed the file. Copy your note, reload the page, and try again |
 | "Read-only demo role cannot change cases." | Switch the demo role to Analyst |

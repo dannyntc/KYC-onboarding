@@ -40,31 +40,31 @@ describe('applicant stories from the seed', () => {
     {
       caseId: 'ONB-001',
       rating: 'Medium',
-      factors: ['Initial-funding alert ALT-001 requires review'],
+      factors: ['Initial transaction alert ALT-001 requires review'],
       blockers: ['Alert ALT-001 has not been reviewed', needRating]
     },
     {
       caseId: 'ONB-002',
       rating: 'High',
-      factors: ['SGD 5,000,000 of declared wealth not corroborated', 'Initial-funding alert ALT-002 requires review'],
+      factors: ['SGD 5,000,000 of declared wealth not corroborated', 'Initial transaction alert ALT-002 requires review'],
       blockers: ['Alert ALT-002 has not been reviewed', needRating]
     },
     {
       caseId: 'ONB-003',
       rating: 'Medium',
-      factors: ['Shared beneficial owner with CLI-007, CLI-011', 'Initial-funding alert ALT-003 requires review'],
+      factors: ['Shared beneficial owner with CLI-007, CLI-011', 'Initial transaction alert ALT-003 requires review'],
       blockers: ['Alert ALT-003 has not been reviewed', needRating]
     },
     {
       caseId: 'ONB-004',
       rating: 'Medium',
-      factors: ['Initial-funding alert ALT-004 requires review'],
+      factors: ['Initial transaction alert ALT-004 requires review'],
       blockers: ['Alert ALT-004 has not been reviewed', needRating]
     },
     {
       caseId: 'ONB-005',
       rating: 'Medium',
-      factors: ['Shared beneficial owner with CLI-003, CLI-011', 'Initial-funding alert ALT-007 requires review'],
+      factors: ['Shared beneficial owner with CLI-003, CLI-011', 'Initial transaction alert ALT-007 requires review'],
       blockers: ['Alert ALT-007 has not been reviewed', needRating]
     },
     { caseId: 'ONB-006', rating: 'Low', factors: [], blockers: [needRating] },

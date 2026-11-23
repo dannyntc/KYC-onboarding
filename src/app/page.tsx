@@ -51,7 +51,7 @@ export default async function OnboardingQueue({
         <div className="asof">
           DEMO DATASET
           <br />
-          <strong>{rows.length} synthetic applicants</strong>
+          <strong>{rows.length} fictitious applicants</strong>
         </div>
       </div>
 
@@ -86,7 +86,6 @@ export default async function OnboardingQueue({
               {filtered.length} of {rows.length} files shown
             </p>
           </div>
-          <span className="count">LIVE DATABASE</span>
         </div>
         <form className="filters">
           <input name="q" defaultValue={q} placeholder="Search applicant, file, or client ID" aria-label="Search applications" />

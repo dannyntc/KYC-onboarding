@@ -13,7 +13,7 @@ export default defineConfig({
     // Pretend the guided tour has already been offered, so its pop-up does not cover the page.
     storageState: {
       cookies: [],
-      origins: [{ origin: baseURL, localStorage: [{ name: 'kyc-onboarding-tour-seen', value: '1' }] }]
+      origins: [{ origin: baseURL, localStorage: [{ name: 'kyc-onboarding-tour-off', value: '1' }] }]
     }
   },
   webServer: {

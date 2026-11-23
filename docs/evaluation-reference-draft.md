@@ -53,7 +53,7 @@ This draft is based on `createSeed()` in `src/lib/seed-data.ts`. Amounts below a
 
 - Suggested rating is Medium while `ALT-004` is open and Low once it is reviewed. The matching amount, buyer and date are potentially mitigating, but the summary alone does not prove the agreement, payer, settlement and transaction are linked. Do not claim the funds are fully explained solely because the amounts match.
 
-## ONB-006 to ONB-012 — files without funding alerts
+## ONB-006 to ONB-012 — files without transaction alerts
 
 | File | Applicant | Recorded facts to check | Suggested rating before analyst decisions | Questions and limits |
 | --- | --- | --- | --- | --- |

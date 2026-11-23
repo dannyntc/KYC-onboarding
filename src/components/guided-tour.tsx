@@ -6,15 +6,17 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { driver, type Driver } from 'driver.js';
 import { TOUR_STEPS, tourText } from '@/lib/tour-steps';
 
-// Remembers that this browser has already been offered the tour, so it is only auto-offered once.
+// Remembers, for this visit only (sessionStorage), that the tour was offered, so it auto-opens once per visit.
 export const TOUR_SEEN_KEY = 'kyc-onboarding-tour-seen';
+// Set in localStorage by the automated browser tests, which cannot pre-fill sessionStorage, to keep the tour from opening.
+export const TOUR_OFF_KEY = 'kyc-onboarding-tour-off';
 const TARGET_WAIT_MS = 3000;
 // Must match the phone breakpoint in globals.css.
 const PHONE_QUERY = '(max-width: 600px)';
 
 function tourSeen(): boolean {
   try {
-    return localStorage.getItem(TOUR_SEEN_KEY) === '1';
+    return sessionStorage.getItem(TOUR_SEEN_KEY) === '1' || localStorage.getItem(TOUR_OFF_KEY) === '1';
   } catch {
     return true; // No storage (private mode): never auto-open, the sidebar link still works.
   }
@@ -22,7 +24,7 @@ function tourSeen(): boolean {
 
 function markTourSeen() {
   try {
-    localStorage.setItem(TOUR_SEEN_KEY, '1');
+    sessionStorage.setItem(TOUR_SEEN_KEY, '1');
   } catch {
     // Nothing to do: the tour just may be offered again next time.
   }

@@ -25,7 +25,7 @@ async function expectInsideTableBox(page: Page, txn: string, selector: string) {
   expect(box!.x + box!.width).toBeLessThanOrEqual(wrap!.x + wrap!.width);
 }
 
-// Every KYC file that raises funding alerts; each shows the same four-column alerts table.
+// Every KYC file that raises transaction alerts; each shows the same four-column alerts table.
 const FILES_WITH_ALERTS = ['ONB-001', 'ONB-002', 'ONB-003', 'ONB-004', 'ONB-005'];
 
 // Fails unless the element sits fully inside the visible box of the given scroll area.

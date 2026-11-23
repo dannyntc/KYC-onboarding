@@ -35,12 +35,12 @@ test('the queue shows all twelve files with their suggested risk and can be sear
   await expect(page.getByRole('link', { name: 'ONB-008', exact: true })).toBeVisible();
 });
 
-test('the funding alerts page still lists all twelve alerts and links to onboarding files', async ({ page }) => {
+test('the transaction alerts page still lists all twelve alerts and links to onboarding files', async ({ page }) => {
   await page.goto('/alerts');
   await expect(page.getByRole('heading', { name: 'Initial funding & activity alerts' })).toBeVisible();
   await expect(page.locator('tbody tr')).toHaveCount(12);
   await expect(page.getByRole('link', { name: 'KYC file ONB-002' })).toBeVisible();
-  await expect(page.locator('.sidebar nav a[aria-current="page"]')).toHaveText(/Funding alerts/);
+  await expect(page.locator('.sidebar nav a[aria-current="page"]')).toHaveText(/Transaction alerts/);
   await page.goto('/');
   await expect(page.locator('.sidebar nav a[aria-current="page"]')).toHaveText(/Onboarding queue/);
   await page.goto('/controls');

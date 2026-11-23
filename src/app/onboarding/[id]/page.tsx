@@ -3,7 +3,6 @@ import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
 import { CaseForm } from '@/components/case-form';
 import { EvidenceLink } from '@/components/evidence-link';
-import { LookOnlyCaption } from '@/components/look-only-banner';
 import { OnboardingNote } from '@/components/onboarding-note';
 import { SwipeTable } from '@/components/swipe-table';
 import { currentRole } from '@/lib/demo-role';
@@ -254,8 +253,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                     <button className="button secondary" name="disposition" value="Confirmed match" disabled={lookOnly}>
                       Confirm match
                     </button>
-                    {lookOnly && <LookOnlyCaption />}
-                  </CaseForm>
+                                      </CaseForm>
                 )}
               </div>
             ))}
@@ -289,9 +287,9 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
 
           <section className="panel section" data-tour="aml-funding">
             <h2>Initial funding &amp; activity since application (AML)</h2>
-            <p className="muted">Funding alerts raised on this applicant&apos;s first activity. Each opens the alert investigation page.</p>
+            <p className="muted">Transaction alerts raised on this applicant&apos;s first activity. Each opens the alert investigation page.</p>
             {client.alerts.length === 0 ? (
-              <p className="muted">No funding alerts raised</p>
+              <p className="muted">No transaction alerts raised</p>
             ) : (
               <SwipeTable>
                 <table>
@@ -403,8 +401,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                 <button className="button" disabled={lookOnly}>
                   Save risk rating
                 </button>
-                {lookOnly && <LookOnlyCaption />}
-              </CaseForm>
+                              </CaseForm>
             )}
             <ReferenceList keys={['risk_assessment']} />
           </section>
@@ -428,8 +425,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                 <button className="button" name="action" value="analyze" disabled={lookOnly}>
                   {live ? 'Generate live KYC draft' : 'Generate fixture KYC draft'}
                 </button>
-                {lookOnly && <LookOnlyCaption />}
-              </CaseForm>
+                              </CaseForm>
             )}
             {shown && (
               <div className="draft">
@@ -531,8 +527,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                 <button className="button secondary" name="action" value="request-info" disabled={lookOnly}>
                   Request information
                 </button>
-                {lookOnly && <LookOnlyCaption />}
-              </CaseForm>
+                              </CaseForm>
             )}
           </section>
 

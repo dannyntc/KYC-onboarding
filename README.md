@@ -31,12 +31,12 @@ For a step-by-step guide to using the demo, see the [user manual](docs/user-manu
 
 ## Current capabilities
 
-- **Onboarding queue.** The home page lists 12 synthetic applicants with a suggested risk rating, the number of outstanding items, status, and search and filters. The earlier alert queue is at **Funding alerts** (`/alerts`).
+- **Onboarding queue.** The home page lists 12 fictitious applicants with a suggested risk rating, the number of outstanding items, status, and search and filters. The earlier alert queue is at **Transaction alerts** (`/alerts`).
 - **KYC file.** Each applicant has a file showing identity documents, beneficial ownership (including other clients that share an owner), screening hits, source of wealth against declared wealth, and the initial funding and activity checks. Every record is traceable by its ID.
 - **Suggested risk and blockers.** Deterministic rules suggest Low, Medium or High with the reasons and evidence IDs, and list what blocks approval (for example an expired passport, an undecided screening hit or an alert that has not been reviewed). The server re-checks the blockers on every save, so a direct request cannot bypass them.
 - **Human decisions.** An analyst records a final rating with reasons, decides screening hits with a reason, and approves, rejects or requests information. A High rating needs a second person: the analyst's approval moves the file to *Pending senior approval* and a *Senior approver* completes it. Roles are a demo switch, not authentication.
 - **KYC assistant.** A draft built from the file's own checks, clearly labelled. The default is a prewritten fixture and not an AI model output. The draft suggests a rating and next step but cannot approve, reject or declare a screening match confirmed, and wording that does so is rejected. Saved drafts, failed attempts and the evidence used for each are kept.
-- **AML section.** The four seeded funding alert scenarios (rapid movement, a source-of-wealth gap, a shared beneficial owner and a documented property sale) open the existing alert investigation page from inside the file. No alert is closed automatically.
+- **AML section.** The four seeded transaction alert scenarios (rapid movement, a source-of-wealth gap, a shared beneficial owner and a documented property sale) open the existing alert investigation page from inside the file. No alert is closed automatically.
 - **Audit.** Every onboarding change is stored as an append-only event with before and after values. Database triggers prevent ordinary updates or deletion.
 
 The application uses SQLite locally and Prisma Postgres on Vercel (`DATABASE_ENGINE=postgres`). Requests such as *Request information* are local records and are not sent anywhere.
@@ -45,9 +45,9 @@ The hosted site is deployed from the lowercase Vercel project `kyc-onboarding-da
 
 ## Guided tour and online look-only mode
 
-A 14-step pop-up tour explains the demo from the queue to the audit trail. It opens automatically on a browser's first visit to the queue, and can be restarted any time from **Guided tour** in the sidebar. The current step is kept in the address (`?tour=N`), so it needs no database. Its text is in `src/lib/tour-steps.ts`, and the pop-ups are drawn by [driver.js](https://driverjs.com) (MIT).
+A 14-step pop-up tour explains the demo from the queue to the audit trail. It opens automatically each time the site is opened in a new tab (once per visit), and can be restarted any time from **Guided tour** in the sidebar. The current step is kept in the address (`?tour=N`), so it needs no database. Its text is in `src/lib/tour-steps.ts`, and the pop-ups are drawn by [driver.js](https://driverjs.com) (MIT).
 
-When the app is not opened from `127.0.0.1` or `localhost`, it runs in **look-only mode**: the top bar says ONLINE DEMO · LOOK-ONLY, every saving button is disabled with a caption, the role switch still works (it only changes the view, through a cookie in your own browser), and the KYC and alert assistants show an unsaved preview of the template draft instead of a Generate button. Nothing is written to the database. This only changes what the screen shows; the save routes keep refusing non-local requests on their own.
+When the app is not opened from `127.0.0.1` or `localhost`, it runs in **look-only mode**: every saving button is disabled (there is no banner or caption), the role switch still works (it only changes the view, through a cookie in your own browser), and the KYC and alert assistants show an unsaved preview of the template draft instead of a Generate button. Nothing is written to the database. This only changes what the screen shows; the save routes keep refusing non-local requests on their own.
 
 Set `KYC_ONBOARDING_PUBLIC_DEMO=1` to see look-only mode on your own computer (`KYC_ONBOARDING_PUBLIC_DEMO=1 npm run dev`), or `=0` to force it off.
 

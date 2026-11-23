@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 
 const links = [
   { href: '/', icon: '▦', label: 'Onboarding queue', matches: (path: string) => path === '/' || path.startsWith('/onboarding') },
-  { href: '/alerts', icon: '⚑', label: 'Funding alerts', matches: (path: string) => path.startsWith('/alerts') || path.startsWith('/cases') },
+  { href: '/alerts', icon: '⚑', label: 'Transaction alerts', matches: (path: string) => path.startsWith('/alerts') || path.startsWith('/cases') },
   { href: '/controls', icon: '▤', label: 'Regulatory library', matches: (path: string) => path.startsWith('/controls') }
 ];
 

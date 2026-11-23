@@ -129,7 +129,7 @@ export function onboardingFixture(file: OnboardingFile): OnboardingAnalysis {
   for (const alert of file.alerts) {
     if (alert.status !== 'Open' && alert.status !== 'Escalated') {
       mitigating_factors.push({
-        description: `Funding alert ${alert.id} has been reviewed by an analyst.`,
+        description: `Transaction alert ${alert.id} has been reviewed by an analyst.`,
         evidence_ids: [alert.id]
       });
     }
