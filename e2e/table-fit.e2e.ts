@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 
 // The transaction tables must show their Amount column without sideways scrolling on common desktop
 // widths. When a table does not fit (phones), the scroll hint shows and the fade goes at the last column.
@@ -25,6 +25,19 @@ async function expectInsideTableBox(page: Page, txn: string, selector: string) {
   expect(box!.x + box!.width).toBeLessThanOrEqual(wrap!.x + wrap!.width);
 }
 
+// Every KYC file that raises funding alerts; each shows the same four-column alerts table.
+const FILES_WITH_ALERTS = ['ONB-001', 'ONB-002', 'ONB-003', 'ONB-004', 'ONB-005'];
+
+// Fails unless the element sits fully inside the visible box of the given scroll area.
+async function expectInsideBox(wrap: Locator, target: Locator) {
+  const wrapBox = await wrap.boundingBox();
+  const box = await target.boundingBox();
+  expect(wrapBox, 'table box').not.toBeNull();
+  expect(box, 'element box').not.toBeNull();
+  expect(box!.x).toBeGreaterThanOrEqual(wrapBox!.x);
+  expect(box!.x + box!.width).toBeLessThanOrEqual(wrapBox!.x + wrapBox!.width);
+}
+
 for (const viewport of DESKTOPS) {
   test.describe(`at ${viewport.width}px wide`, () => {
     test.use({ viewport });
@@ -40,6 +53,19 @@ for (const viewport of DESKTOPS) {
         const sizes = await wrap.evaluate(el => ({ scroll: el.scrollWidth, client: el.clientWidth }));
         expect(sizes.scroll).toBeLessThanOrEqual(sizes.client);
         await expect(page.locator('.swipe', { has: page.locator(`#${txn}`) }).locator('.swipe-hint')).toBeHidden();
+      });
+    }
+
+    for (const file of FILES_WITH_ALERTS) {
+      test(`/onboarding/${file} shows the alert Status column without scrolling`, async ({ page }) => {
+        await page.goto(`/onboarding/${file}`);
+        const wrap = page.locator('.tablewrap', { has: page.locator('th.title') });
+        await expect(wrap.locator('th', { hasText: 'STATUS' })).toBeVisible();
+        await expectInsideBox(wrap, wrap.locator('th', { hasText: 'STATUS' }));
+        const statusCells = wrap.locator('tbody tr td:last-child');
+        expect(await statusCells.count()).toBeGreaterThan(0);
+        for (const cell of await statusCells.all()) await expectInsideBox(wrap, cell);
+        await expect(page.locator('.swipe', { has: page.locator('th.title') }).locator('.swipe-hint')).toBeHidden();
       });
     }
   });

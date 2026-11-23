@@ -35,7 +35,7 @@
 .swipe.overflowing .swipe-hint{display:block;margin:0;padding:0 0 8px 20px;color:var(--muted);font-size:12px}
 .swipe.overflowing:not(.at-end) .tablewrap{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 28px),rgba(0,0,0,.2));mask-image:linear-gradient(to right,#000 calc(100% - 28px),rgba(0,0,0,.2))}
 .swipe th,.swipe td{padding-left:8px;padding-right:8px}
-.swipe td.counterparty{white-space:normal}
+.swipe td.counterparty,.swipe td.title{white-space:normal}
 .swipe .amount{text-align:right}
 @media(max-width:600px){
 .cards thead{display:none}

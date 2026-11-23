@@ -275,7 +275,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                   <thead>
                     <tr>
                       <th>ALERT</th>
-                      <th>TITLE</th>
+                      <th className="title">TITLE</th>
                       <th>PRIORITY</th>
                       <th>STATUS</th>
                     </tr>
@@ -288,7 +288,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                             {alert.id}
                           </Link>
                         </td>
-                        <td>{alert.title}</td>
+                        <td className="title">{alert.title}</td>
                         <td>
                           <span className={`badge ${alert.priority.toLowerCase()}`}>{alert.priority}</span>
                         </td>
