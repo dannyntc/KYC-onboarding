@@ -30,3 +30,16 @@
 .wg-tour .driver-popover-next-btn:hover,.wg-tour .driver-popover-next-btn:focus-visible{background:#0f635d}
 .wg-tour .driver-popover-prev-btn{margin-right:6px}
 .wg-tour .driver-popover-close-btn{font-size:20px}
+
+.swipe-hint{display:none}
+@media(max-width:600px){
+.cards thead{display:none}
+.cards,.cards tbody,.cards tr,.cards td{display:block;width:100%}
+.cards tr{padding:12px 16px;border-top:1px solid #edf1f2}
+.cards td{position:relative;padding:5px 0 5px 42%;border:0;white-space:normal}
+.cards td:not([data-label]){padding-left:0}
+.cards td[data-label]::before{content:attr(data-label);position:absolute;left:0;top:7px;width:38%;color:#728590;font-size:10px;font-weight:bold;letter-spacing:.07em;text-transform:uppercase}
+.cards td small{margin-top:3px}
+.swipe-hint{display:block;margin:0;padding:0 0 8px 20px;color:var(--muted);font-size:12px}
+.swipe .tablewrap{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 28px),rgba(0,0,0,.2));mask-image:linear-gradient(to right,#000 calc(100% - 28px),rgba(0,0,0,.2))}
+}

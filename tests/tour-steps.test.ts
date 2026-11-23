@@ -49,6 +49,13 @@ describe('tour steps', () => {
     }
   });
 
+  it('tags the phone-layout target of a step in the page source too', () => {
+    for (const step of TOUR_STEPS) {
+      if (!step.phoneTarget) continue;
+      expect(sourceFor(step.page), `${step.page} ${step.phoneTarget}`).toContain(`'${step.phoneTarget}'`);
+    }
+  });
+
   it('has a short title and short text, online and local, for every step', () => {
     for (const step of TOUR_STEPS) {
       expect(step.title.trim().length).toBeGreaterThan(0);

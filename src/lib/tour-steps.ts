@@ -4,6 +4,8 @@
 export type TourStep = {
   page: string;
   target: string | null;
+  // Used instead of `target` on phones, where the page lays the element out differently.
+  phoneTarget?: string;
   title: string;
   text: string;
   // Used instead of `text` in the online (look-only) demo, where the buttons are switched off.
@@ -30,6 +32,7 @@ export const TOUR_STEPS: TourStep[] = [
   {
     page: '/',
     target: 'outstanding-column',
+    phoneTarget: 'outstanding-cell',
     title: 'Outstanding items',
     text: 'This counts what still blocks approval, such as an expired passport or a name-check match nobody has decided on yet. "None" means nothing is in the way.',
     side: 'bottom'

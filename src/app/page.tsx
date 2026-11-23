@@ -105,7 +105,7 @@ export default async function OnboardingQueue({
           <button>Apply filters</button>
         </form>
         <div className="tablewrap" data-tour="queue-table">
-          <table>
+          <table className="cards">
             <thead>
               <tr>
                 <th>FILE</th>
@@ -118,23 +118,26 @@ export default async function OnboardingQueue({
               </tr>
             </thead>
             <tbody>
-              {filtered.map(row => (
+              {filtered.map((row, index) => (
                 <tr key={row.id}>
-                  <td>
+                  <td data-label="File">
                     <Link className="caseid" href={`/onboarding/${row.id}`}>
                       {row.id}
                     </Link>
                   </td>
-                  <td>
+                  <td data-label="Applicant">
                     <strong>{row.clientName}</strong>
                     <small>{row.clientId}</small>
                   </td>
-                  <td>{row.applicationDate}</td>
-                  <td>
+                  <td data-label="Application date">{row.applicationDate}</td>
+                  <td data-label="Suggested risk">
                     <span className={`badge ${row.suggestedRisk.toLowerCase()}`}>{row.suggestedRisk}</span>
                   </td>
-                  <td>{row.outstanding === 0 ? 'None' : row.outstanding}</td>
-                  <td>{row.status}</td>
+                  {/* The header cell is hidden in card layout, so the first card's value is the tour's target on phones. */}
+                  <td data-label="Outstanding items" data-tour={index === 0 ? 'outstanding-cell' : undefined}>
+                    {row.outstanding === 0 ? 'None' : row.outstanding}
+                  </td>
+                  <td data-label="Status">{row.status}</td>
                   <td>
                     <Link className="open" href={`/onboarding/${row.id}`}>
                       Open file

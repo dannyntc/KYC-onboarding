@@ -9,6 +9,8 @@ import { TOUR_STEPS, tourText } from '@/lib/tour-steps';
 // Remembers that this browser has already been offered the tour, so it is only auto-offered once.
 export const TOUR_SEEN_KEY = 'kyc-onboarding-tour-seen';
 const TARGET_WAIT_MS = 3000;
+// Must match the phone breakpoint in globals.css.
+const PHONE_QUERY = '(max-width: 600px)';
 
 function tourSeen(): boolean {
   try {
@@ -74,12 +76,13 @@ function TourController({ publicDemo }: { publicDemo: boolean }) {
 
     // The page may still be drawing, so wait briefly for the element this step points at.
     const open = () => {
-      const element = step.target ? document.querySelector(`[data-tour="${step.target}"]`) : null;
-      if (step.target && !element && Date.now() - started < TARGET_WAIT_MS) {
+      const target = (window.matchMedia(PHONE_QUERY).matches && step.phoneTarget) || step.target;
+      const element = target ? document.querySelector(`[data-tour="${target}"]`) : null;
+      if (target && !element && Date.now() - started < TARGET_WAIT_MS) {
         timer = setTimeout(open, 50);
         return;
       }
-      if (step.target && !element) console.warn(`[tour] step ${number}: "${step.target}" not found on ${pathname}`);
+      if (target && !element) console.warn(`[tour] step ${number}: "${target}" not found on ${pathname}`);
       const isFirst = number === 1;
       const isLast = number === TOUR_STEPS.length;
       const nextLabel = isFirst ? 'Start tour' : isLast ? 'Finish' : 'Next';

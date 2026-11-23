@@ -4,6 +4,7 @@ import { CaseForm } from '@/components/case-form';
 import { EvidenceLink } from '@/components/evidence-link';
 import { LookOnlyCaption } from '@/components/look-only-banner';
 import { OnboardingNote } from '@/components/onboarding-note';
+import { SwipeTable } from '@/components/swipe-table';
 import { currentRole } from '@/lib/demo-role';
 import { db } from '@/lib/db';
 import { loadOnboardingFile } from '@/lib/onboarding-file';
@@ -269,7 +270,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
             {client.alerts.length === 0 ? (
               <p className="muted">No funding alerts raised</p>
             ) : (
-              <div className="tablewrap">
+              <SwipeTable>
                 <table>
                   <thead>
                     <tr>
@@ -296,11 +297,11 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </SwipeTable>
             )}
             <h3>Account activity</h3>
             <p className="muted">Amounts use the recorded currency · negative values are outgoing</p>
-            <div className="tablewrap">
+            <SwipeTable>
               <table>
                 <thead>
                   <tr>
@@ -324,7 +325,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                   ))}
                 </tbody>
               </table>
-            </div>
+            </SwipeTable>
             <p className="notice">All documents, screening results and relationships are fictional.</p>
           </section>
         </div>
