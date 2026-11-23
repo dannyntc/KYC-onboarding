@@ -3,7 +3,7 @@ test('analyst reviews grounded fixture and sees a persistent audit event',async(
  await page.goto('/alerts');
  await expect(page.getByRole('link',{name:'ALT-002'})).toBeVisible();
  await page.getByRole('link',{name:'ALT-002'}).click();
- await page.getByRole('button',{name:'Generate fixture draft'}).click();
+ await page.getByRole('button',{name:'Generate draft alert memo'}).click();
  await expect(page.getByText('The declared wealth exceeds the amount in the company-sale record by SGD 5,000,000.')).toBeVisible();
  await expect(page.getByRole('link',{name:'DOC-002'})).toBeVisible();
  await page.getByLabel('ANALYST NOTE / REASON FOR ACTION').fill('Request sale proceeds confirmation');
@@ -42,14 +42,14 @@ for(const scenario of [
  {id:'ALT-004',finding:'The property-sale agreement records proceeds matching the incoming payment.',citation:'DOC-004'},
 ]) test(`fixture evidence is traceable for ${scenario.id}`,async({page})=>{
  await page.goto(`/cases/${scenario.id}`);
- await page.getByRole('button',{name:'Generate fixture draft'}).click();
+ await page.getByRole('button',{name:'Generate draft alert memo'}).click();
  await expect(page.getByText(scenario.finding)).toBeVisible();
  await page.getByRole('link',{name:scenario.citation}).first().click();
  await expect(page.locator(`[id="${scenario.citation}"]`)).toBeVisible();
 });
 test('linked ownership draft cites both client relationship records',async({page})=>{
  await page.goto('/cases/ALT-003');
- await page.getByRole('button',{name:'Generate fixture draft'}).click();
+ await page.getByRole('button',{name:'Generate draft alert memo'}).click();
  const finding=page.getByText('The ownership records identify the same beneficial owner and holding entity across two clients.');
  await expect(finding).toBeVisible();
  await expect(finding.getByRole('link',{name:'REL-001'})).toBeVisible();
@@ -58,7 +58,7 @@ test('linked ownership draft cites both client relationship records',async({page
 });
 test('analyst can add the draft to their note without losing existing text',async({page})=>{
  await page.goto('/cases/ALT-006');
- await page.getByRole('button',{name:'Generate fixture draft'}).click();
+ await page.getByRole('button',{name:'Generate draft alert memo'}).click();
  const original=await page.locator('#draft-case-note').textContent();
  const notes=page.getByLabel('ANALYST NOTE / REASON FOR ACTION');
  await notes.fill('My existing observation.');
@@ -73,7 +73,7 @@ test('generating a draft preserves an unsaved analyst note',async({page})=>{
  await page.goto('/cases/ALT-008');
  const notes=page.getByLabel('ANALYST NOTE / REASON FOR ACTION');
  await notes.fill('Unsaved investigation notes');
- await page.getByRole('button',{name:'Generate fixture draft'}).click();
+ await page.getByRole('button',{name:'Generate draft alert memo'}).click();
  await expect(page.getByText('Review any property-sale evidence and payment trail before a human decision.').first()).toBeVisible();
  await expect(notes).toHaveValue('Unsaved investigation notes');
 });
@@ -86,7 +86,7 @@ test('refreshing a draft does not hide a concurrent review conflict',async({brow
  await second.getByLabel('ANALYST NOTE / REASON FOR ACTION').fill('Another analyst saved this');
  await second.getByRole('button',{name:'Save review'}).click();
  await expect(second.getByText('In review').first()).toBeVisible();
- await first.getByRole('button',{name:'Generate fixture draft'}).click();
+ await first.getByRole('button',{name:'Generate draft alert memo'}).click();
  await expect(first.getByText('In review').first()).toBeVisible();
  await expect(first.getByLabel('ANALYST NOTE / REASON FOR ACTION')).toHaveValue('My unsaved note');
  await first.getByRole('button',{name:'Save review'}).click();
@@ -119,7 +119,7 @@ test('account identifiers connect a client and their transaction evidence',async
 
 test('rapid-movement fixture links the incoming and outgoing transactions',async({page})=>{
  await page.goto('/cases/ALT-001');
- await page.getByRole('button',{name:'Generate fixture draft'}).click();
+ await page.getByRole('button',{name:'Generate draft alert memo'}).click();
  const finding=page.getByText('An outgoing payment was recorded within two calendar days of the incoming payment.');
  await expect(finding.getByRole('link',{name:'TXN-013'})).toBeVisible();
  await finding.getByRole('link',{name:'TXN-014'}).click();

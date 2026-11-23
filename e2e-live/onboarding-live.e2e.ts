@@ -13,10 +13,10 @@ test('live KYC drafts are labelled, bad drafts are rejected, and a provider outa
 
   await mode('onboarding');
   await page.goto(`/onboarding/${caseId}`);
-  await expect(page.getByText('LIVE MODE', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Generate live KYC draft' }).click();
+  await expect(page.getByText('AI', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Generate AI KYC memo' }).click();
   await expect(page.getByText('Simulated live KYC draft', { exact: true })).toBeVisible();
-  await expect(page.getByText('Displayed draft: live model response')).toBeVisible();
+  await expect(page.getByText('Displayed memo: AI response')).toBeVisible();
   let records = await db.onboardingAnalysis.findMany({ where: { onboardingCaseId: caseId }, orderBy: { id: 'asc' } });
   expect(records).toHaveLength(1);
   expect(records[0]).toMatchObject({ mode: 'live', model: 'simulated-model', promptVersion: 'kyc-v1', validation: 'passed' });
@@ -25,8 +25,8 @@ test('live KYC drafts are labelled, bad drafts are rejected, and a provider outa
 
   // A draft that declares the applicant approved must be rejected and logged, not shown.
   await mode('onboarding_approve');
-  await page.getByRole('button', { name: 'Generate live KYC draft' }).click();
-  await expect(page.locator('p.form-error')).toContainText('Previous drafts are preserved');
+  await page.getByRole('button', { name: 'Generate AI KYC memo' }).click();
+  await expect(page.locator('p.form-error')).toContainText('Previous memos are preserved');
   await expect(page.getByText('Simulated live KYC draft', { exact: true })).toBeVisible();
   await expect(page.getByText('The applicant is approved')).toHaveCount(0);
   records = await db.onboardingAnalysis.findMany({ where: { onboardingCaseId: caseId }, orderBy: { id: 'asc' } });
@@ -36,8 +36,8 @@ test('live KYC drafts are labelled, bad drafts are rejected, and a provider outa
 
   // A provider outage is reported and recorded; the earlier draft stays and no template is substituted.
   await mode('provider_error');
-  await page.getByRole('button', { name: 'Generate live KYC draft' }).click();
-  await expect(page.locator('p.form-error')).toContainText('Previous drafts are preserved');
+  await page.getByRole('button', { name: 'Generate AI KYC memo' }).click();
+  await expect(page.locator('p.form-error')).toContainText('Previous memos are preserved');
   await expect(page.getByText('Simulated live KYC draft', { exact: true })).toBeVisible();
   records = await db.onboardingAnalysis.findMany({ where: { onboardingCaseId: caseId }, orderBy: { id: 'asc' } });
   expect(records.map(r => [r.mode, r.validation])).toEqual([
@@ -48,8 +48,8 @@ test('live KYC drafts are labelled, bad drafts are rejected, and a provider outa
   expect(records.at(-1)!.rawResponse).toBeNull();
   expect(await db.onboardingAnalysis.count({ where: { onboardingCaseId: caseId, mode: 'fixture' } })).toBe(0);
 
-  expect(await db.onboardingEvent.count({ where: { onboardingCaseId: caseId, action: 'Live KYC draft generated' } })).toBe(1);
-  expect(await db.onboardingEvent.count({ where: { onboardingCaseId: caseId, action: 'Live KYC draft failed' } })).toBe(2);
+  expect(await db.onboardingEvent.count({ where: { onboardingCaseId: caseId, action: 'AI KYC memo generated' } })).toBe(1);
+  expect(await db.onboardingEvent.count({ where: { onboardingCaseId: caseId, action: 'AI KYC memo failed' } })).toBe(2);
   const events = await db.onboardingEvent.findMany({ where: { onboardingCaseId: caseId } });
   for (const record of records) {
     expect(events.filter(event => event.detail.includes(`Attempt ID: ${record.id};`))).toHaveLength(1);
@@ -59,7 +59,7 @@ test('live KYC drafts are labelled, bad drafts are rejected, and a provider outa
   await page.reload();
   await expect(page.getByText('Simulated live KYC draft', { exact: true })).toBeVisible();
   await page.getByRole('link', { name: `View attempt ${rejected.id}` }).click();
-  await expect(page.getByRole('heading', { name: `KYC draft attempt ${rejected.id}` })).toBeVisible();
+  await expect(page.getByRole('heading', { name: `KYC memo attempt ${rejected.id}` })).toBeVisible();
   await expect(page.getByText('Rejected', { exact: true })).toBeVisible();
   await expect(page.getByText('resp-onboarding_approve')).toBeVisible();
 });

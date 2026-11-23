@@ -43,7 +43,7 @@ describe('template draft', () => {
     const result = validateOnboardingAnalysis(draft, evidenceIdsOf(file), []);
     expect(result.success, JSON.stringify(result)).toBe(true);
     expect(draft.suggested_risk_rating).toBe(suggestRiskRating(file).rating.toLowerCase());
-    expect(draft.limitations).toContain('Fixture demonstration; this is not a live AI response.');
+    expect(draft.limitations.join(' ')).not.toMatch(/Fixture|fictional/);
     expect(draft.relevant_controls).toEqual([]);
   });
 

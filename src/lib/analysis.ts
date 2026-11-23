@@ -76,5 +76,5 @@ export function fixtureAnalysis({scenario,trigger,transactions=[],client,documen
    else missing_information.push('A property-sale record matching the triggering payment is unavailable; verify the agreement and payment trail.');
   }
  }
- return {case_summary:text[scenario]??'Review the case evidence.',observed_facts,risk_indicators,mitigating_factors,missing_information,relevant_controls:[],suggested_action:'review',draft_case_note:text[scenario]??'Review the evidence.',limitations:['Fixture demonstration; this is not a live AI response.','Additional supporting documents may be required.']};
+ return {case_summary:text[scenario]??'Review the case evidence.',observed_facts,risk_indicators,mitigating_factors,missing_information,relevant_controls:[],suggested_action:'review',draft_case_note:text[scenario]??'Review the evidence.',limitations:['Additional supporting documents may be required.']};
 }

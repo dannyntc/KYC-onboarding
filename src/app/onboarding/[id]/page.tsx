@@ -9,6 +9,7 @@ import { currentRole } from '@/lib/demo-role';
 import { db } from '@/lib/db';
 import { loadOnboardingFile } from '@/lib/onboarding-file';
 import { onboardingAnalysisSchema, onboardingFixture } from '@/lib/onboarding-analysis';
+import { modeLabel } from '@/lib/mode-label';
 import { isPublicDemo } from '@/lib/public-demo';
 import { referencesForScenario } from '@/lib/regulatory-references';
 import {
@@ -347,7 +348,6 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                 </tbody>
               </table>
             </SwipeTable>
-            <p className="notice">All documents, screening results and relationships are fictional.</p>
           </section>
         </div>
 
@@ -409,21 +409,21 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
           <section className="panel section" data-tour="assistant">
             <div className="panelhead" style={{ padding: 0, marginBottom: 16 }}>
               <div>
-                <h2>KYC assistant</h2>
-                <p>Evidence-grounded draft for analyst review</p>
+                <h2>KYC memo assistant</h2>
+                <p>Evidence-grounded memo for analyst review</p>
               </div>
-              <span className="badge low">{live ? 'LIVE MODE' : 'FIXTURE MODE'}</span>
+              <span className="badge low">{live ? 'AI' : 'TEMPLATE'}</span>
             </div>
             <p className="notice">
               {live
                 ? 'Live mode sends this fictional file to OpenAI for analysis. Review every finding.'
-                : 'Fixture mode uses prewritten demonstration text built from the checks on this page. No live AI analysis is represented here.'}
+                : 'Template mode builds this memo from the checks on this page. No AI is used.'}
             </p>
             {role !== 'read-only' && (
               <CaseForm action="/api/onboarding">
                 <input type="hidden" name="id" value={row.id} />
                 <button className="button" name="action" value="analyze" disabled={lookOnly}>
-                  {live ? 'Generate live KYC draft' : 'Generate fixture KYC draft'}
+                  {live ? 'Generate AI KYC memo' : 'Generate draft KYC memo'}
                 </button>
                               </CaseForm>
             )}
@@ -431,12 +431,12 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
               <div className="draft">
                 <p className="notice">
                   {!latest
-                    ? 'Preview of the template draft (not saved). Nothing is stored; it is built from the checks on this page.'
+                    ? 'Preview of the template memo (not saved). Nothing is stored; it is built from the checks on this page.'
                     : latest.mode === 'fixture'
-                      ? 'Displayed draft: fixture (no model called)'
+                      ? 'Displayed memo: template (no AI used)'
                       : latest.mode === 'live'
-                        ? 'Displayed draft: live model response'
-                        : 'Displayed draft: origin unknown'}
+                        ? 'Displayed memo: AI response'
+                        : 'Displayed memo: origin unknown'}
                 </p>
                 <h3>Applicant summary</h3>
                 <p>{shown.applicant_summary}</p>
@@ -466,27 +466,31 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                 <p id="draft-note" style={{ whiteSpace: 'pre-line' }}>
                   {shown.draft_note}
                 </p>
-                <h3>Limitations</h3>
-                <ul>
-                  {shown.limitations.map(item => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
+                {shown.limitations.length > 0 && (
+                  <>
+                    <h3>Limitations</h3>
+                    <ul>
+                      {shown.limitations.map(item => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
                 {latest && (
                   <>
                     <details>
-                      <summary>View evidence used for this draft</summary>
+                      <summary>View evidence used for this memo</summary>
                       {latest.inputSnapshot ? (
                         <>
                           <p className="muted">Saved at generation time. Amounts are in cents; current records may have changed.</p>
                           <pre className="audit-detail">{JSON.stringify(JSON.parse(latest.inputSnapshot), null, 2)}</pre>
                         </>
                       ) : (
-                        <p className="muted">Evidence snapshots were not recorded for this draft.</p>
+                        <p className="muted">Evidence snapshots were not recorded for this memo.</p>
                       )}
                     </details>
                     <p className="muted">
-                      Generated {latest.createdAt.toISOString()} · {latest.mode} · {latest.model} · prompt {latest.promptVersion}
+                      Generated {latest.createdAt.toISOString()} · {modeLabel(latest.mode)} · {modeLabel(latest.model)} · prompt {latest.promptVersion}
                     </p>
                   </>
                 )}
@@ -532,14 +536,14 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
           </section>
 
           <section className="panel section">
-            <h2>Draft history</h2>
+            <h2>Memo history</h2>
             {row.analyses.length === 0 ? (
-              <p className="muted">No KYC drafts yet.</p>
+              <p className="muted">No KYC memos yet.</p>
             ) : (
               <ul className="events">
                 {row.analyses.map(item => (
                   <li key={item.id}>
-                    <strong>{attemptLabel(item.validation)}</strong> · {item.mode} · {item.model} · prompt {item.promptVersion}
+                    <strong>{attemptLabel(item.validation)}</strong> · {modeLabel(item.mode)} · {modeLabel(item.model)} · prompt {item.promptVersion}
                     <time>{item.createdAt.toISOString()}</time>
                     <Link className="caseid" href={`/onboarding/${row.id}/analyses/${item.id}`}>
                       View attempt {item.id}

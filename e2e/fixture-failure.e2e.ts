@@ -15,7 +15,7 @@ test('a rejected fixture is retained and linked to its audit event',async({reque
   expect(attempt?.output).toContain('Company-sale records report different amounts.');
   const latestAccepted=await db.analysis.findFirst({where:{alertId:'ALT-002',validation:'passed'},orderBy:{id:'desc'}});
   expect(latestAccepted?.id).toBe(previous?.id);
-  const events=await db.auditEvent.findMany({where:{alertId:'ALT-002',action:'Fixture analysis failed'}});
+  const events=await db.auditEvent.findMany({where:{alertId:'ALT-002',action:'Template alert memo failed'}});
   expect(events.filter(event=>event.detail.includes(`Attempt ID: ${attempt?.id};`))).toHaveLength(1);
  } finally {await db.kYCDocument.delete({where:{id:''}});}
 });

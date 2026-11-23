@@ -145,10 +145,7 @@ export function onboardingFixture(file: OnboardingFile): OnboardingAnalysis {
         ? 'refer_for_senior_review'
         : 'ready_for_human_decision';
 
-  const limitations = [
-    'Fixture demonstration; this is not a live AI response.',
-    'Documents, screening results and ownership records are fictional.'
-  ];
+  const limitations: string[] = [];
   if (file.screeningResults.some(r => r.disposition === SCREENING_DISPOSITION.potential)) {
     limitations.push('Potential screening matches do not change the suggested rating until an analyst decides them.');
   }
@@ -158,7 +155,7 @@ export function onboardingFixture(file: OnboardingFile): OnboardingAnalysis {
     : 'none identified from the current records';
   const outstandingText = blockers.length ? blockers.join('; ') : 'none';
   const draft_note = [
-    `KYC draft for ${file.client.name} (${file.client.id}), file ${file.onboarding.id}.`,
+    `KYC memo for ${file.client.name} (${file.client.id}), file ${file.onboarding.id}.`,
     `Suggested risk rating: ${suggestion.rating}. This is a suggestion; the analyst records the final rating.`,
     `Risk factors: ${factorText}.`,
     `Outstanding before a decision: ${outstandingText}.`

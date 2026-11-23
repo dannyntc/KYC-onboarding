@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 
-const SAVE_BUTTONS = ['Save review', 'Request information', 'Escalate case', /^Generate .*draft$/];
+const SAVE_BUTTONS = ['Save review', 'Request information', 'Escalate case', /^Generate .*memo$/];
 
 async function switchRole(page: Page, role: 'read-only' | 'analyst') {
   await page.getByLabel('Demo role (not authentication)').selectOption(role);

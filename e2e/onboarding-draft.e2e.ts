@@ -3,12 +3,12 @@ import { db } from '../src/lib/db';
 
 test('a fixture KYC draft shows the wealth gap with its citation and can be added to the note', async ({ page }) => {
   await page.goto('/onboarding/ONB-002');
-  await expect(page.getByText('FIXTURE MODE', { exact: true })).toBeVisible();
-  await expect(page.getByText('No KYC drafts yet.')).toBeVisible();
+  await expect(page.getByText('TEMPLATE', { exact: true })).toBeVisible();
+  await expect(page.getByText('No KYC memos yet.')).toBeVisible();
 
-  await page.getByRole('button', { name: 'Generate fixture KYC draft' }).click();
-  const assistant = page.locator('section', { has: page.getByRole('heading', { name: 'KYC assistant' }) });
-  await expect(assistant.getByText('Displayed draft: fixture (no model called)')).toBeVisible();
+  await page.getByRole('button', { name: 'Generate draft KYC memo' }).click();
+  const assistant = page.locator('section', { has: page.getByRole('heading', { name: 'KYC memo assistant' }) });
+  await expect(assistant.getByText('Displayed memo: template (no AI used)')).toBeVisible();
   await expect(assistant.getByText('SGD 5,000,000 of declared wealth not corroborated').first()).toBeVisible();
   await expect(assistant.getByRole('link', { name: 'DOC-002' }).first()).toBeVisible();
   await expect(assistant.getByText('Suggestions for the analyst')).toBeVisible();
@@ -20,10 +20,10 @@ test('a fixture KYC draft shows the wealth gap with its citation and can be adde
   await page.getByRole('button', { name: 'Add draft to note' }).click();
   await expect(page.getByLabel('DECISION NOTE')).toHaveValue(/Suggested risk rating: High/);
 
-  await assistant.getByText('View evidence used for this draft').click();
+  await assistant.getByText('View evidence used for this memo').click();
   await expect(assistant.getByText('permitted_evidence_ids')).toBeVisible();
 
-  await expect(page.locator('.events li').filter({ hasText: 'Fixture KYC draft generated' })).toHaveCount(1);
+  await expect(page.locator('.events li').filter({ hasText: 'Template KYC memo generated' })).toHaveCount(1);
   const attempts = await db.onboardingAnalysis.findMany({ where: { onboardingCaseId: 'ONB-002' } });
   expect(attempts).toHaveLength(1);
   expect(attempts[0]).toMatchObject({ mode: 'fixture', model: 'fixture', promptVersion: 'kyc-v1', validation: 'passed' });

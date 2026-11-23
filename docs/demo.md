@@ -8,9 +8,9 @@ The app also has a built-in guided tour (the **Guided tour** link in the sidebar
 
 1. From the project folder, run `npm run db:migrate` and `npm run dev`, then open <http://127.0.0.1:3000>. If the database has never been seeded, run `npm run db:seed` first. If it was seeded before onboarding existed, run `npm run db:seed:onboarding` once after the migration. Do not reset an existing database just to run the demo: `npm run db:reset` deliberately deletes all demo analyses, reviews and audit events.
 2. The script changes the files it uses (it approves ONB-006, for example), and those decisions are stored. To repeat the demo, start from a fresh seeded database, for example `DATABASE_URL=file:demo-two.db npm run db:migrate && DATABASE_URL=file:demo-two.db npm run db:seed && DATABASE_URL=file:demo-two.db npm run dev`. A relative file name is created inside the `prisma` folder.
-3. Check the mode shown in the **KYC assistant** panel. **Fixture mode** uses prewritten text built from the checks on the page and does not call a model. **Live mode** requires a configured key and model and sends the selected synthetic file to OpenAI. Live mode has not been verified here with a real key. Do not describe a fixture as model-generated.
+3. Check the mode shown in the **KYC memo assistant** panel. **Template mode** uses prewritten text built from the checks on the page and does not call a model. **AI mode** requires a configured key and model and sends the selected synthetic file to OpenAI. AI mode has not been verified here with a real key. Do not describe a template memo as AI-generated.
 4. Confirm the demo role at the bottom of the sidebar is Analyst. The role selector is not authentication. Counts, statuses and suggested ratings come from the current database and differ from a fresh seed once files have been decided.
-5. Use only the synthetic data supplied with the project. If external network access is unavailable, the app works in fixture mode; official MAS links may not open.
+5. Use only the synthetic data supplied with the project. If external network access is unavailable, the app works in template mode; official MAS links may not open.
 
 ## 0–1 minute: the onboarding queue
 
@@ -40,10 +40,10 @@ The app also has a built-in guided tour (the **Guided tour** link in the sidebar
 ## 6–8 minutes: a wealth gap and the KYC draft (ONB-002, Daniel Lim)
 
 - Open `ONB-002`. He declares SGD 8,000,000 from a company sale; `DOC-002` corroborates SGD 3,000,000, so SGD 5,000,000 is not corroborated and the suggested rating is High. The gap is a prompt for more evidence, not proof of wrongdoing.
-- In **KYC assistant**, select **Generate fixture KYC draft** (or **Generate live KYC draft** only if live mode has been configured and verified). Identify the mode label. Follow the `DOC-002` citation back to the document.
+- In **KYC memo assistant**, select **Generate draft KYC memo** (or **Generate AI KYC memo** only if live mode has been configured and verified). Identify the mode label. Follow the `DOC-002` citation back to the document.
 - Note the **Suggestions for the analyst**: a rating and a next step. The draft cannot approve or reject, and it cannot call a screening hit confirmed. Citation checking confirms that an ID was supplied, not that every statement is true.
 - Select **Add draft to note**, edit the note, and select **Request information**. The status becomes Information requested. This saves a local record; it does not send a request.
-- If a live call fails, the error appears and earlier drafts remain. The application does not substitute a fixture for a failed live call. Each attempt appears under **Draft history**.
+- If a live call fails, the error appears and earlier drafts remain. The application does not substitute a template memo for a failed live call. Each attempt appears under **Memo history**.
 
 ## 8–9 minutes: the transaction alert inside a file (ONB-001, Amelia Tan)
 
@@ -54,7 +54,7 @@ The app also has a built-in guided tour (the **Guided tour** link in the sidebar
 ## 9–10 minutes: audit and boundaries
 
 - Show **Audit history** on any decided file, and mention that the database triggers deter ordinary edits but do not make the file tamper-proof.
-- Show [the evaluation protocol](evaluation.md). If no completed study exists, say that no time saving, accuracy improvement or detection improvement has been measured. Fixture mode is useful for a workflow demonstration but is not an AI performance test.
+- Show [the evaluation protocol](evaluation.md). If no completed study exists, say that no time saving, accuracy improvement or detection improvement has been measured. Template mode is useful for a workflow demonstration but is not an AI performance test.
 - Summarize the remaining work: compliance review of the candidate MAS Notice 626 references and their applicability, real-model evaluation if a key is provided, real identity verification and screening providers, and production-grade identity, security and audit controls.
 
 ## Applicant quick reference

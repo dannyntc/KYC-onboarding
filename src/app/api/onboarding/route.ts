@@ -45,7 +45,7 @@ function text(form: FormData, name: string): string {
 async function generateDraft(loaded: LoadedOnboardingFile, role: DemoRole, origin: string) {
   const id = loaded.row.id;
   const lease = await acquireAnalysisLock(id);
-  if (!lease) return new Response('A KYC draft is already being generated for this file. Wait and try again.', { status: 409 });
+  if (!lease) return new Response('A KYC memo is already being generated for this file. Wait and try again.', { status: 409 });
   try {
     const live = Boolean(process.env.OPENAI_API_KEY);
     const model = process.env.OPENAI_MODEL;
@@ -81,7 +81,7 @@ async function generateDraft(loaded: LoadedOnboardingFile, role: DemoRole, origi
     const mode = live ? 'live' : 'fixture';
     const modelName = live ? model! : 'fixture';
     const promptVersion = live ? ONBOARDING_PROMPT_VERSION : ONBOARDING_FIXTURE_VERSION;
-    const label = live ? 'Live' : 'Fixture';
+    const label = live ? 'AI' : 'Template';
     const actor = actorName(role);
 
     async function saveAttempt(validation: string, output: string, rawResponse: string | null, extra = '') {
@@ -91,13 +91,13 @@ async function generateDraft(loaded: LoadedOnboardingFile, role: DemoRole, origi
         });
         const passed = validation === 'passed';
         const detail = passed && !live
-          ? `Attempt ID: ${attempt.id}; Synthetic fixture; no model was called. Version: ${ONBOARDING_FIXTURE_VERSION}; validation: passed.`
+          ? `Attempt ID: ${attempt.id}; Template memo; no AI was called. Version: ${ONBOARDING_FIXTURE_VERSION}; validation: passed.`
           : `Attempt ID: ${attempt.id}; Model: ${modelName}; prompt: ${promptVersion}; validation: ${validation}${extra}`;
         await tx.onboardingEvent.create({
           data: {
             onboardingCaseId: id,
             actor,
-            action: passed ? `${label} KYC draft generated` : `${label} KYC draft failed`,
+            action: passed ? `${label} KYC memo generated` : `${label} KYC memo failed`,
             detail
           }
         });
@@ -122,7 +122,7 @@ async function generateDraft(loaded: LoadedOnboardingFile, role: DemoRole, origi
       const rejected = error instanceof AnalysisValidationError;
       const validation = rejected ? 'rejected' : live ? 'provider_error' : 'fixture_error';
       await saveAttempt(validation, rejected ? (JSON.stringify(error.output) ?? '') : '', rejected ? error.rawResponse : null);
-      return new Response('KYC draft failed or contained invalid citations. Previous drafts are preserved; try again.', { status: 502 });
+      return new Response('KYC memo failed or contained invalid citations. Previous memos are preserved; try again.', { status: 502 });
     }
 
     const checked = validateOnboardingAnalysis(draft, evidenceIds, controls.map(control => control.id));

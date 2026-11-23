@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/db';
+import { modeLabel } from '@/lib/mode-label';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,9 +42,9 @@ export default async function OnboardingAnalysisAttempt({
       <div className="heading">
         <div>
           <p className="eyebrow">KYC DRAFT HISTORY · {id}</p>
-          <h1>KYC draft attempt {attempt.id}</h1>
+          <h1>KYC memo attempt {attempt.id}</h1>
           <p>
-            {attempt.createdAt.toISOString()} · {attempt.mode} · {attempt.model} · prompt {attempt.promptVersion}
+            {attempt.createdAt.toISOString()} · {modeLabel(attempt.mode)} · {modeLabel(attempt.model)} · prompt {attempt.promptVersion}
           </p>
         </div>
         <span className="badge medium">{status}</span>
@@ -51,8 +52,8 @@ export default async function OnboardingAnalysisAttempt({
       <section className="panel section">
         <p className="notice">
           {attempt.validation === 'passed'
-            ? 'This is a saved draft for human review.'
-            : 'This attempt did not produce an accepted draft. Its contents are preserved for review and must not be treated as findings.'}
+            ? 'This is a saved memo for human review.'
+            : 'This attempt did not produce an accepted memo. Its contents are preserved for review and must not be treated as findings.'}
         </p>
         <h2>Saved input and evidence</h2>
         {attempt.inputSnapshot ? (

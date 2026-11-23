@@ -6,7 +6,7 @@ test('foreign-currency trigger requests an SGD comparison instead of applying th
  await db.transaction.updateMany({where:{id:{in:ids}},data:{currency:'USD'}});
  try {
   await page.goto('/cases/ALT-005');
-  await page.getByRole('button',{name:'Generate fixture draft'}).click();
+  await page.getByRole('button',{name:'Generate draft alert memo'}).click();
   await expect(page.getByText(/obtain a comparable SGD amount/)).toBeVisible();
   await expect(page.getByText('The incoming payment exceeds the expected activity range.')).toHaveCount(0);
   await expect(page.getByText('An outgoing payment was recorded within two calendar days of the incoming payment.')).toHaveCount(0);

@@ -57,12 +57,12 @@ test('KYC file save buttons are disabled with a caption, and the draft is an uns
 
   await page.goto('/onboarding/ONB-002');
   await expectSaveButtonsDisabled(page);
-  await expect(page.getByRole('button', { name: 'Generate fixture KYC draft' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Generate draft KYC memo' })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Add draft to note' })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Approve', exact: true })).toBeDisabled();
 
   const draft = page.locator('.draft');
-  await expect(draft).toContainText('Preview of the template draft (not saved)');
+  await expect(draft).toContainText('Preview of the template memo (not saved)');
   await expect(draft).toContainText('SGD 5,000,000');
   await expect(draft.locator('a.evidence-link', { hasText: 'DOC-002' }).first()).toBeVisible();
 
@@ -77,9 +77,9 @@ test('the alert page is look-only too, with an unsaved draft preview', async ({ 
   const before = await rowCounts();
   await page.goto('/cases/ALT-001');
   await expectSaveButtonsDisabled(page);
-  await expect(page.getByRole('button', { name: 'Generate fixture draft' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Generate draft alert memo' })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Save review' })).toBeDisabled();
-  await expect(page.locator('.notice', { hasText: 'Preview of the template draft (not saved)' })).toBeVisible();
+  await expect(page.locator('.notice', { hasText: 'Preview of the template memo (not saved)' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Suggested action' })).toBeVisible();
   expect(await rowCounts()).toEqual(before);
 });
@@ -91,11 +91,11 @@ test('opening every KYC file and alert page writes nothing to the database', asy
   expect(cases.length).toBe(12);
   for (const { id } of cases) {
     await page.goto(`/onboarding/${id}`);
-    await expect(page.locator('.draft')).toContainText('Preview of the template draft (not saved)');
+    await expect(page.locator('.draft')).toContainText('Preview of the template memo (not saved)');
   }
   for (const { id } of alerts) {
     await page.goto(`/cases/${id}`);
-    await expect(page.locator('.notice', { hasText: 'Preview of the template draft (not saved)' })).toBeVisible();
+    await expect(page.locator('.notice', { hasText: 'Preview of the template memo (not saved)' })).toBeVisible();
   }
   expect(await rowCounts()).toEqual(before);
 });

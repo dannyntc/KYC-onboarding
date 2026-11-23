@@ -11,11 +11,11 @@ test('only an attested, current control can be returned and traced to the source
  try {
   await request.post('http://127.0.0.1:3106/mode',{data:{mode:'control'}});
   await page.goto('/cases/ALT-005');
-  await page.getByRole('button',{name:'Generate live draft'}).click();
+  await page.getByRole('button',{name:'Generate AI alert memo'}).click();
   await expect(page.locator('.form-error')).toContainText('invalid citations');
   await writeFile(file,JSON.stringify([review]));
-  await page.getByRole('button',{name:'Generate live draft'}).click();
-  const assistant=page.locator('section').filter({has:page.getByRole('heading',{name:'Investigation assistant'})});
+  await page.getByRole('button',{name:'Generate AI alert memo'}).click();
+  const assistant=page.locator('section').filter({has:page.getByRole('heading',{name:'Alert memo assistant'})});
   await expect(assistant.getByRole('link',{name:reference.id})).toHaveAttribute('href',`/controls#${reference.id}`);
   const library=await page.context().newPage();
   await library.goto(`/controls#${reference.id}`);
@@ -31,7 +31,7 @@ test('only an attested, current control can be returned and traced to the source
   await library.reload();
   await expect(source).toContainText('Not eligible for live analysis');
   await library.close();
-  await page.getByRole('button',{name:'Generate live draft'}).click();
+  await page.getByRole('button',{name:'Generate AI alert memo'}).click();
   await expect(page.locator('.form-error')).toContainText('invalid citations');
   await expect(assistant.getByRole('link',{name:reference.id})).toBeVisible();
  } finally {

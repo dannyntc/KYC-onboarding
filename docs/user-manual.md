@@ -21,7 +21,7 @@ A step-by-step guide to the KYC-onboarding demo. It assumes no compliance or tec
 8. [Step by step: recording a decision](#8-step-by-step-recording-a-decision)
 9. [Step by step: investigating a transaction alert](#9-step-by-step-investigating-a-transaction-alert)
 10. [Demo roles](#10-demo-roles)
-11. [The KYC assistant (drafts)](#11-the-kyc-assistant-drafts)
+11. [The KYC memo assistant](#11-the-kyc-memo-assistant)
 12. [The regulatory library](#12-the-regulatory-library)
 13. [Suggested walkthroughs (the 12 applicants)](#13-suggested-walkthroughs-the-12-applicants)
 14. [Running the demo on your own computer](#14-running-the-demo-on-your-own-computer)
@@ -61,7 +61,7 @@ The demo follows three principles:
 | **Risk rating** | Low, Medium or High: how closely the bank should watch this client |
 | **Senior approver** | A second, more senior person who must also approve high-risk clients ("four-eyes" approval) |
 | **Audit trail** | A permanent log of who did what, and when |
-| **Fixture** | Prewritten template text, used instead of a real AI model |
+| **Template** | Memo text built from the records, used instead of a real AI model |
 
 ## 3. Online demo vs. running it on your own computer
 
@@ -74,7 +74,7 @@ There are two ways to use the demo.
 | Can you see everything? | Yes | Yes |
 | Can you click Approve, Save, etc.? | No: the buttons are greyed out | Yes: everything works |
 | Can you switch demo roles? | Yes (it changes the view only) | Yes |
-| KYC assistant draft | Shown as a preview, marked "not saved" | Generated and saved when you click the button |
+| KYC memo | Shown as a preview, marked "not saved" | Generated and saved when you click the button |
 
 Saving is turned off online because every visitor shares the same data. If saving were allowed, one person's approvals would change what the next visitor sees.
 
@@ -130,7 +130,7 @@ The quickest way to understand the demo is the built-in tour. It takes about 3 m
 | 8 | Ethan Sim (ONB-009) | A sanctions false alarm |
 | 9 | Aisha Malik (ONB-008) | A politically exposed person (PEP) |
 | 10 | Aisha Malik | Senior approval and the role switch |
-| 11 | Daniel Lim (ONB-002) | The KYC assistant's draft |
+| 11 | Daniel Lim (ONB-002) | The KYC memo assistant |
 | 12 | Amelia Tan (ONB-001) | The AML funding check |
 | 13 | Alert ALT-001 | Investigating the transaction alert |
 | 14 | Alert ALT-001 | The audit trail, and the end of the tour |
@@ -181,9 +181,9 @@ Each section lists **candidate regulatory references** (e.g. `MAS-626-6.9`). Cli
 **Right side: the decision tools**
 
 7. **Risk assessment.** The **suggested rating** and the reasons behind it, each linked to its evidence. Below it is the form for the analyst's own final rating.
-8. **KYC assistant.** A drafted summary of the file ([section 11](#11-the-kyc-assistant-drafts)).
+8. **KYC memo assistant.** A drafted KYC memo for the file ([section 11](#11-the-kyc-memo-assistant)).
 9. **Decision.** A red **Outstanding before approval** box lists every blocker, followed by the note box and the decision buttons.
-10. **Draft history** and **Audit history.** Earlier drafts and every recorded action.
+10. **Memo history** and **Audit history.** Earlier memos and every recorded action.
 
 **Tip:** if a table is too wide for your screen, a line saying **"Scroll sideways to see all columns →"** appears above it. Scroll or swipe sideways to see the rest.
 
@@ -248,7 +248,7 @@ Transaction alerts are AML warnings about unusual first money movements.
    - **Client profile:** expected monthly activity and declared wealth.
    - **Transaction evidence:** every transaction. The one that caused the alert is marked **Alert trigger**.
    - **KYC & source of wealth:** the supporting documents.
-3. *(Optional)* Click **Generate fixture draft** in the **Investigation assistant** to get a drafted write-up. Online, a preview is shown instead.
+3. *(Optional)* Click **Generate draft alert memo** in the **Alert memo assistant** to get a drafted alert memo. Online, a preview is shown instead.
 4. In **Analyst review**, type a note and click one of these (locally only):
    - **Save review:** status becomes *In review*.
    - **Request information:** status becomes *Information requested*.
@@ -271,7 +271,7 @@ Use the **Demo role** drop-down in the sidebar, then click **Switch role**. You 
 
 The role switch is a demonstration only. It is **not** a real login or security control.
 
-## 11. The KYC assistant (drafts)
+## 11. The KYC memo assistant
 
 The assistant writes a draft summary to save the analyst time.
 
@@ -279,17 +279,17 @@ The assistant writes a draft summary to save the analyst time.
 - It suggests a risk rating and a next step, clearly labelled **suggestions for the analyst**.
 - It **cannot** approve, reject, or declare that someone *is* a PEP or sanctioned. Drafts containing such statements are automatically rejected.
 
-**Fixture mode vs. live mode:**
+**Template mode vs. AI mode:**
 
-- **Fixture mode** is the default. The draft is prewritten template text built from the records, and no AI is called. It is labelled **FIXTURE MODE**.
-- **Live mode** sends the fictional file to an AI model. It needs an OpenAI key to be configured and is labelled **LIVE MODE**. It has not yet been tested with a real key.
+- **Template mode** is the default. The memo is built from the records using a template, and no AI is called. It is labelled **TEMPLATE**.
+- **AI mode** sends the fictional file to an AI model. It needs an OpenAI key to be configured and is labelled **AI**. It has not yet been tested with a real key.
 
 **To create a draft (locally):**
 
 1. Open a KYC file.
-2. In **KYC assistant**, click **Generate fixture KYC draft**.
+2. In **KYC memo assistant**, click **Generate draft KYC memo**.
 3. Read the draft, click the record links to check its claims, and optionally click **Add draft to note** in the Decision panel.
-4. Earlier drafts are listed in **Draft history**. Open **View evidence used for this draft** to see exactly what it was based on.
+4. Earlier memos are listed in **Memo history**. Open **View evidence used for this memo** to see exactly what it was based on.
 
 Online, the assistant shows a **preview (not saved)** instead.
 

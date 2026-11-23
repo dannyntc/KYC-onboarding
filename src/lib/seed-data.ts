@@ -3,11 +3,11 @@ const names = ['Amelia Tan','Daniel Lim','Priya Menon','Marcus Lee','Sofia Ng','
 const scenarios = ['rapid_movement','wealth_gap','linked_ownership','documented_sale'] as const;
 const descriptions = ['Large third-party transfer followed by rapid outward payments','Declared sale proceeds exceed supporting documentation','Shared beneficial owner across client relationships','Large incoming transfer supported by a property sale'];
 export function createSeed() {
- const clients = names.map((name, i) => ({id:`CLI-${String(i+1).padStart(3,'0')}`, name, expectedMonthlyMin:5000000, expectedMonthlyMax:10000000, declaredWealth: i%4===1 ? 800000000 : 450000000, profile: i<12 && i%4===1 ? 'Fictional private banking client; Singapore resident. Client declares SGD 8 million in wealth from a company sale.' : 'Fictional private banking client; Singapore resident.'}));
+ const clients = names.map((name, i) => ({id:`CLI-${String(i+1).padStart(3,'0')}`, name, expectedMonthlyMin:5000000, expectedMonthlyMax:10000000, declaredWealth: i%4===1 ? 800000000 : 450000000, profile: i<12 && i%4===1 ? 'Private banking client; Singapore resident. Client declares SGD 8 million in wealth from a company sale.' : 'Private banking client; Singapore resident.'}));
  const accounts = clients.map(c=>({id:`ACC-${c.id}`,clientId:c.id}));
- const transactions = clients.flatMap((c,i) => Array.from({length:14},(_,j)=>({id:`TXN-${String(i*14+j+1).padStart(3,'0')}`,clientId:c.id,accountId:`ACC-${c.id}`,date:j===12?'2026-05-10':j===13?'2026-05-11':`2026-${String(1+Math.floor(j/3)).padStart(2,'0')}-${String(2+(j*3)%25).padStart(2,'0')}`,amount: j===12 && i<12 ? (i%4===0?120000000:i%4===3?250000000:21000000) : (j===13 && i%4===0 && i<12 ? -85000000 : (j%3===0?-1:1)*(200000+j*20000+i*1000)),currency:'SGD',counterparty:j===12&&i%4===3?'Harbour Property Buyer':j===12&&i%4===0?'New third party':'Fictional counterparty'})));
- const documents = clients.slice(0,12).map((c,i)=>({id:`DOC-${String(i+1).padStart(3,'0')}`,clientId:c.id,kind:i%4===1?'company_sale':i%4===3?'property_sale':'profile',title:i%4===1?'Company sale extract':i%4===3?'Property sale agreement':'Client profile declaration',summary:i%4===1?'Synthetic sale extract corroborates SGD 3m against SGD 8m declared.':i%4===3?`Fictional signed agreement summary for property PROP-${String(i+1).padStart(3,'0')}: seller ${c.name}; buyer Harbour Property Buyer; completion 2026-05-10; proceeds SGD 2,500,000. Settlement trail not supplied.`:'Synthetic profile information; additional corroboration may be required.',corroboratedAmount:i%4===1?300000000:i%4===3?250000000:0}));
- const relationships = [{id:'REL-001',clientId:'CLI-003',owner:'Morgan Vale',entity:'Cedar Harbour Holdings',description:'Fictional beneficial owner of holding entity.'},{id:'REL-002',clientId:'CLI-007',owner:'Morgan Vale',entity:'Cedar Harbour Holdings',description:'Fictional beneficial owner of holding entity.'},{id:'REL-003',clientId:'CLI-011',owner:'Morgan Vale',entity:'Cedar Harbour Holdings',description:'Fictional beneficial owner of holding entity.'}];
+ const transactions = clients.flatMap((c,i) => Array.from({length:14},(_,j)=>({id:`TXN-${String(i*14+j+1).padStart(3,'0')}`,clientId:c.id,accountId:`ACC-${c.id}`,date:j===12?'2026-05-10':j===13?'2026-05-11':`2026-${String(1+Math.floor(j/3)).padStart(2,'0')}-${String(2+(j*3)%25).padStart(2,'0')}`,amount: j===12 && i<12 ? (i%4===0?120000000:i%4===3?250000000:21000000) : (j===13 && i%4===0 && i<12 ? -85000000 : (j%3===0?-1:1)*(200000+j*20000+i*1000)),currency:'SGD',counterparty:j===12&&i%4===3?'Harbour Property Buyer':j===12&&i%4===0?'New third party':'Regular counterparty'})));
+ const documents = clients.slice(0,12).map((c,i)=>({id:`DOC-${String(i+1).padStart(3,'0')}`,clientId:c.id,kind:i%4===1?'company_sale':i%4===3?'property_sale':'profile',title:i%4===1?'Company sale extract':i%4===3?'Property sale agreement':'Client profile declaration',summary:i%4===1?'Synthetic sale extract corroborates SGD 3m against SGD 8m declared.':i%4===3?`Signed agreement summary for property PROP-${String(i+1).padStart(3,'0')}: seller ${c.name}; buyer Harbour Property Buyer; completion 2026-05-10; proceeds SGD 2,500,000. Settlement trail not supplied.`:'Synthetic profile information; additional corroboration may be required.',corroboratedAmount:i%4===1?300000000:i%4===3?250000000:0}));
+ const relationships = [{id:'REL-001',clientId:'CLI-003',owner:'Morgan Vale',entity:'Cedar Harbour Holdings',description:'Beneficial owner of holding entity.'},{id:'REL-002',clientId:'CLI-007',owner:'Morgan Vale',entity:'Cedar Harbour Holdings',description:'Beneficial owner of holding entity.'},{id:'REL-003',clientId:'CLI-011',owner:'Morgan Vale',entity:'Cedar Harbour Holdings',description:'Beneficial owner of holding entity.'}];
  const alerts = clients.flatMap(c=>{
   const ownTransactions=transactions.filter(t=>t.clientId===c.id);
   const ownDocuments=documents.filter(d=>d.clientId===c.id);
@@ -78,7 +78,7 @@ function createIdentityDocuments() {
         id: `IDV-${String(first).padStart(3, '0')}`,
         clientId: a.clientId,
         kind: 'passport',
-        title: 'Passport (fictional, Republic of Singapore)',
+        title: 'Passport (Republic of Singapore)',
         status: a.passport as string,
         expiresOn: expired ? expiredPassportDate : validUntil,
         summary: expired
@@ -89,7 +89,7 @@ function createIdentityDocuments() {
         id: `IDV-${String(first + 1).padStart(3, '0')}`,
         clientId: a.clientId,
         kind: 'proof_of_address',
-        title: 'Proof of address (fictional utility bill)',
+        title: 'Proof of address (utility bill)',
         status: a.proofOfAddress as string,
         expiresOn: null as string | null,
         summary: missing
@@ -108,7 +108,7 @@ function createScreeningResults() {
       list: 'PEP',
       matchedName: 'Aisha Malik',
       matchStrength: 'Strong',
-      summary: 'Fictional list entry: Aisha Malik, former deputy minister in a fictional government ministry (left office in 2022). Name, date of birth and nationality are consistent with the applicant.',
+      summary: 'Watch-list entry: Aisha Malik, former deputy minister in a government ministry (left office in 2022). Name, date of birth and nationality are consistent with the applicant.',
       disposition: 'Potential match',
       dispositionReason: ''
     },
@@ -118,7 +118,7 @@ function createScreeningResults() {
       list: 'Sanctions',
       matchedName: 'Ethan Sim',
       matchStrength: 'Partial',
-      summary: 'Fictional list entry: Ethan Sim, born 1961, national of a fictional state. The applicant was born in 1988 and holds Singapore nationality, so the entry appears to describe a different person.',
+      summary: 'Watch-list entry: Ethan Sim, born 1961, national of another country. The applicant was born in 1988 and holds Singapore nationality, so the entry appears to describe a different person.',
       disposition: 'Potential match',
       dispositionReason: ''
     },
@@ -128,7 +128,7 @@ function createScreeningResults() {
       list: 'Adverse media',
       matchedName: 'Isabelle Tay',
       matchStrength: 'Partial',
-      summary: 'Fictional news article reporting a fraud investigation of an Isabelle Tay, a director of an unrelated company in another country. Nothing links the article to the applicant beyond the name.',
+      summary: 'News article reporting a fraud investigation of an Isabelle Tay, a director of an unrelated company in another country. Nothing links the article to the applicant beyond the name.',
       disposition: 'Potential match',
       dispositionReason: ''
     }

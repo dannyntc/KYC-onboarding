@@ -35,7 +35,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <li><a href="#8-step-by-step-recording-a-decision">Step by step: recording a decision</a></li>
 <li><a href="#9-step-by-step-investigating-a-transaction-alert">Step by step: investigating a transaction alert</a></li>
 <li><a href="#10-demo-roles">Demo roles</a></li>
-<li><a href="#11-the-kyc-assistant-drafts">The KYC assistant (drafts)</a></li>
+<li><a href="#11-the-kyc-memo-assistant">The KYC memo assistant</a></li>
 <li><a href="#12-the-regulatory-library">The regulatory library</a></li>
 <li><a href="#13-suggested-walkthroughs-the-12-applicants">Suggested walkthroughs (the 12 applicants)</a></li>
 <li><a href="#14-running-the-demo-on-your-own-computer">Running the demo on your own computer</a></li>
@@ -121,8 +121,8 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <td>A permanent log of who did what, and when</td>
 </tr>
 <tr>
-<td><strong>Fixture</strong></td>
-<td>Prewritten template text, used instead of a real AI model</td>
+<td><strong>Template</strong></td>
+<td>Memo text built from the records, used instead of a real AI model</td>
 </tr>
 </tbody></table>
 <h2 id="3-online-demo-vs-running-it-on-your-own-computer">3. Online demo vs. running it on your own computer</h2>
@@ -161,7 +161,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <td>Yes</td>
 </tr>
 <tr>
-<td>KYC assistant draft</td>
+<td>KYC memo</td>
 <td>Shown as a preview, marked &quot;not saved&quot;</td>
 <td>Generated and saved when you click the button</td>
 </tr>
@@ -298,7 +298,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <tr>
 <td>11</td>
 <td>Daniel Lim (ONB-002)</td>
-<td>The KYC assistant&#39;s draft</td>
+<td>The KYC memo assistant&#39;s draft</td>
 </tr>
 <tr>
 <td>12</td>
@@ -365,9 +365,9 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <p><strong>Right side: the decision tools</strong></p>
 <ol start="7">
 <li><strong>Risk assessment.</strong> The <strong>suggested rating</strong> and the reasons behind it, each linked to its evidence. Below it is the form for the analyst&#39;s own final rating.</li>
-<li><strong>KYC assistant.</strong> A drafted summary of the file (<a href="#11-the-kyc-assistant-drafts">section 11</a>).</li>
+<li><strong>KYC memo assistant.</strong> A drafted KYC memo for the file (<a href="#11-the-kyc-memo-assistant">section 11</a>).</li>
 <li><strong>Decision.</strong> A red <strong>Outstanding before approval</strong> box lists every blocker, followed by the note box and the decision buttons.</li>
-<li><strong>Draft history</strong> and <strong>Audit history.</strong> Earlier drafts and every recorded action.</li>
+<li><strong>Memo history</strong> and <strong>Audit history.</strong> Earlier memos and every recorded action.</li>
 </ol>
 <p><strong>Tip:</strong> if a table is too wide for your screen, a line saying <strong>&quot;Scroll sideways to see all columns →&quot;</strong> appears above it. Scroll or swipe sideways to see the rest.</p>
 <h2 id="8-step-by-step-recording-a-decision">8. Step by step: recording a decision</h2>
@@ -436,7 +436,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <li><strong>KYC &amp; source of wealth:</strong> the supporting documents.</li>
 </ul>
 </li>
-<li><em>(Optional)</em> Click <strong>Generate fixture draft</strong> in the <strong>Investigation assistant</strong> to get a drafted write-up. Online, a preview is shown instead.</li>
+<li><em>(Optional)</em> Click <strong>Generate draft alert memo</strong> in the <strong>Alert memo assistant</strong> to get a drafted alert memo. Online, a preview is shown instead.</li>
 <li>In <strong>Analyst review</strong>, type a note and click one of these (locally only):<ul>
 <li><strong>Save review:</strong> status becomes <em>In review</em>.</li>
 <li><strong>Request information:</strong> status becomes <em>Information requested</em>.</li>
@@ -470,24 +470,24 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 </tr>
 </tbody></table>
 <p>The role switch is a demonstration only. It is <strong>not</strong> a real login or security control.</p>
-<h2 id="11-the-kyc-assistant-drafts">11. The KYC assistant (drafts)</h2>
+<h2 id="11-the-kyc-memo-assistant">11. The KYC memo assistant</h2>
 <p>The assistant writes a draft summary to save the analyst time.</p>
 <ul>
 <li>Every statement it makes links to a record, so you can check it.</li>
 <li>It suggests a risk rating and a next step, clearly labelled <strong>suggestions for the analyst</strong>.</li>
 <li>It <strong>cannot</strong> approve, reject, or declare that someone <em>is</em> a PEP or sanctioned. Drafts containing such statements are automatically rejected.</li>
 </ul>
-<p><strong>Fixture mode vs. live mode:</strong></p>
+<p><strong>Template mode vs. AI mode:</strong></p>
 <ul>
-<li><strong>Fixture mode</strong> is the default. The draft is prewritten template text built from the records, and no AI is called. It is labelled <strong>FIXTURE MODE</strong>.</li>
-<li><strong>Live mode</strong> sends the fictional file to an AI model. It needs an OpenAI key to be configured and is labelled <strong>LIVE MODE</strong>. It has not yet been tested with a real key.</li>
+<li><strong>Template mode</strong> is the default. The memo is built from the records using a template, and no AI is called. It is labelled <strong>TEMPLATE</strong>.</li>
+<li><strong>AI mode</strong> sends the fictional file to an AI model. It needs an OpenAI key to be configured and is labelled <strong>AI</strong>. It has not yet been tested with a real key.</li>
 </ul>
 <p><strong>To create a draft (locally):</strong></p>
 <ol>
 <li>Open a KYC file.</li>
-<li>In <strong>KYC assistant</strong>, click <strong>Generate fixture KYC draft</strong>.</li>
+<li>In <strong>KYC memo assistant</strong>, click <strong>Generate draft KYC memo</strong>.</li>
 <li>Read the draft, click the record links to check its claims, and optionally click <strong>Add draft to note</strong> in the Decision panel.</li>
-<li>Earlier drafts are listed in <strong>Draft history</strong>. Open <strong>View evidence used for this draft</strong> to see exactly what it was based on.</li>
+<li>Earlier memos are listed in <strong>Memo history</strong>. Open <strong>View evidence used for this memo</strong> to see exactly what it was based on.</li>
 </ol>
 <p>Online, the assistant shows a <strong>preview (not saved)</strong> instead.</p>
 <h2 id="12-the-regulatory-library">12. The regulatory library</h2>

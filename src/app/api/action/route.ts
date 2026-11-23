@@ -39,7 +39,7 @@ export async function POST(request:Request){
    const failedResponse=error instanceof AnalysisValidationError?error.rawResponse:null;
    await db.$transaction(async tx=>{
     const attempt=await tx.analysis.create({data:{alertId:id,mode:live?'live':'fixture',model:live?model!:'fixture',promptVersion:live?LIVE_PROMPT_VERSION:FIXTURE_VERSION,validation,output:raw,rawResponse:failedResponse,inputSnapshot}});
-    await tx.auditEvent.create({data:{alertId:id,actor:'Demo analyst',action:live?'Live analysis failed':'Fixture analysis failed',detail:`Attempt ID: ${attempt.id}; Model: ${live?model:'fixture'}; prompt: ${live?LIVE_PROMPT_VERSION:FIXTURE_VERSION}; validation: ${validation}`}});
+    await tx.auditEvent.create({data:{alertId:id,actor:'Demo analyst',action:live?'AI alert memo failed':'Template alert memo failed',detail:`Attempt ID: ${attempt.id}; Model: ${live?model:'fixture'}; prompt: ${live?LIVE_PROMPT_VERSION:FIXTURE_VERSION}; validation: ${validation}`}});
    });
    return new Response('Analysis failed or contained invalid citations. Previous drafts are preserved; try again.',{status:502});
   }
@@ -47,14 +47,14 @@ export async function POST(request:Request){
   if(!checked.success) {
    await db.$transaction(async tx=>{
     const attempt=await tx.analysis.create({data:{alertId:id,mode:live?'live':'fixture',model:live?model!:'fixture',promptVersion:live?LIVE_PROMPT_VERSION:FIXTURE_VERSION,validation:'rejected',output:JSON.stringify(draft) ?? '',rawResponse,inputSnapshot}});
-    await tx.auditEvent.create({data:{alertId:id,actor:'Demo analyst',action:live?'Live analysis failed':'Fixture analysis failed',detail:`Attempt ID: ${attempt.id}; Model: ${live?model:'fixture'}; prompt: ${live?LIVE_PROMPT_VERSION:FIXTURE_VERSION}; validation: rejected; ${checked.error}`}});
+    await tx.auditEvent.create({data:{alertId:id,actor:'Demo analyst',action:live?'AI alert memo failed':'Template alert memo failed',detail:`Attempt ID: ${attempt.id}; Model: ${live?model:'fixture'}; prompt: ${live?LIVE_PROMPT_VERSION:FIXTURE_VERSION}; validation: rejected; ${checked.error}`}});
    });
    return new Response(checked.error,{status:422});
   }
   const mode=live?'live':'fixture';
   await db.$transaction(async tx=>{
    const attempt=await tx.analysis.create({data:{alertId:id,mode,model:live?model!:'fixture',promptVersion:live?LIVE_PROMPT_VERSION:FIXTURE_VERSION,validation:'passed',output:JSON.stringify(checked.data),rawResponse,inputSnapshot}});
-   await tx.auditEvent.create({data:{alertId:id,actor:'Demo analyst',action:live?'Live analysis generated':'Fixture analysis generated',detail:live?`Attempt ID: ${attempt.id}; Model: ${model}; prompt: ${LIVE_PROMPT_VERSION}; validation: passed`:`Attempt ID: ${attempt.id}; Synthetic fixture; no model was called. Version: ${FIXTURE_VERSION}; validation: passed.`}});
+   await tx.auditEvent.create({data:{alertId:id,actor:'Demo analyst',action:live?'AI alert memo generated':'Template alert memo generated',detail:live?`Attempt ID: ${attempt.id}; Model: ${model}; prompt: ${LIVE_PROMPT_VERSION}; validation: passed`:`Attempt ID: ${attempt.id}; Template memo; no AI was called. Version: ${FIXTURE_VERSION}; validation: passed.`}});
   });
   } finally {await releaseAnalysisLock(id,lease);}
  }else if(['save','request','escalate'].includes(action)){
