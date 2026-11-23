@@ -77,7 +77,7 @@ export const TOUR_STEPS: TourStep[] = [
     title: 'Two sets of eyes',
     text: 'High-risk applicants need a second person, a Senior approver, to sign off as well. Switch to that role here to give the second approval. This switch is a demo tool, not a real login.',
     onlineText:
-      'High-risk applicants need a second person, a Senior approver, to sign off as well. The role switch is turned off online, but it works when you run the demo locally.',
+      'High-risk applicants need a second person, a Senior approver, to sign off as well. Try the role switch here: Read-only access hides the decision buttons. Online nothing is saved, so run the demo locally to see a senior approver\'s "Give senior approval" button.',
     side: 'right'
   },
   {

@@ -24,13 +24,34 @@ async function expectSaveButtonsDisabled(page: Page) {
   await expect(page.locator('.content .lookonly-note').first()).toHaveText('Disabled in the online demo');
 }
 
-test('the online demo shows the look-only banner, badge and a disabled role switch', async ({ page }) => {
+test('the online demo shows the look-only banner and badge, and the role switch is on', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('look-only-banner')).toContainText('saving is turned off');
   await expect(page.locator('.topbar .demo')).toContainText('ONLINE DEMO · LOOK-ONLY');
-  await expect(page.locator('#role')).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Switch role' })).toBeDisabled();
-  await expect(page.getByText('Role switching works when run locally.')).toBeVisible();
+  await expect(page.locator('#role')).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Switch role' })).toBeEnabled();
+  await expect(page.getByText('Switching role changes the view only; saving stays off online.')).toBeVisible();
+});
+
+test('role switching works in look-only mode, stays on the same page and writes nothing', async ({ page }) => {
+  const before = await rowCounts();
+  await page.goto('/onboarding/ONB-008');
+
+  for (const role of ['read-only', 'senior-approver', 'analyst']) {
+    await page.getByLabel('Demo role (not authentication)').selectOption(role);
+    await page.getByRole('button', { name: 'Switch role' }).click();
+    await expect(page).toHaveURL(/\/onboarding\/ONB-008$/);
+    await expect(page.getByLabel('Demo role (not authentication)')).toHaveValue(role);
+    if (role === 'read-only') {
+      await expect(page.getByText('The read-only role cannot change onboarding files.')).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Approve', exact: true })).toHaveCount(0);
+    } else {
+      // Saving stays off online for every role.
+      await expect(page.getByRole('button', { name: 'Approve', exact: true })).toBeDisabled();
+    }
+  }
+
+  expect(await rowCounts()).toEqual(before);
 });
 
 test('KYC file save buttons are disabled with a caption, and the draft is an unsaved preview', async ({ page }) => {
@@ -90,7 +111,17 @@ test('direct saves from an online origin are still refused', async ({ request })
   expect(approve.status()).toBe(403);
   const alertDraft = await request.post('/api/action', { headers, form: { id: 'ALT-001', action: 'analyze' } });
   expect(alertDraft.status()).toBe(403);
-  const role = await request.post('/api/role', { headers, form: { role: 'senior-approver' } });
-  expect(role.status()).toBe(403);
+  expect(await rowCounts()).toEqual(before);
+});
+
+test('a role switch from another site is still refused and sets no cookie', async ({ page }) => {
+  const before = await rowCounts();
+  for (const origin of [ONLINE_ORIGIN, 'http://evil.example', 'null']) {
+    const response = await page.request.post('/api/role', { headers: { origin }, form: { role: 'senior-approver' } });
+    expect(response.status()).toBe(403);
+  }
+  const noOrigin = await page.request.post('/api/role', { form: { role: 'senior-approver' } });
+  expect(noOrigin.status()).toBe(403);
+  expect((await page.context().cookies()).find(cookie => cookie.name === 'demo-role')).toBeUndefined();
   expect(await rowCounts()).toEqual(before);
 });

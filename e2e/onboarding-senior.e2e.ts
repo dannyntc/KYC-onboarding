@@ -19,7 +19,8 @@ test('a confirmed PEP needs senior approval, which a senior approver gives', asy
 
   await page.getByLabel('Demo role (not authentication)').selectOption('senior-approver');
   await page.getByRole('button', { name: 'Switch role' }).click();
-  await page.goto('/onboarding/ONB-008');
+  // The switch returns to the same file, so the senior approver sees the new button straight away.
+  await expect(page).toHaveURL(/\/onboarding\/ONB-008$/);
   await page.getByRole('button', { name: 'Give senior approval' }).click();
   await expect(page.getByTestId('onboarding-status')).toHaveText('Approved');
 

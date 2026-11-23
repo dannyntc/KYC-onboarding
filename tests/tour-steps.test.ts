@@ -68,6 +68,12 @@ describe('tour steps', () => {
     expect(tourText(plain, true)).toBe(plain.text);
   });
 
+  it('keeps the role-switch step working online: it invites a role switch instead of saying it is off', () => {
+    const step = TOUR_STEPS.find(item => item.target === 'role-switcher')!;
+    expect(tourText(step, true)).toContain('Try the role switch');
+    expect(tourText(step, true)).not.toContain('turned off');
+  });
+
   it('explains KYC, sanctions, PEP and AML where they first appear', () => {
     const first = (word: string) => TOUR_STEPS.findIndex(step => step.text.includes(word));
     expect(TOUR_STEPS[first('KYC')].text).toContain('know your customer');
