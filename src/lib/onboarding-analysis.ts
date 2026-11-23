@@ -147,7 +147,7 @@ export function onboardingFixture(file: OnboardingFile): OnboardingAnalysis {
 
   const limitations: string[] = [];
   if (file.screeningResults.some(r => r.disposition === SCREENING_DISPOSITION.potential)) {
-    limitations.push('Potential screening matches do not change the suggested rating until an analyst decides them.');
+    limitations.push('Until an analyst decides them, a possible sanctions match keeps the suggested rating High and a strong possible PEP match raises it to at least Medium; other possible matches do not change it.');
   }
 
   const factorText = suggestion.factors.length

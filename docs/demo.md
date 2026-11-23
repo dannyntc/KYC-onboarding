@@ -32,7 +32,7 @@ The app also has a built-in guided tour (the **Guided tour** link in the sidebar
 
 ## 4–6 minutes: a politically exposed person and senior approval (ONB-008, Aisha Malik)
 
-- Open `ONB-008`. `SCR-001` is a strong potential PEP match (a fictional former deputy minister). Until an analyst decides it, it is listed as outstanding and does not change the suggested rating.
+- Open `ONB-008`. `SCR-001` is a strong potential PEP match (a fictional former deputy minister). Until an analyst decides it, it is listed as outstanding and the suggested rating is Medium (PEPs need enhanced due diligence under MAS Notice 626).
 - Enter a reason and select **Confirm match**. The suggested rating becomes High. Choose High in **Risk assessment**, give reasons, and select **Save risk rating**.
 - The only outstanding item is "High-risk applicants need senior approval". Select **Approve** as the analyst: the status becomes Pending senior approval, and **Approve** is greyed out.
 - Switch the demo role to **Senior approver** in the sidebar, reopen `ONB-008`, and select **Give senior approval**. The status becomes Approved and the audit history shows "Demo senior approver". The role switch is a demonstration, not a login.
@@ -49,7 +49,7 @@ The app also has a built-in guided tour (the **Guided tour** link in the sidebar
 
 - Open `ONB-001`. In **Initial Transactions & activity since application (AML)**, `ALT-001` is open: `TXN-013` is an incoming SGD 1,200,000 and `TXN-014` an outgoing SGD 850,000 the next day, against expected activity of SGD 50,000–100,000 per month. These are indicators for review, not findings.
 - **Approve** is greyed out and the outstanding item reads "Alert ALT-001 has not been reviewed". Select `ALT-001` to open the existing investigation page, add a note and select **Save review**.
-- Use the link **Back to KYC file ONB-001**. The alert no longer blocks approval and the suggested rating falls from Medium to Low.
+- Use the link **Back to KYC file ONB-001**. The alert no longer blocks approval and the suggested rating falls from High to Low.
 
 ## 9–10 minutes: audit and boundaries
 

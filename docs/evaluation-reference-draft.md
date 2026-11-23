@@ -16,7 +16,7 @@ This draft is based on `createSeed()` in `src/lib/seed-data.ts`. Amounts below a
 
 **Questions and limits**
 
-- Suggested rating is Medium while `ALT-001` is open, and approval is blocked until it is reviewed. The amounts and timing do not establish a connection between the two payments, their purpose, or wrongdoing.
+- Suggested rating is High while the High-priority `ALT-001` is open, and approval is blocked until it is reviewed. The amounts and timing do not establish a connection between the two payments, their purpose, or wrongdoing.
 - The source and purpose of the incoming funds, and the recipient and purpose of the outgoing payment, need human review.
 
 ## ONB-002 — source-of-wealth gap (CLI-002, Daniel Lim)
@@ -51,7 +51,7 @@ This draft is based on `createSeed()` in `src/lib/seed-data.ts`. Amounts below a
 
 **Questions and limits**
 
-- Suggested rating is Medium while `ALT-004` is open and Low once it is reviewed. The matching amount, buyer and date are potentially mitigating, but the summary alone does not prove the agreement, payer, settlement and transaction are linked. Do not claim the funds are fully explained solely because the amounts match.
+- Suggested rating is Low: `ALT-004` is Low priority, so it adds no risk factor, but approval stays blocked until it is reviewed. The matching amount, buyer and date are potentially mitigating, but the summary alone does not prove the agreement, payer, settlement and transaction are linked. Do not claim the funds are fully explained solely because the amounts match.
 
 ## ONB-006 to ONB-012 — files without transaction alerts
 
@@ -59,7 +59,7 @@ This draft is based on `createSeed()` in `src/lib/seed-data.ts`. Amounts below a
 | --- | --- | --- | --- | --- |
 | ONB-006 | CLI-013 Sarah Yeo | `IDV-011`, `IDV-012` verified; no hits; `DOC-105` employment income SGD 4,500,000 | Low | A clean file needs a recorded rating with reasons before approval |
 | ONB-007 | CLI-014 Darren Ho | `IDV-013` passport Expired; `IDV-014` verified; `DOC-106` inheritance SGD 8,000,000 | Low | Approval is blocked by the expired passport; the reviewer decides what to request |
-| ONB-008 | CLI-015 Aisha Malik | `SCR-001` PEP, strong potential match (fictional former deputy minister); `DOC-107` SGD 4,500,000 | Low until the hit is decided; High if confirmed | A potential match does not change the rating until decided; a High rating needs senior approval |
+| ONB-008 | CLI-015 Aisha Malik | `SCR-001` PEP, strong potential match (fictional former deputy minister); `DOC-107` SGD 4,500,000 | Medium until the hit is decided (strong potential PEP match); High if confirmed | A strong potential PEP match raises the rating to Medium until decided; a High rating needs senior approval |
 | ONB-009 | CLI-016 Ethan Sim | `SCR-002` sanctions, partial potential match (born 1961 against the applicant's 1988, different nationality); `DOC-108` SGD 4,500,000 | High while unresolved; Low once cleared | Clearing needs a recorded reason; the reviewer decides whether the stated differences are enough |
 | ONB-010 | CLI-017 Isabelle Tay | `SCR-003` adverse media, partial potential match (fictional fraud article about a namesake); `DOC-109` SGD 4,500,000 | Low until decided; Medium if confirmed | Only the name links the article to the applicant; the analyst decides |
 | ONB-011 | CLI-018 Raj Mehta | `IDV-021` passport verified; `IDV-022` proof of address Missing; `DOC-110` SGD 8,000,000 | Low | Approval is blocked by the missing proof of address |

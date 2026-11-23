@@ -27,13 +27,13 @@ export function buildFile(caseId: string): OnboardingFile {
       .map(d => ({ id: d.id, kind: d.kind, status: d.status })),
     screeningResults: seed.screeningResults
       .filter(s => s.clientId === client.id)
-      .map(s => ({ id: s.id, list: s.list, disposition: s.disposition, dispositionReason: s.dispositionReason })),
+      .map(s => ({ id: s.id, list: s.list, matchStrength: s.matchStrength, disposition: s.disposition, dispositionReason: s.dispositionReason })),
     documents: seed.documents
       .filter(d => d.clientId === client.id)
       .map(d => ({ id: d.id, kind: d.kind, corroboratedAmount: d.corroboratedAmount })),
     relationships,
     relatedRelationships,
-    alerts: seed.alerts.filter(a => a.clientId === client.id).map(a => ({ id: a.id, status: a.status }))
+    alerts: seed.alerts.filter(a => a.clientId === client.id).map(a => ({ id: a.id, status: a.status, priority: a.priority }))
   };
 }
 

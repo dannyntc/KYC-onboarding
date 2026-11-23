@@ -42,6 +42,7 @@ export type OnboardingFile = {
   screeningResults: {
     id: string;
     list: string;
+    matchStrength: string;
     disposition: string;
     dispositionReason: string;
   }[];
@@ -51,7 +52,7 @@ export type OnboardingFile = {
   relationships: { id: string; clientId: string; owner: string; entity: string }[];
   // Ownership records of other clients that share an owner and entity with the applicant.
   relatedRelationships: { id: string; clientId: string; owner: string; entity: string }[];
-  alerts: { id: string; status: string }[];
+  alerts: { id: string; status: string; priority: string }[];
 };
 
 export type RiskFactor = {
@@ -109,6 +110,19 @@ export function suggestRiskRating(file: OnboardingFile): RiskSuggestion {
     });
   }
 
+  // MAS Notice 626 paragraph 8: PEPs need enhanced due diligence, so a strong match that nobody
+  // has decided yet already raises the suggestion. Confirming it makes it High (see above).
+  const unresolvedStrongPep = file.screeningResults.filter(
+    r => r.list === 'PEP' && r.matchStrength === 'Strong' && r.disposition === SCREENING_DISPOSITION.potential
+  );
+  if (unresolvedStrongPep.length > 0) {
+    factors.push({
+      description: 'Unresolved strong PEP match',
+      evidenceIds: ids(unresolvedStrongPep),
+      weight: 'Medium'
+    });
+  }
+
   const confirmedAdverseMedia = file.screeningResults.filter(
     r => r.list === 'Adverse media' && r.disposition === SCREENING_DISPOSITION.confirmed
   );
@@ -136,12 +150,14 @@ export function suggestRiskRating(file: OnboardingFile): RiskSuggestion {
     });
   }
 
+  // An open alert counts with its own priority. A Low-priority alert adds no risk factor, but it
+  // still blocks approval until it is reviewed (see approvalBlockers).
   for (const alert of file.alerts) {
-    if (alert.status === 'Open' || alert.status === 'Escalated') {
+    if ((alert.status === 'Open' || alert.status === 'Escalated') && (alert.priority === 'High' || alert.priority === 'Medium')) {
       factors.push({
-        description: `Initial transaction alert ${alert.id} requires review`,
+        description: `${alert.priority}-priority transaction alert ${alert.id} requires review`,
         evidenceIds: [alert.id],
-        weight: 'Medium'
+        weight: alert.priority
       });
     }
   }

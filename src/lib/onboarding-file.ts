@@ -54,6 +54,7 @@ export async function loadOnboardingFile(id: string) {
     screeningResults: client.screeningResults.map(s => ({
       id: s.id,
       list: s.list,
+      matchStrength: s.matchStrength,
       disposition: s.disposition,
       dispositionReason: s.dispositionReason
     })),
@@ -70,7 +71,7 @@ export async function loadOnboardingFile(id: string) {
       owner: r.owner,
       entity: r.entity
     })),
-    alerts: client.alerts.map(a => ({ id: a.id, status: a.status }))
+    alerts: client.alerts.map(a => ({ id: a.id, status: a.status, priority: a.priority }))
   };
 
   return { file, row, related: relatedWithFile };

@@ -306,7 +306,7 @@ Click **Regulatory library** in the sidebar.
 | ONB-001 | Amelia Tan | Large money in, quickly out | Open alert ALT-001, review it, then return. Approval is blocked until the alert is reviewed |
 | ONB-002 | Daniel Lim | Source-of-wealth gap: declares SGD 8M, documents back SGD 3M | Generate a KYC draft. Request information about the missing SGD 5M |
 | ONB-003 | Priya Menon | Shares a hidden owner with other clients | Read **Beneficial ownership** and follow the links to the related clients |
-| ONB-004 | Marcus Lee | First deposit explained by a property sale | Review alert ALT-004. The suggested risk drops to Low, then approve |
+| ONB-004 | Marcus Lee | First deposit explained by a property sale | Review alert ALT-004 (suggested risk is already Low, because the alert is Low priority), then approve |
 | ONB-005 | Nadia Rahman | The other side of the shared-owner link | Compare with ONB-003 |
 | ONB-006 | Sarah Yeo | Clean | Save a Low rating with reasons, then approve |
 | ONB-007 | Darren Ho | Expired passport | Note the blocker; request information |

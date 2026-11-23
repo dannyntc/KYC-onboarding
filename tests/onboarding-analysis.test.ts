@@ -78,8 +78,8 @@ describe('template draft', () => {
 
   it('describes an unresolved PEP hit as a potential match and cites it', () => {
     const draft = onboardingFixture(buildFile('ONB-008'));
-    const hit = draft.risk_factors.find(f => f.evidence_ids.includes('SCR-001'));
-    expect(hit?.description).toMatch(/potential PEP match/);
+    const hits = draft.risk_factors.filter(f => f.evidence_ids.includes('SCR-001')).map(f => f.description);
+    expect(hits.some(description => /potential PEP match/.test(description))).toBe(true);
     expect(draft.outstanding_items).toContain('Screening SCR-001 needs a decision');
   });
 

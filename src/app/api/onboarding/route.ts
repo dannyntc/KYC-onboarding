@@ -196,10 +196,11 @@ export async function POST(request: Request) {
         screeningResults: screeningResults.map(s => ({
           id: s.id,
           list: s.list,
+          matchStrength: s.matchStrength,
           disposition: s.disposition,
           dispositionReason: s.dispositionReason
         })),
-        alerts: alerts.map(a => ({ id: a.id, status: a.status }))
+        alerts: alerts.map(a => ({ id: a.id, status: a.status, priority: a.priority }))
       };
 
       const change = onboardingTransition(file, action as OnboardingAction, input, role);

@@ -39,32 +39,32 @@ describe('applicant stories from the seed', () => {
   }[] = [
     {
       caseId: 'ONB-001',
-      rating: 'Medium',
-      factors: ['Initial transaction alert ALT-001 requires review'],
+      rating: 'High',
+      factors: ['High-priority transaction alert ALT-001 requires review'],
       blockers: ['Alert ALT-001 has not been reviewed', needRating]
     },
     {
       caseId: 'ONB-002',
       rating: 'High',
-      factors: ['SGD 5,000,000 of declared wealth not corroborated', 'Initial transaction alert ALT-002 requires review'],
+      factors: ['SGD 5,000,000 of declared wealth not corroborated', 'High-priority transaction alert ALT-002 requires review'],
       blockers: ['Alert ALT-002 has not been reviewed', needRating]
     },
     {
       caseId: 'ONB-003',
       rating: 'Medium',
-      factors: ['Shared beneficial owner with CLI-007, CLI-011', 'Initial transaction alert ALT-003 requires review'],
+      factors: ['Shared beneficial owner with CLI-007, CLI-011', 'Medium-priority transaction alert ALT-003 requires review'],
       blockers: ['Alert ALT-003 has not been reviewed', needRating]
     },
     {
       caseId: 'ONB-004',
-      rating: 'Medium',
-      factors: ['Initial transaction alert ALT-004 requires review'],
+      rating: 'Low',
+      factors: [],
       blockers: ['Alert ALT-004 has not been reviewed', needRating]
     },
     {
       caseId: 'ONB-005',
       rating: 'Medium',
-      factors: ['Shared beneficial owner with CLI-003, CLI-011', 'Initial transaction alert ALT-007 requires review'],
+      factors: ['Shared beneficial owner with CLI-003, CLI-011', 'Medium-priority transaction alert ALT-007 requires review'],
       blockers: ['Alert ALT-007 has not been reviewed', needRating]
     },
     { caseId: 'ONB-006', rating: 'Low', factors: [], blockers: [needRating] },
@@ -76,8 +76,8 @@ describe('applicant stories from the seed', () => {
     },
     {
       caseId: 'ONB-008',
-      rating: 'Low',
-      factors: [],
+      rating: 'Medium',
+      factors: ['Unresolved strong PEP match'],
       blockers: ['Screening SCR-001 needs a decision', needRating]
     },
     {
@@ -134,11 +134,17 @@ describe('applicant stories from the seed', () => {
     expect(approvalBlockers(reviewed, 'analyst')).toEqual([needRating]);
   });
 
-  it('ONB-001 stays Medium, not High, and an escalated alert still counts as a factor', () => {
+  it('ONB-001 is High from its High-priority alert, also when escalated, and drops once the alert is reviewed', () => {
     const file = buildFile('ONB-001');
-    expect(suggestRiskRating(file).rating).toBe('Medium');
-    expect(suggestRiskRating(change(file, setAlertStatus('Escalated'))).rating).toBe('Medium');
+    expect(suggestRiskRating(file).rating).toBe('High');
+    expect(suggestRiskRating(change(file, setAlertStatus('Escalated'))).rating).toBe('High');
     expect(suggestRiskRating(change(file, setAlertStatus('In review'))).rating).toBe('Low');
+  });
+
+  it('a Low-priority alert (ONB-004) adds no risk factor but still blocks approval until reviewed', () => {
+    const file = buildFile('ONB-004');
+    expect(suggestRiskRating(file).factors).toEqual([]);
+    expect(approvalBlockers(file, 'analyst')).toContain('Alert ALT-004 has not been reviewed');
   });
 
   it('ONB-006 can be approved once Low is recorded with reasons', () => {
@@ -192,13 +198,15 @@ describe('applicant stories from the seed', () => {
 });
 
 describe('rule details', () => {
-  it('rates a confirmed sanctions match High and ignores cleared and potential non-sanctions hits', () => {
+  it('rates a confirmed sanctions match High, a strong potential PEP match Medium, and ignores weaker potential hits', () => {
     const base = buildFile('ONB-009');
     expect(suggestRiskRating(change(base, setScreening('SCR-002', 'Confirmed match'))).factors[0].description).toBe(
       'Confirmed PEP/sanctions match'
     );
-    // A potential PEP match alone does not change the suggestion; the analyst has to decide it first.
-    expect(suggestRiskRating(buildFile('ONB-008')).factors).toEqual([]);
+    // A strong potential PEP match already raises the suggestion to Medium (MAS Notice 626 paragraph 8);
+    // a partial adverse-media match does not, because even a confirmed one only adds a Medium factor.
+    expect(suggestRiskRating(buildFile('ONB-008')).factors.map(f => f.description)).toEqual(['Unresolved strong PEP match']);
+    expect(suggestRiskRating(buildFile('ONB-010')).factors).toEqual([]);
   });
 
   it('reports a missing identity document or proof of address when no record exists', () => {

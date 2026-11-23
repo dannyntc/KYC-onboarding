@@ -2,14 +2,14 @@ import { test, expect } from '@playwright/test';
 import { db } from '../src/lib/db';
 
 const expectedRisk: Record<string, string> = {
-  'ONB-001': 'Medium',
+  'ONB-001': 'High',
   'ONB-002': 'High',
   'ONB-003': 'Medium',
-  'ONB-004': 'Medium',
+  'ONB-004': 'Low',
   'ONB-005': 'Medium',
   'ONB-006': 'Low',
   'ONB-007': 'Low',
-  'ONB-008': 'Low',
+  'ONB-008': 'Medium',
   'ONB-009': 'High',
   'ONB-010': 'Low',
   'ONB-011': 'Low',
