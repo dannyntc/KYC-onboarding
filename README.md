@@ -27,7 +27,7 @@ npm run db:seed:onboarding
 
 `db:seed:onboarding` only inserts. It refuses to run if any onboarding table already has rows, or if clients `CLI-001` to `CLI-019` are missing or renamed, and it adds everything in one transaction. For the hosted Postgres database the equivalents are `npm run db:migrate:postgres` and `npm run db:seed:onboarding:postgres`. Take a copy of the database file first if the existing data matters.
 
-For a guided walkthrough and a blank measurement protocol, see [the demonstration script](docs/demo.md) and [evaluation protocol](docs/evaluation.md).
+For a step-by-step guide to using the demo, see the [user manual](docs/user-manual.md) (also available as standalone [HTML](docs/user-manual.html)). For a guided walkthrough and a blank measurement protocol, see [the demonstration script](docs/demo.md) and [evaluation protocol](docs/evaluation.md).
 
 ## Current capabilities
 

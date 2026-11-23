@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KYC-onboarding: User Manual</title><style>:root{--navy:#142841;--ink:#142c41;--muted:#627487;--line:#dce5e9;--teal:#147d75;--paper:#f3f6f7}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 Arial,Helvetica,sans-serif}
+header{background:var(--navy);color:#fff;padding:22px 24px}header span{color:#7ad4c7;font-size:13px;font-weight:bold;letter-spacing:.06em}
+main{max-width:880px;margin:28px auto;background:#fff;border:1px solid var(--line);border-radius:10px;padding:36px 44px}
+h1{font-size:30px;margin:0 0 12px;letter-spacing:-.02em}h2{font-size:22px;margin:40px 0 12px;padding-top:12px;border-top:1px solid var(--line)}h3{font-size:17px;margin:26px 0 8px}
+a{color:var(--teal)}code{background:#eef4f5;padding:1px 5px;border-radius:4px;font-size:.92em}
+pre{background:#0f2234;color:#e6f0f4;padding:14px 16px;border-radius:8px;overflow:auto}pre code{background:none;padding:0;color:inherit}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;display:block;overflow-x:auto}th{background:#f6f9fa;color:#526674;text-align:left}th,td{padding:9px 12px;border:1px solid var(--line);vertical-align:top}
+blockquote{margin:16px 0;padding:12px 16px;background:#fff6e0;border-left:4px solid #e3a42b;border-radius:4px}blockquote p{margin:0}
+hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
+@media(max-width:700px){main{margin:0;border-radius:0;padding:22px 18px}}
+@media print{body{background:#fff}header{display:none}main{border:0;margin:0;padding:0;max-width:none}h2{break-after:avoid}table,pre{break-inside:avoid}}</style></head>
+<body><header><span>KYC-ONBOARDING · USER MANUAL</span></header><main>
+<h1 id="kyc-onboarding-user-manual">KYC-onboarding: User Manual</h1>
+<p>A step-by-step guide to the KYC-onboarding demo. It assumes no compliance or technical background.</p>
+<ul>
+<li><strong>Live demo:</strong> <a href="https://kyc-onboarding-dannyntc.vercel.app">https://kyc-onboarding-dannyntc.vercel.app</a></li>
+<li><strong>Source code:</strong> <a href="https://github.com/dannyntc/KYC-onboarding">https://github.com/dannyntc/KYC-onboarding</a></li>
+</ul>
+<blockquote>
+<p><strong>Everything in this demo is fictional.</strong> No real people, companies or bank data are used. This is a prototype for showing an idea. It is not a real compliance system.</p>
+</blockquote>
+<hr>
+<h2 id="contents">Contents</h2>
+<ol>
+<li><a href="#1-what-this-demo-is">What this demo is</a></li>
+<li><a href="#2-key-terms">Key terms</a></li>
+<li><a href="#3-online-demo-vs-running-it-on-your-own-computer">Online demo vs. running it on your own computer</a></li>
+<li><a href="#4-finding-your-way-around-the-screen">Finding your way around the screen</a></li>
+<li><a href="#5-the-guided-tour">The guided tour</a></li>
+<li><a href="#6-step-by-step-the-onboarding-queue">Step by step: the onboarding queue</a></li>
+<li><a href="#7-step-by-step-a-clients-kyc-file">Step by step: a client&#39;s KYC file</a></li>
+<li><a href="#8-step-by-step-recording-a-decision">Step by step: recording a decision</a></li>
+<li><a href="#9-step-by-step-investigating-a-funding-alert">Step by step: investigating a funding alert</a></li>
+<li><a href="#10-demo-roles">Demo roles</a></li>
+<li><a href="#11-the-kyc-assistant-drafts">The KYC assistant (drafts)</a></li>
+<li><a href="#12-the-regulatory-library">The regulatory library</a></li>
+<li><a href="#13-suggested-walkthroughs-the-12-applicants">Suggested walkthroughs (the 12 applicants)</a></li>
+<li><a href="#14-running-the-demo-on-your-own-computer">Running the demo on your own computer</a></li>
+<li><a href="#15-troubleshooting">Troubleshooting</a></li>
+<li><a href="#16-limitations">Limitations</a></li>
+</ol>
+<hr>
+<h2 id="1-what-this-demo-is">1. What this demo is</h2>
+<p>Before a bank accepts a new client, it must check who they really are and where their money comes from. This process is called <strong>KYC (know your customer)</strong>.</p>
+<p>KYC-onboarding shows how a bank analyst could work through these checks for each new applicant. They confirm identity, look at who really owns the money, check watch lists, compare declared wealth with documents, and look at the first money moving into the account. Then a <strong>person</strong> records a decision.</p>
+<p>The demo follows three principles:</p>
+<ul>
+<li><strong>Human-led.</strong> Rules and an assistant can <em>suggest</em>, but only a person can approve or reject.</li>
+<li><strong>Traceable.</strong> Every finding links back to the record it came from, such as a passport or a transaction.</li>
+<li><strong>Recorded.</strong> Every action is written to an audit trail that cannot be edited.</li>
+</ul>
+<h2 id="2-key-terms">2. Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>KYC</strong></td>
+<td>Know your customer: checking a new client&#39;s identity and money before accepting them</td>
+</tr>
+<tr>
+<td><strong>Applicant</strong></td>
+<td>A person asking to become a client</td>
+</tr>
+<tr>
+<td><strong>KYC file</strong></td>
+<td>One applicant&#39;s page, with all their checks in one place</td>
+</tr>
+<tr>
+<td><strong>Beneficial owner</strong></td>
+<td>The real person who ultimately owns or controls a client or company</td>
+</tr>
+<tr>
+<td><strong>Screening</strong></td>
+<td>Checking a name against official watch lists</td>
+</tr>
+<tr>
+<td><strong>PEP</strong></td>
+<td>Politically exposed person: someone in a senior public role, or their family. They carry a higher risk of bribery, so they need extra checks</td>
+</tr>
+<tr>
+<td><strong>Sanctions list</strong></td>
+<td>People and organisations a bank is not allowed to deal with</td>
+</tr>
+<tr>
+<td><strong>Adverse media</strong></td>
+<td>Negative news coverage linked to a person</td>
+</tr>
+<tr>
+<td><strong>False positive</strong></td>
+<td>A watch-list &quot;match&quot; that turns out to be a different person</td>
+</tr>
+<tr>
+<td><strong>Source of wealth</strong></td>
+<td>How a person built up their total wealth (e.g. selling a company, a salary, an inheritance)</td>
+</tr>
+<tr>
+<td><strong>AML</strong></td>
+<td>Anti-money laundering: checks that stop criminal money passing through the bank</td>
+</tr>
+<tr>
+<td><strong>Funding alert</strong></td>
+<td>An automatic warning about unusual money movement, e.g. a large payment that quickly leaves again</td>
+</tr>
+<tr>
+<td><strong>Risk rating</strong></td>
+<td>Low, Medium or High: how closely the bank should watch this client</td>
+</tr>
+<tr>
+<td><strong>Senior approver</strong></td>
+<td>A second, more senior person who must also approve high-risk clients (&quot;four-eyes&quot; approval)</td>
+</tr>
+<tr>
+<td><strong>Audit trail</strong></td>
+<td>A permanent log of who did what, and when</td>
+</tr>
+<tr>
+<td><strong>Fixture</strong></td>
+<td>Prewritten template text, used instead of a real AI model</td>
+</tr>
+</tbody></table>
+<h2 id="3-online-demo-vs-running-it-on-your-own-computer">3. Online demo vs. running it on your own computer</h2>
+<p>There are two ways to use the demo.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Online demo</strong> (live website)</th>
+<th><strong>On your own computer</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>How to open</td>
+<td>Visit <a href="https://kyc-onboarding-dannyntc.vercel.app">https://kyc-onboarding-dannyntc.vercel.app</a></td>
+<td>Follow <a href="#14-running-the-demo-on-your-own-computer">section 14</a></td>
+</tr>
+<tr>
+<td>Badge at top right</td>
+<td><strong>ONLINE DEMO · LOOK-ONLY</strong></td>
+<td><strong>SYNTHETIC DATA · LOCAL</strong></td>
+</tr>
+<tr>
+<td>Can you see everything?</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Can you click Approve, Save, etc.?</td>
+<td>No: the buttons are greyed out, labelled &quot;Disabled in the online demo&quot;</td>
+<td>Yes: everything works</td>
+</tr>
+<tr>
+<td>Can you switch demo roles?</td>
+<td>Yes (it changes the view only)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>KYC assistant draft</td>
+<td>Shown as a preview, marked &quot;not saved&quot;</td>
+<td>Generated and saved when you click the button</td>
+</tr>
+</tbody></table>
+<p>Saving is turned off online because every visitor shares the same data. If saving were allowed, one person&#39;s approvals would change what the next visitor sees.</p>
+<h2 id="4-finding-your-way-around-the-screen">4. Finding your way around the screen</h2>
+<p><strong>Left sidebar</strong> (on phones, at the top of the screen):</p>
+<ul>
+<li><strong>Onboarding queue:</strong> the list of all applicants. This is the home page.</li>
+<li><strong>Funding alerts:</strong> the list of AML alerts raised on applicants&#39; first money movements.</li>
+<li><strong>Regulatory library:</strong> the Singapore regulations (MAS Notice 626) that relate to each check.</li>
+<li><strong>▶ Guided tour:</strong> starts the step-by-step pop-up tour.</li>
+<li><strong>Demo role:</strong> a drop-down to switch between <em>Read-only access</em>, <em>Analyst</em> and <em>Senior approver</em>, plus a <strong>Switch role</strong> button. This is a demo tool, not a real login.</li>
+</ul>
+<p><strong>Top bar:</strong> shows whether you are on the online demo (look-only) or a local copy.</p>
+<p><strong>Links that look like <code>DOC-002</code>, <code>SCR-001</code> or <code>TXN-013</code>:</strong> these are <strong>record IDs</strong>. Click one to jump to that record on the page.</p>
+<table>
+<thead>
+<tr>
+<th>Prefix</th>
+<th>Record type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ONB-</code></td>
+<td>KYC file (onboarding case)</td>
+</tr>
+<tr>
+<td><code>CLI-</code></td>
+<td>Client</td>
+</tr>
+<tr>
+<td><code>ACC-</code></td>
+<td>Account</td>
+</tr>
+<tr>
+<td><code>IDV-</code></td>
+<td>Identity document</td>
+</tr>
+<tr>
+<td><code>SCR-</code></td>
+<td>Screening result</td>
+</tr>
+<tr>
+<td><code>DOC-</code></td>
+<td>Supporting document (e.g. source of wealth)</td>
+</tr>
+<tr>
+<td><code>REL-</code></td>
+<td>Ownership relationship</td>
+</tr>
+<tr>
+<td><code>TXN-</code></td>
+<td>Transaction</td>
+</tr>
+<tr>
+<td><code>ALT-</code></td>
+<td>Funding alert</td>
+</tr>
+<tr>
+<td><code>MAS-626-</code></td>
+<td>Regulation reference</td>
+</tr>
+</tbody></table>
+<h2 id="5-the-guided-tour">5. The guided tour</h2>
+<p>The quickest way to understand the demo is the built-in tour. It takes about 3 minutes.</p>
+<ol>
+<li>Open the demo. On your first visit, a <strong>Welcome</strong> bubble appears automatically.</li>
+<li>Click <strong>Start tour</strong>.</li>
+<li>Read each bubble. The highlighted part of the screen is what the bubble is about.</li>
+<li>Click <strong>Next</strong> to continue, or <strong>Back</strong> to go back. You can also use your keyboard&#39;s arrow keys. The tour moves between pages by itself.</li>
+<li>Close it at any time with the <strong>×</strong> or the <strong>Esc</strong> key.</li>
+<li>To restart later, click <strong>▶ Guided tour</strong> in the sidebar.</li>
+</ol>
+<p><strong>The 13 steps of the tour:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Page</th>
+<th>What it shows</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Queue</td>
+<td>Welcome: what KYC is</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Queue</td>
+<td>The list of applicants and &quot;suggested risk&quot;</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Queue</td>
+<td>Outstanding items that block approval</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Sarah Yeo (ONB-006)</td>
+<td>A clean applicant with verified identity</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Sarah Yeo</td>
+<td>Source of wealth fully backed by documents</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Sarah Yeo</td>
+<td>The decision panel</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Ethan Sim (ONB-009)</td>
+<td>A sanctions false alarm</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Aisha Malik (ONB-008)</td>
+<td>A politically exposed person (PEP)</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Aisha Malik</td>
+<td>Senior approval and the role switch</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Daniel Lim (ONB-002)</td>
+<td>The KYC assistant&#39;s draft</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Amelia Tan (ONB-001)</td>
+<td>The AML funding check</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Alert ALT-001</td>
+<td>Investigating the funding alert</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Alert ALT-001</td>
+<td>The audit trail, and the end of the tour</td>
+</tr>
+</tbody></table>
+<h2 id="6-step-by-step-the-onboarding-queue">6. Step by step: the onboarding queue</h2>
+<p>The queue is the home page. Click <strong>Onboarding queue</strong> in the sidebar to return to it.</p>
+<ol>
+<li><strong>Read the four summary tiles</strong> at the top:<ul>
+<li><em>Applications in progress</em></li>
+<li><em>Pending senior approval</em></li>
+<li><em>Information requested</em></li>
+<li><em>Decided</em></li>
+</ul>
+</li>
+<li><strong>Read the applications table.</strong> Each row is one applicant and shows:<ul>
+<li><strong>File:</strong> the KYC file ID (e.g. ONB-006)</li>
+<li><strong>Applicant:</strong> name and client ID</li>
+<li><strong>Application date</strong></li>
+<li><strong>Suggested risk:</strong> Low / Medium / High, worked out by fixed rules from the records, not by AI</li>
+<li><strong>Outstanding items:</strong> how many things still block approval (&quot;None&quot; means nothing is in the way)</li>
+<li><strong>Status:</strong> In progress, Information requested, Pending senior approval, Approved or Rejected</li>
+</ul>
+</li>
+<li><strong>Search:</strong> type a name, file ID or client ID into the search box.</li>
+<li><strong>Filter:</strong> choose a suggested risk and/or status from the drop-downs.</li>
+<li>Click <strong>Apply filters</strong>.</li>
+<li><strong>Open a file:</strong> click the file ID or <strong>Open file</strong>.</li>
+</ol>
+<p>On a phone, each row appears as a card with labels.</p>
+<h2 id="7-step-by-step-a-clients-kyc-file">7. Step by step: a client&#39;s KYC file</h2>
+<p>A KYC file has the evidence on the left and the decision tools on the right. (On a phone, everything is in one column.) Work down the left side first.</p>
+<p><strong>Left side: the checks</strong></p>
+<ol>
+<li><strong>Applicant overview.</strong> Client ID, account, application date, declared wealth, expected monthly activity and file status.</li>
+<li><strong>Identity &amp; documents.</strong> The passport and proof of address, each marked:<ul>
+<li><strong>Verified:</strong> checked and fine</li>
+<li><strong>Expired:</strong> the document is out of date, which blocks approval</li>
+<li><strong>Missing:</strong> not supplied, which blocks approval</li>
+</ul>
+</li>
+<li><strong>Beneficial ownership.</strong> Who really owns or controls the money. If the same owner appears behind <em>other</em> clients, they&#39;re listed here with links to their files.</li>
+<li><strong>Screening.</strong> Watch-list matches (PEP, sanctions, adverse media), each showing the match strength and the list entry. An undecided match is shown as <strong>Potential match</strong>, and it blocks approval until an analyst decides.</li>
+<li><strong>Source of wealth &amp; funds.</strong> The declared wealth, each supporting document and how much it backs up, the corroborated total, and any amount <strong>not corroborated</strong>.</li>
+<li><strong>Initial funding &amp; activity since application (AML).</strong><ul>
+<li>Any funding alerts for this applicant. Click an alert ID to open its investigation page.</li>
+<li>The account&#39;s transactions. Negative amounts are money going out.</li>
+</ul>
+</li>
+</ol>
+<p>Each section lists <strong>candidate regulatory references</strong> (e.g. <code>MAS-626-6.9</code>). Click one to see it in the regulatory library.</p>
+<p><strong>Right side: the decision tools</strong></p>
+<ol start="7">
+<li><strong>Risk assessment.</strong> The <strong>suggested rating</strong> and the reasons behind it, each linked to its evidence. Below it is the form for the analyst&#39;s own final rating.</li>
+<li><strong>KYC assistant.</strong> A drafted summary of the file (<a href="#11-the-kyc-assistant-drafts">section 11</a>).</li>
+<li><strong>Decision.</strong> A red <strong>Outstanding before approval</strong> box lists every blocker, followed by the note box and the decision buttons.</li>
+<li><strong>Draft history</strong> and <strong>Audit history.</strong> Earlier drafts and every recorded action.</li>
+</ol>
+<p><strong>Tip:</strong> if a table is too wide for your screen, a line saying <strong>&quot;Scroll sideways to see all columns →&quot;</strong> appears above it. Scroll or swipe sideways to see the rest.</p>
+<h2 id="8-step-by-step-recording-a-decision">8. Step by step: recording a decision</h2>
+<p><em>This only works when running locally (<a href="#14-running-the-demo-on-your-own-computer">section 14</a>). Online, the buttons are greyed out.</em></p>
+<h3 id="81-decide-on-a-screening-match-if-there-is-one">8.1 Decide on a screening match (if there is one)</h3>
+<ol>
+<li>In <strong>Screening</strong>, read the list entry and compare it with the applicant&#39;s details.</li>
+<li>Type a reason in <strong>Reason for decision</strong> (at least 10 characters). For example: <em>&quot;Different birth year and nationality.&quot;</em></li>
+<li>Click either button:<ul>
+<li><strong>Clear as false positive</strong> if it&#39;s a different person.</li>
+<li><strong>Confirm match</strong> if it really is the applicant.</li>
+</ul>
+</li>
+<li>The match updates, the suggested risk may change, and the action is added to the audit history.</li>
+</ol>
+<h3 id="82-save-a-final-risk-rating">8.2 Save a final risk rating</h3>
+<ol>
+<li>In <strong>Risk assessment</strong>, choose a <strong>Final risk rating</strong> (Low, Medium or High).</li>
+<li>Type your <strong>Reasons for rating</strong> (at least 20 characters).<ul>
+<li>If your rating is <em>lower</em> than the suggested one, write a fuller explanation (at least 50 characters).</li>
+</ul>
+</li>
+<li>Click <strong>Save risk rating</strong>.</li>
+</ol>
+<h3 id="83-approve-reject-or-ask-for-more-information">8.3 Approve, reject or ask for more information</h3>
+<ol>
+<li>Check the <strong>Outstanding before approval</strong> box. <strong>Approve</strong> stays greyed out until it&#39;s empty.</li>
+<li>Optionally type a <strong>decision note</strong>. You can click <strong>Add draft to note</strong> to copy the assistant&#39;s draft in, then edit it.</li>
+<li>Click one of:<ul>
+<li><strong>Approve:</strong> accept the applicant. For a <strong>High</strong> rating, an Analyst&#39;s approval moves the file to <em>Pending senior approval</em> instead (see below).</li>
+<li><strong>Reject:</strong> decline the applicant. A note is required.</li>
+<li><strong>Request information:</strong> ask the applicant for more documents. A note is required, and the status becomes <em>Information requested</em>.</li>
+</ul>
+</li>
+<li>Once a file is Approved or Rejected, it can no longer be changed.</li>
+</ol>
+<h3 id="84-give-senior-approval-high-risk-applicants">8.4 Give senior approval (high-risk applicants)</h3>
+<ol>
+<li>As <strong>Analyst</strong>, approve the high-risk file. Its status becomes <strong>Pending senior approval</strong>.</li>
+<li>In the sidebar, choose <strong>Senior approver</strong> and click <strong>Switch role</strong>. You stay on the same page.</li>
+<li>Click <strong>Give senior approval</strong>. The status becomes <strong>Approved</strong>.</li>
+<li>The audit history shows both approvals and who gave them.</li>
+</ol>
+<h3 id="what-blocks-approval">What blocks approval</h3>
+<p>Approval is blocked if any of these are true:</p>
+<ul>
+<li>An identity document is expired or missing.</li>
+<li>A screening match is still undecided.</li>
+<li>A linked funding alert is still <strong>Open</strong> (not yet reviewed).</li>
+<li>No final risk rating, or the reasons are too short.</li>
+<li>The rating is High and you are not a Senior approver.</li>
+<li>A downgraded rating hasn&#39;t been properly explained.</li>
+</ul>
+<p>The server enforces these rules, so they can&#39;t be bypassed.</p>
+<h2 id="9-step-by-step-investigating-a-funding-alert">9. Step by step: investigating a funding alert</h2>
+<p>Funding alerts are AML warnings about unusual first money movements.</p>
+<ol>
+<li>Open an alert in either of two ways:<ul>
+<li>from a KYC file&#39;s <strong>Initial funding &amp; activity</strong> section, or</li>
+<li>from <strong>Funding alerts</strong> in the sidebar, then the alert ID (e.g. ALT-001).</li>
+</ul>
+</li>
+<li>Read the alert page:<ul>
+<li><strong>Client profile:</strong> expected monthly activity and declared wealth.</li>
+<li><strong>Transaction evidence:</strong> every transaction. The one that caused the alert is marked <strong>Alert trigger</strong>.</li>
+<li><strong>KYC &amp; source of wealth:</strong> the supporting documents.</li>
+</ul>
+</li>
+<li><em>(Optional)</em> Click <strong>Generate fixture draft</strong> in the <strong>Investigation assistant</strong> to get a drafted write-up. Online, a preview is shown instead.</li>
+<li>In <strong>Analyst review</strong>, type a note and click one of these (locally only):<ul>
+<li><strong>Save review:</strong> status becomes <em>In review</em>.</li>
+<li><strong>Request information:</strong> status becomes <em>Information requested</em>.</li>
+<li><strong>Escalate case:</strong> status becomes <em>Escalated</em>.</li>
+</ul>
+</li>
+<li>Click <strong>‹ Back to KYC file</strong> to return.</li>
+</ol>
+<p>Once the alert is no longer <em>Open</em>, it stops blocking the applicant&#39;s approval.</p>
+<p><strong>Note:</strong> the demo can never close an alert automatically. Only a person can act on it.</p>
+<h2 id="10-demo-roles">10. Demo roles</h2>
+<p>Use the <strong>Demo role</strong> drop-down in the sidebar, then click <strong>Switch role</strong>. You stay on the page you were on.</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>What it can do</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Read-only access</strong></td>
+<td>View everything. Decision and review buttons are hidden, and a note explains why</td>
+</tr>
+<tr>
+<td><strong>Analyst</strong></td>
+<td>The default. Decide screening matches, save ratings, approve Low/Medium files, reject, request information, review alerts</td>
+</tr>
+<tr>
+<td><strong>Senior approver</strong></td>
+<td>Everything an Analyst can do, plus give the second approval on High-risk files</td>
+</tr>
+</tbody></table>
+<p>The role switch is a demonstration only. It is <strong>not</strong> a real login or security control.</p>
+<h2 id="11-the-kyc-assistant-drafts">11. The KYC assistant (drafts)</h2>
+<p>The assistant writes a draft summary to save the analyst time.</p>
+<ul>
+<li>Every statement it makes links to a record, so you can check it.</li>
+<li>It suggests a risk rating and a next step, clearly labelled <strong>suggestions for the analyst</strong>.</li>
+<li>It <strong>cannot</strong> approve, reject, or declare that someone <em>is</em> a PEP or sanctioned. Drafts containing such statements are automatically rejected.</li>
+</ul>
+<p><strong>Fixture mode vs. live mode:</strong></p>
+<ul>
+<li><strong>Fixture mode</strong> is the default. The draft is prewritten template text built from the records, and no AI is called. It is labelled <strong>FIXTURE MODE</strong>.</li>
+<li><strong>Live mode</strong> sends the fictional file to an AI model. It needs an OpenAI key to be configured and is labelled <strong>LIVE MODE</strong>. It has not yet been tested with a real key.</li>
+</ul>
+<p><strong>To create a draft (locally):</strong></p>
+<ol>
+<li>Open a KYC file.</li>
+<li>In <strong>KYC assistant</strong>, click <strong>Generate fixture KYC draft</strong>.</li>
+<li>Read the draft, click the record links to check its claims, and optionally click <strong>Add draft to note</strong> in the Decision panel.</li>
+<li>Earlier drafts are listed in <strong>Draft history</strong>. Open <strong>View evidence used for this draft</strong> to see exactly what it was based on.</li>
+</ol>
+<p>Online, the assistant shows a <strong>preview (not saved)</strong> instead.</p>
+<h2 id="12-the-regulatory-library">12. The regulatory library</h2>
+<p>Click <strong>Regulatory library</strong> in the sidebar.</p>
+<ul>
+<li>It lists paragraphs of <strong>MAS Notice 626</strong>, Singapore&#39;s anti-money-laundering rules for banks, that relate to each check.</li>
+<li>Each entry links to the official MAS document.</li>
+<li>These links are <strong>candidates for human review</strong>, not approved policy. A compliance reviewer must sign off a reference before it is given to the AI assistant. By default, none have been signed off.</li>
+</ul>
+<h2 id="13-suggested-walkthroughs-the-12-applicants">13. Suggested walkthroughs (the 12 applicants)</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Applicant</th>
+<th>Story</th>
+<th>What to do (locally)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ONB-001</td>
+<td>Amelia Tan</td>
+<td>Large money in, quickly out</td>
+<td>Open alert ALT-001, review it, then return. Approval is blocked until the alert is reviewed</td>
+</tr>
+<tr>
+<td>ONB-002</td>
+<td>Daniel Lim</td>
+<td>Source-of-wealth gap: declares SGD 8M, documents back SGD 3M</td>
+<td>Generate a KYC draft. Request information about the missing SGD 5M</td>
+</tr>
+<tr>
+<td>ONB-003</td>
+<td>Priya Menon</td>
+<td>Shares a hidden owner with other clients</td>
+<td>Read <strong>Beneficial ownership</strong> and follow the links to the related clients</td>
+</tr>
+<tr>
+<td>ONB-004</td>
+<td>Marcus Lee</td>
+<td>First deposit explained by a property sale</td>
+<td>Review alert ALT-004. The suggested risk drops to Low, then approve</td>
+</tr>
+<tr>
+<td>ONB-005</td>
+<td>Nadia Rahman</td>
+<td>The other side of the shared-owner link</td>
+<td>Compare with ONB-003</td>
+</tr>
+<tr>
+<td>ONB-006</td>
+<td>Sarah Yeo</td>
+<td>Clean</td>
+<td>Save a Low rating with reasons, then approve</td>
+</tr>
+<tr>
+<td>ONB-007</td>
+<td>Darren Ho</td>
+<td>Expired passport</td>
+<td>Note the blocker; request information</td>
+</tr>
+<tr>
+<td>ONB-008</td>
+<td>Aisha Malik</td>
+<td>Possible PEP</td>
+<td>Confirm the match, so risk becomes High. Approve as Analyst (pending), then switch to Senior approver and give senior approval</td>
+</tr>
+<tr>
+<td>ONB-009</td>
+<td>Ethan Sim</td>
+<td>Sanctions name match, different person</td>
+<td>Clear it as a false positive with a reason. Risk drops to Low</td>
+</tr>
+<tr>
+<td>ONB-010</td>
+<td>Isabelle Tay</td>
+<td>Negative news about a namesake</td>
+<td>Decide: clear or confirm (confirm makes risk Medium)</td>
+</tr>
+<tr>
+<td>ONB-011</td>
+<td>Raj Mehta</td>
+<td>Missing proof of address</td>
+<td>Note the blocker; request information</td>
+</tr>
+<tr>
+<td>ONB-012</td>
+<td>Rachel Chan</td>
+<td>Clean</td>
+<td>Approve</td>
+</tr>
+</tbody></table>
+<p><strong>A 5-minute demo for an audience:</strong></p>
+<ol>
+<li>Queue (step 6)</li>
+<li>ONB-006: a clean approval</li>
+<li>ONB-009: clear a false alarm</li>
+<li>ONB-008: PEP and senior approval</li>
+<li>ONB-002: the assistant&#39;s draft and the wealth gap</li>
+<li>ONB-001: the funding alert</li>
+<li>The audit history</li>
+</ol>
+<h2 id="14-running-the-demo-on-your-own-computer">14. Running the demo on your own computer</h2>
+<p>Running locally lets you click every button. You need <strong>Node.js 24</strong> and <strong>npm</strong> installed.</p>
+<ol>
+<li>Download the code:<pre><code class="language-sh">git clone https://github.com/dannyntc/KYC-onboarding.git
+cd KYC-onboarding
+</code></pre>
+</li>
+<li>Install and set up:<pre><code class="language-sh">npm install
+cp -n .env.example .env
+npm run db:migrate
+npm run db:seed
+</code></pre>
+</li>
+<li>Start the app:<pre><code class="language-sh">npm run dev
+</code></pre>
+</li>
+<li>Open <a href="http://127.0.0.1:3000">http://127.0.0.1:3000</a> in your browser.</li>
+</ol>
+<p><strong>Useful extras:</strong></p>
+<ul>
+<li><strong>See the online look-only version locally:</strong> <code>KYC_ONBOARDING_PUBLIC_DEMO=1 npm run dev</code></li>
+<li><strong>Upgrade an existing older database:</strong> <code>npm run db:migrate</code>, then <code>npm run db:seed:onboarding</code></li>
+<li><strong>Start again from fresh data:</strong> <code>npm run db:reset</code>. <strong>Warning:</strong> this permanently deletes all your demo decisions and audit history.</li>
+</ul>
+<h2 id="15-troubleshooting">15. Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Buttons are greyed out with &quot;Disabled in the online demo&quot;</td>
+<td>Expected on the live website. Run the demo locally to use them</td>
+</tr>
+<tr>
+<td><strong>Approve</strong> stays greyed out locally</td>
+<td>Read the <strong>Outstanding before approval</strong> box and resolve each item first</td>
+</tr>
+<tr>
+<td>&quot;This file changed. Reload and try again.&quot;</td>
+<td>Someone (or another tab) changed the file. Copy your note, reload the page, and try again</td>
+</tr>
+<tr>
+<td>&quot;Read-only demo role cannot change cases.&quot;</td>
+<td>Switch the demo role to Analyst</td>
+</tr>
+<tr>
+<td>The tour doesn&#39;t appear</td>
+<td>Click <strong>▶ Guided tour</strong> in the sidebar</td>
+</tr>
+<tr>
+<td>A table seems cut off</td>
+<td>Look for &quot;Scroll sideways to see all columns →&quot; and scroll sideways</td>
+</tr>
+<tr>
+<td>A page looks out of date after updating the code</td>
+<td>Stop the app, delete the <code>.next</code> folder, and run <code>npm run dev</code> again</td>
+</tr>
+<tr>
+<td>A red &quot;hydration&quot; message appears locally</td>
+<td>Usually caused by a browser extension. It&#39;s harmless</td>
+</tr>
+</tbody></table>
+<h2 id="16-limitations">16. Limitations</h2>
+<ul>
+<li>All data is fictional. <strong>Never enter real client information.</strong></li>
+<li>It is a prototype, <strong>not</strong> a compliance control.</li>
+<li>The demo roles are not real logins.</li>
+<li>The local database is not tamper-proof.</li>
+<li>Screening results, documents and ownership records are synthetic. There is no real ID verification or document upload.</li>
+<li>AI live mode has not been verified with a real API key.</li>
+<li>Regulatory references are candidates. A qualified compliance reviewer must confirm them.</li>
+<li>No time savings or accuracy improvements have been measured.</li>
+</ul>
+</main></body></html>
