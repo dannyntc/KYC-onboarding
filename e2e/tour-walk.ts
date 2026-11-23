@@ -13,7 +13,7 @@ export function watchForProblems(page: Page): string[] {
 }
 
 // Checks the bubble for one step: right page, right words, and the highlighted element really is
-// the tagged target (no centred fallback). Step 1 is the only one that is meant to be centred.
+// the tagged target (no centred fallback). Steps 1 and 2 are the only ones meant to be centred.
 export async function expectStep(page: Page, number: number, publicDemo: boolean) {
   const step = TOUR_STEPS[number - 1];
   const popover = page.locator('.driver-popover');

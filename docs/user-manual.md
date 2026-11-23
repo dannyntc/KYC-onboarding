@@ -51,7 +51,7 @@ The demo follows three principles:
 | **KYC file** | One applicant's page, with all their checks in one place |
 | **Beneficial owner** | The real person who ultimately owns or controls a client or company |
 | **Screening** | Checking a name against official watch lists |
-| **PEP** | Politically exposed person: someone in a senior public role, or their family. They carry a higher risk of bribery, so they need extra checks |
+| **PEP** | Politically exposed person: someone in a senior public role, or their family. They carry a higher risk of suspicious activities, so they need extra checks |
 | **Sanctions list** | People and organisations a bank is not allowed to deal with |
 | **Adverse media** | Negative news coverage linked to a person |
 | **False positive** | A watch-list "match" that turns out to be a different person |
@@ -109,30 +109,31 @@ Saving is turned off online because every visitor shares the same data. If savin
 
 The quickest way to understand the demo is the built-in tour. It takes about 3 minutes.
 
-1. Open the demo. On your first visit, a **Welcome** bubble appears automatically.
+1. Open the demo. On your first visit, an **About this demo** bubble appears automatically.
 2. Click **Start tour**.
 3. Read each bubble. The highlighted part of the screen is what the bubble is about.
 4. Click **Next** to continue, or **Back** to go back. You can also use your keyboard's arrow keys. The tour moves between pages by itself.
 5. Close it at any time with the **×** or the **Esc** key.
 6. To restart later, click **▶ Guided tour** in the sidebar.
 
-**The 13 steps of the tour:**
+**The 14 steps of the tour:**
 
 | Step | Page | What it shows |
 |---|---|---|
-| 1 | Queue | Welcome: what KYC is |
-| 2 | Queue | The list of applicants and "suggested risk" |
-| 3 | Queue | Outstanding items that block approval |
-| 4 | Sarah Yeo (ONB-006) | A clean applicant with verified identity |
-| 5 | Sarah Yeo | Source of wealth fully backed by documents |
-| 6 | Sarah Yeo | The decision panel |
-| 7 | Ethan Sim (ONB-009) | A sanctions false alarm |
-| 8 | Aisha Malik (ONB-008) | A politically exposed person (PEP) |
-| 9 | Aisha Malik | Senior approval and the role switch |
-| 10 | Daniel Lim (ONB-002) | The KYC assistant's draft |
-| 11 | Amelia Tan (ONB-001) | The AML funding check |
-| 12 | Alert ALT-001 | Investigating the funding alert |
-| 13 | Alert ALT-001 | The audit trail, and the end of the tour |
+| 1 | Queue | About this demo: its purpose, faster checks with better controls, and MAS Notice 626 |
+| 2 | Queue | Welcome: what KYC is |
+| 3 | Queue | The list of applicants and "suggested risk" |
+| 4 | Queue | Outstanding items that block approval |
+| 5 | Sarah Yeo (ONB-006) | A clean applicant with verified identity |
+| 6 | Sarah Yeo | Source of wealth fully backed by documents |
+| 7 | Sarah Yeo | The decision panel |
+| 8 | Ethan Sim (ONB-009) | A sanctions false alarm |
+| 9 | Aisha Malik (ONB-008) | A politically exposed person (PEP) |
+| 10 | Aisha Malik | Senior approval and the role switch |
+| 11 | Daniel Lim (ONB-002) | The KYC assistant's draft |
+| 12 | Amelia Tan (ONB-001) | The AML funding check |
+| 13 | Alert ALT-001 | Investigating the funding alert |
+| 14 | Alert ALT-001 | The audit trail, and the end of the tour |
 
 ## 6. Step by step: the onboarding queue
 

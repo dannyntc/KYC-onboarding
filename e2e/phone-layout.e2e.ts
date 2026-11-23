@@ -56,12 +56,12 @@ test.describe('on a phone', () => {
       if (message.text().includes('[tour]')) warnings.push(message.text());
     });
 
-    await page.goto('/?tour=2');
-    await expect(page.locator('.driver-popover-progress-text')).toHaveText('Step 2 of 13');
+    await page.goto('/?tour=3');
+    await expect(page.locator('.driver-popover-progress-text')).toHaveText('Step 3 of 14');
     await expect(page.locator('[data-tour="queue-table"]')).toHaveClass(/driver-active-element/);
 
-    await page.goto('/?tour=3');
-    await expect(page.locator('.driver-popover-progress-text')).toHaveText('Step 3 of 13');
+    await page.goto('/?tour=4');
+    await expect(page.locator('.driver-popover-progress-text')).toHaveText('Step 4 of 14');
     const target = page.locator('[data-tour="outstanding-cell"]');
     await expect(target).toHaveCount(1);
     await expect(target).toHaveClass(/driver-active-element/);

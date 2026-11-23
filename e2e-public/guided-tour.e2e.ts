@@ -23,9 +23,9 @@ test('the whole tour runs in look-only mode with the online wording and writes n
   }).toEqual(before);
 });
 
-test('the online decision step says the buttons are switched off, and they are', async ({ page }) => {
-  await page.goto('/onboarding/ONB-006?tour=6');
-  await expect(page.locator('.driver-popover-description')).toContainText('switched off online');
+test('the online decision step shows the shorter online wording, and the buttons are switched off', async ({ page }) => {
+  await page.goto('/onboarding/ONB-006?tour=7');
+  await expect(page.locator('.driver-popover-description')).toHaveText('The analyst saves a final risk rating with reasons, then approves.');
   await page.locator('.driver-popover-close-btn').click();
   await expect(page.getByRole('button', { name: 'Save risk rating' })).toBeDisabled();
 });

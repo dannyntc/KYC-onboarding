@@ -23,13 +23,13 @@ test('a first-time visitor is offered step 1 once, and closing it keeps it close
   expect(problems).toEqual([]);
 });
 
-test('Next walks all 13 steps across the pages and Finish ends the tour', async ({ page }) => {
+test('Next walks all 14 steps across the pages and Finish ends the tour', async ({ page }) => {
   await walkWholeTour(page, false);
 });
 
 test('local wording invites the visitor to try the buttons, which stay enabled', async ({ page }) => {
-  await page.goto('/onboarding/ONB-006?tour=6');
-  await expectStep(page, 6, false);
+  await page.goto('/onboarding/ONB-006?tour=7');
+  await expectStep(page, 7, false);
   await expect(popover(page).locator('.driver-popover-description')).toContainText('Try it here');
   await popover(page).locator('.driver-popover-close-btn').click();
   await expect(page.getByLabel('REASONS FOR RATING')).toBeEnabled();
@@ -37,23 +37,23 @@ test('local wording invites the visitor to try the buttons, which stay enabled',
 });
 
 test('Back works within a page and across a page change', async ({ page }) => {
-  await page.goto('/onboarding/ONB-006?tour=5');
+  await page.goto('/onboarding/ONB-006?tour=6');
+  await expectStep(page, 6, false);
+  await popover(page).locator('.driver-popover-prev-btn').click();
   await expectStep(page, 5, false);
   await popover(page).locator('.driver-popover-prev-btn').click();
   await expectStep(page, 4, false);
-  await popover(page).locator('.driver-popover-prev-btn').click();
-  await expectStep(page, 3, false);
-  await expect(page).toHaveURL(/\/\?tour=3$/);
+  await expect(page).toHaveURL(/\/\?tour=4$/);
   // driver.js ignores arrow keys while its 0.4 s fade-in is still running, so let it finish.
   await page.waitForTimeout(700);
   await page.keyboard.press('ArrowRight');
-  await expectStep(page, 4, false);
+  await expectStep(page, 5, false);
 });
 
 test('a tour address for another page takes the visitor to that page', async ({ page }) => {
-  await page.goto('/?tour=7');
-  await expectStep(page, 7, false);
-  await expect(page).toHaveURL(/\/onboarding\/ONB-009\?tour=7$/);
+  await page.goto('/?tour=8');
+  await expectStep(page, 8, false);
+  await expect(page).toHaveURL(/\/onboarding\/ONB-009\?tour=8$/);
 });
 
 test('Escape closes the tour', async ({ page }) => {

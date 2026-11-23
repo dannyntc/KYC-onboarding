@@ -17,16 +17,20 @@ export const TOUR_STEPS: TourStep[] = [
   {
     page: '/',
     target: null,
+    title: 'About this demo',
+    text: 'This demo shows how a bank\'s onboarding team can check new clients faster, with improved quality controls. Identity, ownership, watch-list, wealth and funding checks sit in one file, and risk controls block approval until every check is done. The checks follow MAS Notice 626, Singapore\'s anti-money-laundering rules for banks.'
+  },
+  {
+    page: '/',
+    target: null,
     title: 'Welcome',
-    text: 'This is a fictional bank\'s KYC desk. KYC ("know your customer") means checking who a new client really is before the bank accepts them. All people and data here are made up, and the tour takes about 3 minutes.',
-    onlineText:
-      'This is a fictional bank\'s KYC desk. KYC ("know your customer") means checking who a new client really is before the bank accepts them. All data here is made up, and saving is switched off online, so you can look but not change anything.'
+    text: 'KYC ("know your customer") means checking who a new client really is before the bank accepts them. Here an analyst works through each applicant in one place: every finding links to its evidence, and fixed rules flag what still blocks approval. The team decides faster, with fewer missed checks and a clear record for reviewers.'
   },
   {
     page: '/',
     target: 'queue-table',
     title: 'The onboarding queue',
-    text: 'Each row is a new applicant waiting to be checked. "Suggested risk" is worked out from their records by fixed rules, not by AI. A person always makes the final decision.',
+    text: 'Each row is a new applicant waiting to be checked. "Suggested risk" is worked out from their records by fixed rules, not by AI. A person always makes the final decision. Clustering could also be used to uncover hidden links between these clients and people on watch lists.',
     side: 'top'
   },
   {
@@ -56,8 +60,7 @@ export const TOUR_STEPS: TourStep[] = [
     target: 'decision-panel',
     title: 'The decision',
     text: 'The analyst saves a final risk rating with reasons, then approves. Try it here: save a rating and the Approve button unlocks. Changes stay in your local demo database.',
-    onlineText:
-      'The analyst saves a final risk rating with reasons, then approves. These buttons are switched off online. Run the demo on your own computer and they all work.',
+    onlineText: 'The analyst saves a final risk rating with reasons, then approves.',
     side: 'left'
   },
   {
@@ -71,7 +74,7 @@ export const TOUR_STEPS: TourStep[] = [
     page: '/onboarding/ONB-008',
     target: 'screening',
     title: 'A politically exposed person',
-    text: 'Aisha Malik strongly matches a PEP, a politically exposed person (someone in a senior public role, who carries a higher risk of bribery). If an analyst confirms the match, her risk becomes High.',
+    text: 'Aisha Malik strongly matches a PEP, a politically exposed person (someone in a senior public role, who carries a higher risk of suspicious activities). If an analyst confirms the match, her risk becomes higher.',
     side: 'right'
   },
   {
@@ -80,7 +83,7 @@ export const TOUR_STEPS: TourStep[] = [
     title: 'Two sets of eyes',
     text: 'High-risk applicants need a second person, a Senior approver, to sign off as well. Switch to that role here to give the second approval. This switch is a demo tool, not a real login.',
     onlineText:
-      'High-risk applicants need a second person, a Senior approver, to sign off as well. Try the role switch here: Read-only access hides the decision buttons. Online nothing is saved, so run the demo locally to see a senior approver\'s "Give senior approval" button.',
+      'High-risk applicants need a second person, a Senior approver, to sign off as well. Try the role switch here: Read-only access hides the decision buttons.',
     side: 'right'
   },
   {
@@ -96,7 +99,7 @@ export const TOUR_STEPS: TourStep[] = [
     page: '/onboarding/ONB-001',
     target: 'aml-funding',
     title: 'Money coming in',
-    text: 'AML (anti-money-laundering) checks look for dirty money passing through the bank. Here SGD 1.2 million arrived and SGD 850,000 left almost straight away, which raised an alert. Next, open that alert.',
+    text: 'AML (anti-money-laundering) checks look for suspicious transactions through the bank. Here SGD 1.2 million arrived and SGD 850,000 left almost straight away, which raised an alert. Next, open that alert.',
     side: 'right'
   },
   {

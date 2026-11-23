@@ -17,9 +17,9 @@ function sourceFor(page: string): string {
 }
 
 describe('tour steps', () => {
-  it('has 13 steps, and only the welcome step is centred', () => {
-    expect(TOUR_STEPS).toHaveLength(13);
-    expect(TOUR_STEPS.map(step => step.target === null)).toEqual(TOUR_STEPS.map((_, index) => index === 0));
+  it('has 14 steps, and only the first two (About this demo, Welcome) are centred', () => {
+    expect(TOUR_STEPS).toHaveLength(14);
+    expect(TOUR_STEPS.map(step => step.target === null)).toEqual(TOUR_STEPS.map((_, index) => index <= 1));
   });
 
   it('only visits pages that exist in the demo data', () => {

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
 import { CaseForm } from '@/components/case-form';
 import { EvidenceLink } from '@/components/evidence-link';
@@ -138,21 +139,28 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                 <span>FILE STATUS</span>
                 <strong>{row.status}</strong>
               </div>
+              <Field label="PROFILE" wide>
+                {client.profile}
+              </Field>
             </div>
-            <p className="muted">{client.profile}</p>
           </section>
 
           <section className="panel section" data-tour="identity">
             <h2>Identity &amp; documents</h2>
             {client.identityDocuments.length === 0 && <p className="muted">No identity documents recorded.</p>}
             {client.identityDocuments.map(d => (
-              <div id={d.id} key={d.id}>
-                <strong>
-                  {d.title} · {d.id}
-                </strong>{' '}
-                <span className={`badge ${identityClass(d.status)}`}>{d.status}</span>
-                {d.expiresOn && <span className="muted"> · expires {d.expiresOn}</span>}
-                <p className="muted">{d.summary}</p>
+              <div id={d.id} key={d.id} className="fielditem">
+                <div className="meta fields">
+                  <Field label="DOCUMENT">{d.title}</Field>
+                  <Field label="REFERENCE">{d.id}</Field>
+                  <Field label="STATUS">
+                    <span className={`badge ${identityClass(d.status)}`}>{d.status}</span>
+                  </Field>
+                  {d.expiresOn && <Field label="EXPIRES">{d.expiresOn}</Field>}
+                  <Field label="CHECK RESULT" wide>
+                    {d.summary}
+                  </Field>
+                </div>
               </div>
             ))}
             <ReferenceList keys={['identity_verification']} />
@@ -162,38 +170,46 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
             <h2>Beneficial ownership</h2>
             {client.relationships.length === 0 && <p className="muted">No ownership relationships recorded.</p>}
             {client.relationships.map(r => (
-              <p id={r.id} key={r.id}>
-                <strong>{r.id}</strong> · {r.owner} · {r.entity}
-                <br />
-                <span className="muted">{r.description}</span>
-              </p>
+              <div id={r.id} key={r.id} className="fielditem">
+                <div className="meta fields">
+                  <Field label="REFERENCE">{r.id}</Field>
+                  <Field label="OWNER">{r.owner}</Field>
+                  <Field label="ENTITY">{r.entity}</Field>
+                  <Field label="DESCRIPTION" wide>
+                    {r.description}
+                  </Field>
+                </div>
+              </div>
             ))}
             {related.map(r => (
-              <p id={r.id} key={r.id}>
-                <strong>{r.id}</strong> · {r.owner} · {r.entity}
-                <br />
-                <span className="muted">Related client: </span>
-                {r.onboardingId ? (
-                  <Link className="caseid" href={`/onboarding/${r.onboardingId}`}>
-                    {r.client.name} ({r.onboardingId})
-                  </Link>
-                ) : (
-                  r.client.name
-                )}
-                <br />
-                <span className="muted">
-                  Account:{' '}
-                  {r.client.accounts.length
-                    ? r.client.accounts.map(account => (
-                        <span id={account.id} key={account.id}>
-                          {account.id}
-                        </span>
-                      ))
-                    : 'Unavailable'}
-                </span>
-                <br />
-                <span className="muted">{r.description}</span>
-              </p>
+              <div id={r.id} key={r.id} className="fielditem">
+                <div className="meta fields">
+                  <Field label="REFERENCE">{r.id}</Field>
+                  <Field label="OWNER">{r.owner}</Field>
+                  <Field label="ENTITY">{r.entity}</Field>
+                  <Field label="RELATED CLIENT">
+                    {r.onboardingId ? (
+                      <Link className="caseid" href={`/onboarding/${r.onboardingId}`}>
+                        {r.client.name} ({r.onboardingId})
+                      </Link>
+                    ) : (
+                      r.client.name
+                    )}
+                  </Field>
+                  <Field label="ACCOUNT">
+                    {r.client.accounts.length
+                      ? r.client.accounts.map(account => (
+                          <span id={account.id} key={account.id}>
+                            {account.id}
+                          </span>
+                        ))
+                      : 'Unavailable'}
+                  </Field>
+                  <Field label="DESCRIPTION" wide>
+                    {r.description}
+                  </Field>
+                </div>
+              </div>
             ))}
             <ReferenceList keys={['beneficial_ownership']} />
           </section>
@@ -202,14 +218,26 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
             <h2>Screening</h2>
             {client.screeningResults.length === 0 && <p className="muted">No screening hits recorded.</p>}
             {client.screeningResults.map(result => (
-              <div id={result.id} key={result.id}>
-                <strong>
-                  {result.list} · {result.matchedName} · {result.id}
-                </strong>{' '}
-                <span className="badge medium">{result.matchStrength} match</span>{' '}
-                <span className={`badge ${screeningClass(result.disposition)}`}>{result.disposition}</span>
-                <p className="muted">{result.summary}</p>
-                {result.dispositionReason && <p>Analyst reason: {result.dispositionReason}</p>}
+              <div id={result.id} key={result.id} className="fielditem">
+                <div className="meta fields">
+                  <Field label="LIST">{result.list}</Field>
+                  <Field label="MATCHED NAME">{result.matchedName}</Field>
+                  <Field label="REFERENCE">{result.id}</Field>
+                  <Field label="MATCH STRENGTH">
+                    <span className="badge medium">{result.matchStrength}</span>
+                  </Field>
+                  <Field label="STATUS">
+                    <span className={`badge ${screeningClass(result.disposition)}`}>{result.disposition}</span>
+                  </Field>
+                  <Field label="DETAILS" wide>
+                    {result.summary}
+                  </Field>
+                  {result.dispositionReason && (
+                    <Field label="ANALYST REASON" wide>
+                      {result.dispositionReason}
+                    </Field>
+                  )}
+                </div>
                 {canEdit && result.disposition === 'Potential match' && (
                   <CaseForm action="/api/onboarding" className="formstack">
                     <input type="hidden" name="id" value={row.id} />
@@ -236,31 +264,26 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
 
           <section className="panel section" data-tour="source-of-wealth">
             <h2>Source of wealth &amp; funds</h2>
-            <p>
-              Declared wealth: <strong>{money(client.declaredWealth)}</strong>.
-            </p>
+            <div className="fielditem">
+              <div className="meta fields">
+                <Field label="DECLARED WEALTH">{money(client.declaredWealth)}</Field>
+                <Field label="CORROBORATED TOTAL">{money(corroborated)}</Field>
+                <Field label="NOT CORROBORATED">{wealthGap > 0 ? money(wealthGap) : 'Fully corroborated'}</Field>
+              </div>
+            </div>
             {client.documents.map(d => (
-              <div id={d.id} key={d.id}>
-                <strong>
-                  {d.title} · {d.id}
-                </strong>
-                <p className="muted">
-                  {d.summary} Corroborated amount: {money(d.corroboratedAmount)}
-                  {SOURCE_OF_WEALTH_KINDS.includes(d.kind) ? '.' : ' (not counted towards source of wealth).'}
-                </p>
+              <div id={d.id} key={d.id} className="fielditem">
+                <div className="meta fields">
+                  <Field label="DOCUMENT">{d.title}</Field>
+                  <Field label="REFERENCE">{d.id}</Field>
+                  <Field label="CORROBORATED AMOUNT">{money(d.corroboratedAmount)}</Field>
+                  <Field label="COUNTS TOWARDS SOURCE OF WEALTH">{SOURCE_OF_WEALTH_KINDS.includes(d.kind) ? 'Yes' : 'No'}</Field>
+                  <Field label="DETAILS" wide>
+                    {d.summary}
+                  </Field>
+                </div>
               </div>
             ))}
-            <p>
-              Corroborated total: <strong>{money(corroborated)}</strong>
-              {wealthGap > 0 ? (
-                <>
-                  {' '}
-                  · Not corroborated: <strong>{money(wealthGap)}</strong>
-                </>
-              ) : (
-                ' · Declared wealth is fully corroborated.'
-              )}
-            </p>
             <ReferenceList keys={['source_of_wealth']} />
           </section>
 
@@ -333,12 +356,16 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
         <div className="stack">
           <section className="panel section">
             <h2>Risk assessment</h2>
-            <p>
-              Suggested rating:{' '}
-              <span className={`badge ${riskClass(suggestion.rating)}`} data-testid="suggested-risk">
-                {suggestion.rating}
-              </span>
-            </p>
+            <div className="meta fields" style={{ marginBottom: 14 }}>
+              <Field label="SUGGESTED RATING">
+                <span className={`badge ${riskClass(suggestion.rating)}`} data-testid="suggested-risk">
+                  {suggestion.rating}
+                </span>
+              </Field>
+              <Field label="FINAL RATING">
+                <span data-testid="final-risk">{row.riskRating ?? 'Not set'}</span>
+              </Field>
+            </div>
             {suggestion.factors.length === 0 ? (
               <p className="muted">No risk factors identified from the current records.</p>
             ) : (
@@ -355,10 +382,6 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                 ))}
               </ul>
             )}
-            <p>
-              Final rating recorded by the analyst:{' '}
-              <strong data-testid="final-risk">{row.riskRating ?? 'Not set'}</strong>
-            </p>
             {canEdit && (
               <CaseForm action="/api/onboarding" className="formstack">
                 <input type="hidden" name="id" value={row.id} />
@@ -554,6 +577,16 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
         </div>
       </div>
     </>
+  );
+}
+
+// One labelled value in the grey-label-over-value style the Applicant overview uses. `wide` spans both columns.
+function Field({ label, wide, children }: { label: string; wide?: boolean; children: ReactNode }) {
+  return (
+    <div className={wide ? 'wide' : undefined}>
+      <span>{label}</span>
+      <strong>{children}</strong>
+    </div>
   );
 }
 

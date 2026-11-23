@@ -45,7 +45,7 @@ The hosted site is deployed from the lowercase Vercel project `kyc-onboarding-da
 
 ## Guided tour and online look-only mode
 
-A 13-step pop-up tour explains the demo from the queue to the audit trail. It opens automatically on a browser's first visit to the queue, and can be restarted any time from **Guided tour** in the sidebar. The current step is kept in the address (`?tour=N`), so it needs no database. Its text is in `src/lib/tour-steps.ts`, and the pop-ups are drawn by [driver.js](https://driverjs.com) (MIT).
+A 14-step pop-up tour explains the demo from the queue to the audit trail. It opens automatically on a browser's first visit to the queue, and can be restarted any time from **Guided tour** in the sidebar. The current step is kept in the address (`?tour=N`), so it needs no database. Its text is in `src/lib/tour-steps.ts`, and the pop-ups are drawn by [driver.js](https://driverjs.com) (MIT).
 
 When the app is not opened from `127.0.0.1` or `localhost`, it runs in **look-only mode**: the top bar says ONLINE DEMO · LOOK-ONLY, every saving button is disabled with a caption, the role switch still works (it only changes the view, through a cookie in your own browser), and the KYC and alert assistants show an unsaved preview of the template draft instead of a Generate button. Nothing is written to the database. This only changes what the screen shows; the save routes keep refusing non-local requests on their own.
 
