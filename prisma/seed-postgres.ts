@@ -29,7 +29,7 @@ async function main() {
     await tx.onboardingEvent.deleteMany();
     await tx.$executeRawUnsafe('CREATE TRIGGER onboarding_event_no_update BEFORE UPDATE ON "OnboardingEvent" FOR EACH ROW EXECUTE FUNCTION onboarding_event_append_only_guard()');
     await tx.$executeRawUnsafe('CREATE TRIGGER onboarding_event_no_delete BEFORE DELETE ON "OnboardingEvent" FOR EACH ROW EXECUTE FUNCTION onboarding_event_append_only_guard()');
-   });
+   }, { maxWait: 15000, timeout: 30000 }); // A pooled connection can take a few seconds to open.
    await prisma.onboardingAnalysis.deleteMany();
    await prisma.screeningResult.deleteMany();
    await prisma.identityDocument.deleteMany();

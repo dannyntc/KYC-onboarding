@@ -14,7 +14,10 @@ const usePostgres = process.env.DATABASE_ENGINE === 'postgres' || isPostgresData
 
 function createDatabaseClient(): DatabaseClient {
  if (usePostgres) {
-  return new PostgresPrismaClient({adapter:new PrismaPg({connectionString:configuredUrl})}) as unknown as DatabaseClient;
+  // On Vercel, use the pooled address when it exists: many short-lived app copies share a few
+  // real connections instead of each opening direct ones and hitting the connection limit.
+  const connectionString = process.env.DATABASE_URL_POOLED || configuredUrl;
+  return new PostgresPrismaClient({adapter:new PrismaPg({connectionString})}) as unknown as DatabaseClient;
  }
  return new SQLitePrismaClient({adapter:new PrismaBetterSqlite3({url:databaseUrl(configuredUrl,process.cwd())})});
 }
