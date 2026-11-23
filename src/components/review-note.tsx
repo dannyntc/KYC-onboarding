@@ -1,7 +1,7 @@
 'use client';
 import {useRef,useState} from 'react';
 
-export function ReviewNote({initialNote,initialVersion,draft,disabled=false}:{initialNote:string;initialVersion:number;draft?:string;disabled?:boolean}) {
+export function ReviewNote({initialNote,initialVersion,draft,disabled=false,readOnly=false}:{initialNote:string;initialVersion:number;draft?:string;disabled?:boolean;readOnly?:boolean}) {
  const note=useRef<HTMLTextAreaElement>(null);
  const [version]=useState(initialVersion);
  function addDraft(){
@@ -12,7 +12,7 @@ export function ReviewNote({initialNote,initialVersion,draft,disabled=false}:{in
  return <>
   <input type="hidden" name="version" value={version}/>
   <label htmlFor="notes" className="label">ANALYST NOTE / REASON FOR ACTION</label>
-  <textarea ref={note} className="field" id="notes" name="notes" defaultValue={initialNote} required/>
-  {draft && <button type="button" className="button secondary" onClick={addDraft} disabled={disabled}>Add draft to analyst note</button>}
+  <textarea ref={note} className="field" id="notes" name="notes" defaultValue={initialNote} readOnly={readOnly} required/>
+  {draft && !readOnly && <button type="button" className="button secondary" onClick={addDraft} disabled={disabled}>Add draft to analyst note</button>}
  </>;
 }
