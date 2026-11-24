@@ -18,13 +18,13 @@ export const TOUR_STEPS: TourStep[] = [
     page: '/',
     target: null,
     title: 'The problem',
-    text: 'KYC ("know your customer") means checking who a new client is and where their money comes from before the bank accepts them.\n\nDone by hand, it is slow and error-prone: evidence is scattered, analysts judge risk differently, checks are missed until late, hidden links go unseen, and write-ups and decision records take hours.'
+    text: 'KYC ("know your customer") means checking who a new client is and where their money comes from before the bank accepts them.\n\nDone without a system, it is slow and error-prone: evidence is scattered, analysts judge risk differently, checks are missed until late, hidden links go unseen, and write-ups and decision records take hours.'
   },
   {
     page: '/',
     target: 'problem',
     title: 'How this demo helps',
-    text: 'This workspace closes those gaps: one file per applicant, the same rules for every rating, approval locked until every check is done, linked clients flagged, a drafted memo that cites its records, and a log of every decision.\n\nMachine learning (clustering) could go further and surface hidden relationships.',
+    text: 'This workspace closes those gaps: one file per applicant, the same rules for every rating, approval locked until every check is done, linked clients flagged, a drafted memo that cites its records, and a log of every decision.',
     side: 'bottom'
   },
   {
@@ -52,7 +52,7 @@ export const TOUR_STEPS: TourStep[] = [
     page: '/',
     target: 'queue-table',
     title: 'The onboarding queue',
-    text: 'Each row is a new applicant waiting to be checked.\n\n"Suggested risk" is worked out from their records by fixed rules, not by AI. A person always makes the final decision.\n\nClustering could also be used to uncover hidden links between these clients and people on watch lists.',
+    text: 'Each row is a new applicant waiting to be checked.\n\n"Suggested risk" is worked out from their records by fixed rules, not by AI. A person always makes the final decision.',
     side: 'top'
   },
   {
@@ -60,7 +60,7 @@ export const TOUR_STEPS: TourStep[] = [
     target: 'outstanding-column',
     phoneTarget: 'outstanding-cell',
     title: 'Outstanding items',
-    text: 'This counts what still blocks approval, such as an expired passport or a name-check match nobody has decided on yet.\n\n"None" means nothing is in the way.',
+    text: 'This counts what still blocks approval, such as an expired passport or a name-check match nobody has decided on yet.',
     side: 'bottom'
   },
   {

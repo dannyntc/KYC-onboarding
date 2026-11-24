@@ -66,7 +66,8 @@ describe('tour steps', () => {
       for (const publicDemo of [false, true]) {
         const text = tourText(step, publicDemo);
         expect(text.trim().length, step.title).toBeGreaterThan(0);
-        expect(text.length, step.title).toBeLessThanOrEqual(330);
+        // 340 characters fits the 420px-wide bubble on a phone screen.
+        expect(text.length, step.title).toBeLessThanOrEqual(340);
       }
     }
   });

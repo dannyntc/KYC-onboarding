@@ -5,7 +5,7 @@ test('the queue opens with the problem statement and the six gaps it closes', as
   const panel = page.locator('[data-tour="problem"]');
   await expect(panel).toContainText('THE PROBLEM THIS SOLVES');
   await expect(panel.locator('li')).toHaveCount(6);
-  await expect(panel).toContainText('machine learning (clustering)');
+  await expect(panel).not.toContainText('machine learning');
   await expect(panel).toContainText('Hours spent writing up each file');
   await expect(panel).toContainText('No clear record of who decided what, and why');
 });
