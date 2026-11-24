@@ -22,9 +22,9 @@
 
 .tourlink{display:block;margin:14px 0 0;padding:10px 12px;border:1px solid #395063;border-radius:7px;color:#7ad4c7;font-size:13px;font-weight:700}
 .tourlink:hover{background:#29445a;color:white}
-.driver-popover.wg-tour{max-width:340px;padding:18px;border-radius:10px;font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+.driver-popover.wg-tour{max-width:min(420px,calc(100vw - 24px));padding:20px 22px;border-radius:10px;font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
 .wg-tour .driver-popover-title{font-size:17px;color:var(--navy);padding-right:24px}
-.wg-tour .driver-popover-description{color:var(--muted);line-height:1.55;text-align:justify}
+.wg-tour .driver-popover-description{color:var(--muted);line-height:1.6;text-align:justify;white-space:pre-line;font-size:14.5px;margin-top:6px}
 .wg-tour .driver-popover-progress-text{color:var(--teal);font-weight:700;font-size:12px}
 .wg-tour .driver-popover-footer-btn{padding:7px 12px;font-size:13px;font-weight:700;border-radius:6px;border-color:var(--teal);color:var(--teal)}
 .wg-tour .driver-popover-next-btn{background:var(--teal);color:white}
