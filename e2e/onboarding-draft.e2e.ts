@@ -7,7 +7,7 @@ test('a fixture KYC draft shows the wealth gap with its citation and can be adde
   await expect(page.getByText('No KYC memos yet.')).toBeVisible();
 
   await page.getByRole('button', { name: 'Generate draft KYC memo' }).click();
-  const assistant = page.locator('section', { has: page.getByRole('heading', { name: 'KYC memo assistant' }) });
+  const assistant = page.locator('section', { has: page.getByRole('heading', { name: 'KYC memo builder' }) });
   await expect(assistant.getByText('Displayed memo: template (no AI used)')).toBeVisible();
   await expect(assistant.getByText('SGD 5,000,000 of declared wealth not corroborated').first()).toBeVisible();
   await expect(assistant.getByRole('link', { name: 'DOC-002' }).first()).toBeVisible();

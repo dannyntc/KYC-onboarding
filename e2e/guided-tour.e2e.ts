@@ -52,10 +52,9 @@ test('Next walks all 24 steps across the pages and Finish ends the tour', async 
   await walkWholeTour(page, false);
 });
 
-test('local wording invites the visitor to try the buttons, which stay enabled', async ({ page }) => {
+test('the decision step leaves the buttons enabled locally', async ({ page }) => {
   await page.goto('/onboarding/ONB-006?tour=12');
   await expectStep(page, 12, false);
-  await expect(popover(page).locator('.driver-popover-description')).toContainText('Try it here');
   await popover(page).locator('.driver-popover-close-btn').click();
   await expect(page.getByLabel('REASONS FOR RATING')).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Save risk rating' })).toBeEnabled();

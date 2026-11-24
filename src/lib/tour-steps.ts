@@ -60,7 +60,7 @@ export const TOUR_STEPS: TourStep[] = [
     target: 'outstanding-column',
     phoneTarget: 'outstanding-cell',
     title: 'Outstanding items',
-    text: 'This counts what still blocks approval, such as an expired passport or a name-check match nobody has decided on yet.',
+    text: 'This counts what still blocks approval, such as an expired passport, incomplete documents, or an undecided screening alert.',
     side: 'bottom'
   },
   {
@@ -95,8 +95,7 @@ export const TOUR_STEPS: TourStep[] = [
     page: '/onboarding/ONB-006',
     target: 'decision-panel',
     title: 'The decision',
-    text: 'Once a final rating is saved, Approve unlocks.\n\nThe analyst can also Reject, or Request information from the applicant, with a note each time.\n\nTry it here: changes save to the shared demo database.',
-    onlineText: 'Once a final rating is saved, Approve unlocks.\n\nThe analyst can also Reject, or Request information from the applicant, with a note each time.',
+    text: 'Once a final rating is saved, Approve unlocks.\n\nThe analyst can also Reject, or Request information from the applicant, with a note each time.',
     side: 'left'
   },
   {
@@ -152,16 +151,16 @@ export const TOUR_STEPS: TourStep[] = [
   {
     page: '/onboarding/ONB-002',
     target: 'assistant',
-    title: 'The KYC assistant',
-    text: 'The assistant drafts a summary, and every statement links to a record.\n\nIt can only suggest, and can never approve or reject.\n\nHere it spots SGD 5 million of declared wealth with no document behind it.',
-    onlineText: 'The assistant drafts a summary, and every statement links to a record.\n\nIt can only suggest, and can never approve or reject.\n\nHere it spots SGD 5 million of declared wealth with no document behind it.\n\nOnline, this draft is a preview and is not saved.',
+    title: 'The memo builder',
+    text: 'The KYC memo builder drafts a summary, and every statement links to a record.\n\nIt can only suggest, and can never approve or reject.\n\nHere it spots SGD 5 million of declared wealth with no document behind it.',
+    onlineText: 'The KYC memo builder drafts a summary, and every statement links to a record.\n\nIt can only suggest, and can never approve or reject.\n\nHere it spots SGD 5 million of declared wealth with no document behind it.\n\nOnline, this draft is a preview and is not saved.',
     side: 'left'
   },
   {
     page: '/onboarding/ONB-002',
     target: 'memo-history',
     title: 'Memo history',
-    text: 'Every memo is kept, failed attempts included, and never overwritten.\n\nOpen one to see exactly what the assistant was given and what it returned, so a reviewer can check its work.',
+    text: 'Every memo is kept, failed attempts included, and never overwritten.\n\nOpen one to see exactly what the memo builder was given and what it returned, so a reviewer can check its work.',
     side: 'left'
   },
   {
@@ -182,7 +181,7 @@ export const TOUR_STEPS: TourStep[] = [
     page: '/controls',
     target: null,
     title: 'That\'s the tour',
-    text: 'You\'ve seen the whole workflow: queue, KYC file, checks, risk rating, memo, decision and audit trail.\n\nExplore freely, or restart the tour from the sidebar.'
+    text: 'You\'ve seen the whole workflow: queue, KYC file, checks, risk rating, memo, decision and audit trail.\n\nExplore freely, or restart the tour from the sidebar. Thank you for your time Linda!'
   }
 ];
 

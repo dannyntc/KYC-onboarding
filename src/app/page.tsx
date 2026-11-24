@@ -11,7 +11,7 @@ const GAPS: [gap: string, help: string][] = [
   ['Risk judged differently by each analyst', 'The same rules suggest a rating for everyone, with the reasons shown; a person decides'],
   ['Checks missed until late', 'Approval stays locked until every check is done; high-risk files need a second approver'],
   ['Hidden relationships between clients', 'Shared owners are flagged and linked'],
-  ['Hours spent writing up each file', 'The KYC memo assistant drafts the summary, and every statement links to the record it came from, so the analyst checks rather than writes'],
+  ['Hours spent writing up each file', 'The KYC memo builder drafts the summary, and every statement links to the record it came from, so the analyst checks rather than writes'],
   ['No clear record of who decided what, and why', 'Every rating, screening decision and approval is logged with the person, time and reason, and the log cannot be edited']
 ];
 

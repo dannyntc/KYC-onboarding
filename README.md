@@ -28,7 +28,7 @@ For a step-by-step guide to using the demo, see the [user manual](docs/user-manu
 - **KYC file.** Each applicant has a file showing identity documents, beneficial ownership (including other clients that share an owner), screening hits, and source of wealth against declared wealth. Every record is traceable by its ID.
 - **Suggested risk and blockers.** Deterministic rules suggest Low, Medium or High with the reasons and evidence IDs, and list what blocks approval (for example an expired passport, or an undecided screening hit). The server re-checks the blockers on every save, so a direct request cannot bypass them.
 - **Human decisions.** An analyst records a final rating with reasons, decides screening hits with a reason, and approves, rejects or requests information. A High rating needs a second person: the analyst's approval moves the file to *Pending senior approval* and a *Senior approver* completes it. Roles are a demo switch, not authentication.
-- **KYC memo assistant.** A KYC memo built from the file's own checks, clearly labelled. The default is a template, not an AI model output. The memo suggests a rating and next step but cannot approve, reject or declare a screening match confirmed, and wording that does so is rejected. Saved drafts, failed attempts and the evidence used for each are kept.
+- **KYC memo builder.** A KYC memo built from the file's own checks, clearly labelled. The default is a template, not an AI model output. The memo suggests a rating and next step but cannot approve, reject or declare a screening match confirmed, and wording that does so is rejected. Saved drafts, failed attempts and the evidence used for each are kept.
 - **Audit.** Every onboarding change is stored as an append-only event with before and after values. Database triggers prevent ordinary updates or deletion.
 
 The application uses SQLite locally and Prisma Postgres on Vercel (`DATABASE_ENGINE=postgres`). Requests such as *Request information* are local records and are not sent anywhere.
@@ -37,11 +37,11 @@ The hosted site is deployed from the lowercase Vercel project `kyc-onboarding-da
 
 ## Guided tour, saving online, and look-only mode
 
-A 24-step pop-up tour covers every part of the demo: the queue, each section of a KYC file, the decision, the memo assistant, the audit trail and the regulatory library. It opens automatically each time the onboarding queue is freshly loaded (including a refresh), and can be restarted any time from **Guided tour** in the sidebar. The current step is kept in the address (`?tour=N`), so it needs no database. Its text is in `src/lib/tour-steps.ts`, and the pop-ups are drawn by [driver.js](https://driverjs.com) (MIT).
+A 24-step pop-up tour covers every part of the demo: the queue, each section of a KYC file, the decision, the memo builder, the audit trail and the regulatory library. It opens automatically each time the onboarding queue is freshly loaded (including a refresh), and can be restarted any time from **Guided tour** in the sidebar. The current step is kept in the address (`?tour=N`), so it needs no database. Its text is in `src/lib/tour-steps.ts`, and the pop-ups are drawn by [driver.js](https://driverjs.com) (MIT).
 
 The hosted site saves like a local copy: every visitor shares one database. The save routes accept requests only from the site serving the page (`isSameOrigin` in `src/lib/origin.ts`), so other websites cannot submit changes. **Reset demo data** in the sidebar (Analyst and Senior approver roles) calls `/api/reset`, which restores the starting data in one all-or-nothing transaction (`src/lib/demo-reset.ts`, shared with `npm run db:seed`/`db:reset` and their `:postgres` versions).
 
-Set `KYC_ONBOARDING_PUBLIC_DEMO=1` to turn on **look-only mode**: every saving button is disabled, the KYC memo assistant shows an unsaved preview of the template memo, and the save and reset routes refuse changes. Use it locally (`KYC_ONBOARDING_PUBLIC_DEMO=1 npm run dev`) or set it in Vercel to make the hosted site read-only again without a code change.
+Set `KYC_ONBOARDING_PUBLIC_DEMO=1` to turn on **look-only mode**: every saving button is disabled, the KYC memo builder shows an unsaved preview of the template memo, and the save and reset routes refuse changes. Use it locally (`KYC_ONBOARDING_PUBLIC_DEMO=1 npm run dev`) or set it in Vercel to make the hosted site read-only again without a code change.
 
 ## Known gaps
 

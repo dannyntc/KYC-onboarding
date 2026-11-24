@@ -34,7 +34,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <li><a href="#7-step-by-step-a-clients-kyc-file">Step by step: a client&#39;s KYC file</a></li>
 <li><a href="#8-step-by-step-recording-a-decision">Step by step: recording a decision</a></li>
 <li><a href="#9-demo-roles">Demo roles</a></li>
-<li><a href="#10-the-kyc-memo-assistant">The KYC memo assistant</a></li>
+<li><a href="#10-the-kyc-memo-builder">The KYC memo builder</a></li>
 <li><a href="#11-the-regulatory-library">The regulatory library</a></li>
 <li><a href="#12-suggested-walkthroughs-the-12-applicants">Suggested walkthroughs (the 12 applicants)</a></li>
 <li><a href="#13-running-the-demo-on-your-own-computer">Running the demo on your own computer</a></li>
@@ -47,7 +47,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <p>KYC-onboarding shows how a bank analyst could work through these checks for each new applicant. They confirm identity, look at who really owns the money, check watch lists, and compare declared wealth with documents. Then a <strong>person</strong> records a decision.</p>
 <p>The demo follows three principles:</p>
 <ul>
-<li><strong>Human-led.</strong> Rules and an assistant can <em>suggest</em>, but only a person can approve or reject.</li>
+<li><strong>Human-led.</strong> Rules and the memo builder can <em>suggest</em>, but only a person can approve or reject.</li>
 <li><strong>Traceable.</strong> Every finding links back to the record it came from, such as a passport or a screening result.</li>
 <li><strong>Recorded.</strong> Every action is written to an audit trail that cannot be edited.</li>
 </ul>
@@ -325,7 +325,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <tr>
 <td>20</td>
 <td>Daniel Lim</td>
-<td>The KYC memo assistant</td>
+<td>The KYC memo builder</td>
 </tr>
 <tr>
 <td>21</td>
@@ -389,12 +389,12 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <li><strong>Screening.</strong> Watch-list matches (PEP, sanctions, adverse media), each showing the match strength and the list entry. An undecided match is shown as <strong>Potential match</strong>, and it blocks approval until an analyst decides.</li>
 <li><strong>Source of wealth &amp; funds.</strong> The declared wealth, each supporting document and how much it backs up, the corroborated total, and any amount <strong>not corroborated</strong>.</li>
 </ol>
-<p>Four key sections (Beneficial ownership, Risk assessment, KYC memo assistant and Decision) open with a short <strong>Solves:</strong> line naming the gap they close.</p>
+<p>Four key sections (Beneficial ownership, Risk assessment, KYC memo builder and Decision) open with a short <strong>Solves:</strong> line naming the gap they close.</p>
 <p>Each section lists <strong>candidate regulatory references</strong> (e.g. <code>MAS-626-6.9</code>). Click one to see it in the regulatory library.</p>
 <p><strong>Right side: the decision tools</strong></p>
 <ol start="6">
 <li><strong>Risk assessment.</strong> The <strong>suggested rating</strong> and the reasons behind it, each linked to its evidence. Below it is the form for the analyst&#39;s own final rating.</li>
-<li><strong>KYC memo assistant.</strong> A drafted KYC memo for the file (<a href="#10-the-kyc-memo-assistant">section 10</a>).</li>
+<li><strong>KYC memo builder.</strong> A drafted KYC memo for the file (<a href="#10-the-kyc-memo-builder">section 10</a>).</li>
 <li><strong>Decision.</strong> A red <strong>Outstanding before approval</strong> box lists every blocker, followed by the note box and the decision buttons.</li>
 <li><strong>Memo history</strong> and <strong>Audit history.</strong> Earlier memos and every recorded action.</li>
 </ol>
@@ -422,7 +422,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <h3 id="83-approve-reject-or-ask-for-more-information">8.3 Approve, reject or ask for more information</h3>
 <ol>
 <li>Check the <strong>Outstanding before approval</strong> box. <strong>Approve</strong> stays greyed out until it&#39;s empty.</li>
-<li>Optionally type a <strong>decision note</strong>. You can click <strong>Add draft to note</strong> to copy the assistant&#39;s draft in, then edit it.</li>
+<li>Optionally type a <strong>decision note</strong>. You can click <strong>Add draft to note</strong> to copy the memo builder&#39;s draft in, then edit it.</li>
 <li>Click one of:<ul>
 <li><strong>Approve:</strong> accept the applicant. For a <strong>High</strong> rating, an Analyst&#39;s approval moves the file to <em>Pending senior approval</em> instead (see below).</li>
 <li><strong>Reject:</strong> decline the applicant. A note is required.</li>
@@ -471,8 +471,8 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 </tr>
 </tbody></table>
 <p>The role switch is a demonstration only. It is <strong>not</strong> a real login or security control.</p>
-<h2 id="10-the-kyc-memo-assistant">10. The KYC memo assistant</h2>
-<p>The assistant writes a draft summary to save the analyst time.</p>
+<h2 id="10-the-kyc-memo-builder">10. The KYC memo builder</h2>
+<p>The memo builder writes a draft summary to save the analyst time.</p>
 <ul>
 <li>Every statement it makes links to a record, so you can check it.</li>
 <li>It suggests a risk rating and a next step, clearly labelled <strong>suggestions for the analyst</strong>.</li>
@@ -486,17 +486,17 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <p><strong>To create a draft (locally):</strong></p>
 <ol>
 <li>Open a KYC file.</li>
-<li>In <strong>KYC memo assistant</strong>, click <strong>Generate draft KYC memo</strong>.</li>
+<li>In <strong>KYC memo builder</strong>, click <strong>Generate draft KYC memo</strong>.</li>
 <li>Read the draft, click the record links to check its claims, and optionally click <strong>Add draft to note</strong> in the Decision panel.</li>
 <li>Earlier memos are listed in <strong>Memo history</strong>. Open <strong>View evidence used for this memo</strong> to see exactly what it was based on.</li>
 </ol>
-<p>Online, the assistant shows a <strong>preview (not saved)</strong> instead.</p>
+<p>Online, the memo builder shows a <strong>preview (not saved)</strong> instead.</p>
 <h2 id="11-the-regulatory-library">11. The regulatory library</h2>
 <p>Click <strong>Regulatory library</strong> in the sidebar.</p>
 <ul>
 <li>It lists paragraphs of <strong>MAS Notice 626</strong>, Singapore&#39;s anti-money-laundering rules for banks, that relate to each check.</li>
 <li>Each entry links to the official MAS document.</li>
-<li>These links are <strong>candidates for human review</strong>, not approved policy. A compliance reviewer must sign off a reference before it is given to the AI assistant. By default, none have been signed off.</li>
+<li>These links are <strong>candidates for human review</strong>, not approved policy. A compliance reviewer must sign off a reference before it is given to the AI model. By default, none have been signed off.</li>
 </ul>
 <h2 id="12-suggested-walkthroughs-the-12-applicants">12. Suggested walkthroughs (the 12 applicants)</h2>
 <table>
@@ -587,7 +587,7 @@ hr{border:0;border-top:1px solid var(--line);margin:24px 0}li{margin:4px 0}
 <li>ONB-006: a clean approval</li>
 <li>ONB-009: clear a false alarm</li>
 <li>ONB-008: PEP and senior approval</li>
-<li>ONB-002: the assistant&#39;s draft and the wealth gap</li>
+<li>ONB-002: the memo builder&#39;s draft and the wealth gap</li>
 <li>The audit history</li>
 </ol>
 <h2 id="13-running-the-demo-on-your-own-computer">13. Running the demo on your own computer</h2>

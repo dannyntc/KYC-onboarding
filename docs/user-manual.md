@@ -20,7 +20,7 @@ A step-by-step guide to the KYC-onboarding demo. It assumes no compliance or tec
 7. [Step by step: a client's KYC file](#7-step-by-step-a-clients-kyc-file)
 8. [Step by step: recording a decision](#8-step-by-step-recording-a-decision)
 9. [Demo roles](#9-demo-roles)
-10. [The KYC memo assistant](#10-the-kyc-memo-assistant)
+10. [The KYC memo builder](#10-the-kyc-memo-builder)
 11. [The regulatory library](#11-the-regulatory-library)
 12. [Suggested walkthroughs (the 12 applicants)](#12-suggested-walkthroughs-the-12-applicants)
 13. [Running the demo on your own computer](#13-running-the-demo-on-your-own-computer)
@@ -37,7 +37,7 @@ KYC-onboarding shows how a bank analyst could work through these checks for each
 
 The demo follows three principles:
 
-- **Human-led.** Rules and an assistant can *suggest*, but only a person can approve or reject.
+- **Human-led.** Rules and the memo builder can *suggest*, but only a person can approve or reject.
 - **Traceable.** Every finding links back to the record it came from, such as a passport or a screening result.
 - **Recorded.** Every action is written to an audit trail that cannot be edited.
 
@@ -133,7 +133,7 @@ The quickest way to understand the demo is the built-in tour. It takes about 5 m
 | 17 | Aisha Malik | Senior approval and the role switch |
 | 18 | Priya Menon (ONB-003) | Beneficial ownership: an owner shared with other clients |
 | 19 | Daniel Lim (ONB-002) | A source-of-wealth gap |
-| 20 | Daniel Lim | The KYC memo assistant |
+| 20 | Daniel Lim | The KYC memo builder |
 | 21 | Daniel Lim | Memo history |
 | 22 | Daniel Lim | The regulatory references in each section |
 | 23 | Regulatory library | The MAS Notice 626 references and their review status |
@@ -179,14 +179,14 @@ A KYC file has the evidence on the left and the decision tools on the right. (On
 4. **Screening.** Watch-list matches (PEP, sanctions, adverse media), each showing the match strength and the list entry. An undecided match is shown as **Potential match**, and it blocks approval until an analyst decides.
 5. **Source of wealth & funds.** The declared wealth, each supporting document and how much it backs up, the corroborated total, and any amount **not corroborated**.
 
-Four key sections (Beneficial ownership, Risk assessment, KYC memo assistant and Decision) open with a short **Solves:** line naming the gap they close.
+Four key sections (Beneficial ownership, Risk assessment, KYC memo builder and Decision) open with a short **Solves:** line naming the gap they close.
 
 Each section lists **candidate regulatory references** (e.g. `MAS-626-6.9`). Click one to see it in the regulatory library.
 
 **Right side: the decision tools**
 
 6. **Risk assessment.** The **suggested rating** and the reasons behind it, each linked to its evidence. Below it is the form for the analyst's own final rating.
-7. **KYC memo assistant.** A drafted KYC memo for the file ([section 10](#10-the-kyc-memo-assistant)).
+7. **KYC memo builder.** A drafted KYC memo for the file ([section 10](#10-the-kyc-memo-builder)).
 8. **Decision.** A red **Outstanding before approval** box lists every blocker, followed by the note box and the decision buttons.
 9. **Memo history** and **Audit history.** Earlier memos and every recorded action.
 
@@ -211,7 +211,7 @@ Each section lists **candidate regulatory references** (e.g. `MAS-626-6.9`). Cli
 ### 8.3 Approve, reject or ask for more information
 
 1. Check the **Outstanding before approval** box. **Approve** stays greyed out until it's empty.
-2. Optionally type a **decision note**. You can click **Add draft to note** to copy the assistant's draft in, then edit it.
+2. Optionally type a **decision note**. You can click **Add draft to note** to copy the memo builder's draft in, then edit it.
 3. Click one of:
    - **Approve:** accept the applicant. For a **High** rating, an Analyst's approval moves the file to *Pending senior approval* instead (see below).
    - **Reject:** decline the applicant. A note is required.
@@ -249,9 +249,9 @@ Use the **Demo role** drop-down in the sidebar, then click **Switch role**. You 
 
 The role switch is a demonstration only. It is **not** a real login or security control.
 
-## 10. The KYC memo assistant
+## 10. The KYC memo builder
 
-The assistant writes a draft summary to save the analyst time.
+The memo builder writes a draft summary to save the analyst time.
 
 - Every statement it makes links to a record, so you can check it.
 - It suggests a risk rating and a next step, clearly labelled **suggestions for the analyst**.
@@ -265,11 +265,11 @@ The assistant writes a draft summary to save the analyst time.
 **To create a draft (locally):**
 
 1. Open a KYC file.
-2. In **KYC memo assistant**, click **Generate draft KYC memo**.
+2. In **KYC memo builder**, click **Generate draft KYC memo**.
 3. Read the draft, click the record links to check its claims, and optionally click **Add draft to note** in the Decision panel.
 4. Earlier memos are listed in **Memo history**. Open **View evidence used for this memo** to see exactly what it was based on.
 
-Online, the assistant shows a **preview (not saved)** instead.
+Online, the memo builder shows a **preview (not saved)** instead.
 
 ## 11. The regulatory library
 
@@ -277,7 +277,7 @@ Click **Regulatory library** in the sidebar.
 
 - It lists paragraphs of **MAS Notice 626**, Singapore's anti-money-laundering rules for banks, that relate to each check.
 - Each entry links to the official MAS document.
-- These links are **candidates for human review**, not approved policy. A compliance reviewer must sign off a reference before it is given to the AI assistant. By default, none have been signed off.
+- These links are **candidates for human review**, not approved policy. A compliance reviewer must sign off a reference before it is given to the AI model. By default, none have been signed off.
 
 ## 12. Suggested walkthroughs (the 12 applicants)
 
@@ -302,7 +302,7 @@ Click **Regulatory library** in the sidebar.
 2. ONB-006: a clean approval
 3. ONB-009: clear a false alarm
 4. ONB-008: PEP and senior approval
-5. ONB-002: the assistant's draft and the wealth gap
+5. ONB-002: the memo builder's draft and the wealth gap
 6. The audit history
 
 ## 13. Running the demo on your own computer

@@ -330,7 +330,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
           <section className="panel section" data-tour="assistant">
             <div className="panelhead" style={{ padding: 0, marginBottom: 16 }}>
               <div>
-                <h2>KYC memo assistant</h2>
+                <h2>KYC memo builder</h2>
                 <p className="solves">
                   <strong>Solves:</strong> hours spent writing up each file. A drafted memo where every statement cites its record.
                 </p>
