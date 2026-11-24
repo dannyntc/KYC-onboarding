@@ -7,7 +7,7 @@ import { createSeed } from './seed-data';
 type Tx = Prisma.TransactionClient;
 export type Engine = 'sqlite' | 'postgres';
 
-// Postgres may hand out a pooled connection that takes a few seconds to open, and the inserts run
+// A new Postgres connection may take a few seconds to open, and the inserts run
 // inside the same transaction, so allow more than Prisma's 2 s / 5 s defaults.
 const TRANSACTION_OPTIONS = { maxWait: 15000, timeout: 60000 };
 

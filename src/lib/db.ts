@@ -18,11 +18,11 @@ export const databaseEngine: Engine = usePostgres ? 'postgres' : 'sqlite';
 
 function createDatabaseClient(): DatabaseClient {
  if (usePostgres) {
-  // On Vercel, use the pooled address when it exists: many short-lived app copies share a few
-  // real connections instead of each opening direct ones and hitting the connection limit.
-  const connectionString = process.env.DATABASE_URL_POOLED || configuredUrl;
-  // A connection that never answers fails after 10 s instead of hanging the page; idle connections close after 5 s.
-  const pool = new Pool({connectionString, connectionTimeoutMillis:10_000, idleTimeoutMillis:5_000});
+  // Direct address, not Prisma's pooled one: measured on Vercel (2026-11-24), the first query on a new pooled
+  // connection often waited 1-47 s, while direct connections answered in under 0.5 s every time.
+  // To stay under the direct connection limit, each app copy keeps at most 5 connections and closes idle ones
+  // after 5 s; one that never opens fails after 10 s instead of hanging the page.
+  const pool = new Pool({connectionString:configuredUrl, max:5, connectionTimeoutMillis:10_000, idleTimeoutMillis:5_000});
   // On Vercel, closes idle connections before a paused app copy is frozen, so a later visit never reuses a dead one.
   attachDatabasePool(pool);
   return new PostgresPrismaClient({adapter:new PrismaPg(pool)}) as unknown as DatabaseClient;
