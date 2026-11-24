@@ -10,8 +10,6 @@ export type TourStep = {
   text: string;
   // Used instead of `text` in the online (look-only) demo, where the buttons are switched off.
   onlineText?: string;
-  // Used instead of `target` in the online demo, for an element that is hidden there (null = centred).
-  onlineTarget?: string | null;
   side?: 'top' | 'right' | 'bottom' | 'left';
 };
 
@@ -89,7 +87,7 @@ export const TOUR_STEPS: TourStep[] = [
     page: '/onboarding/ONB-006',
     target: 'risk-assessment',
     title: 'Rating the risk',
-    text: 'The rules suggest a risk level and list the reasons, each linked to its record. Sarah has none, so Low is suggested. The analyst still picks the final rating and writes down why: at least 20 characters, or 50 when choosing lower than suggested.',
+    text: 'The rules suggest a risk level and list the reasons, each linked to its record. Sarah has none, so Low is suggested. The analyst is the one deciding the final rating and writes down why.',
     side: 'left'
   },
   {
@@ -173,15 +171,6 @@ export const TOUR_STEPS: TourStep[] = [
     side: 'right'
   },
   {
-    page: '/onboarding/ONB-002',
-    target: 'reset-demo',
-    title: 'Starting over',
-    text: 'Everyone shares this demo\'s database. Reset demo data restores all 12 applicants to their starting state and clears every rating, decision, memo and audit entry.',
-    onlineText: 'In the full demo, a Reset demo data button in the sidebar restores all 12 applicants to their starting state.',
-    onlineTarget: null,
-    side: 'right'
-  },
-  {
     page: '/controls',
     target: 'library',
     title: 'The regulatory library',
@@ -195,11 +184,6 @@ export const TOUR_STEPS: TourStep[] = [
     text: 'You\'ve seen the whole workflow: queue, KYC file, checks, risk rating, memo, decision and audit trail. Explore freely, or restart the tour from the sidebar.'
   }
 ];
-
-// The element a step points at, before any phone-layout swap.
-export function tourTarget(step: TourStep, publicDemo: boolean): string | null {
-  return publicDemo && step.onlineTarget !== undefined ? step.onlineTarget : step.target;
-}
 
 export function tourText(step: TourStep, publicDemo: boolean): string {
   return publicDemo && step.onlineText ? step.onlineText : step.text;

@@ -48,11 +48,11 @@ test.describe('on a phone', () => {
     });
 
     await page.goto('/?tour=6');
-    await expect(page.locator('.driver-popover-progress-text')).toHaveText('Step 6 of 25');
+    await expect(page.locator('.driver-popover-progress-text')).toHaveText('Step 6 of 24');
     await expect(page.locator('[data-tour="queue-table"]')).toHaveClass(/driver-active-element/);
 
     await page.goto('/?tour=7');
-    await expect(page.locator('.driver-popover-progress-text')).toHaveText('Step 7 of 25');
+    await expect(page.locator('.driver-popover-progress-text')).toHaveText('Step 7 of 24');
     const target = page.locator('[data-tour="outstanding-cell"]');
     await expect(target).toHaveCount(1);
     await expect(target).toHaveClass(/driver-active-element/);

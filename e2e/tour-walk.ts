@@ -1,5 +1,5 @@
 import { expect, type Page } from '@playwright/test';
-import { TOUR_STEPS, tourTarget, tourText } from '../src/lib/tour-steps';
+import { TOUR_STEPS, tourText } from '../src/lib/tour-steps';
 
 // Collects anything the browser reports as an error, plus the tour's own "target not found" warning.
 export function watchForProblems(page: Page): string[] {
@@ -21,9 +21,8 @@ export async function expectStep(page: Page, number: number, publicDemo: boolean
   await expect(popover.locator('.driver-popover-progress-text')).toHaveText(`Step ${number} of ${TOUR_STEPS.length}`);
   await expect(popover.locator('.driver-popover-title')).toHaveText(step.title);
   await expect(popover.locator('.driver-popover-description')).toHaveText(tourText(step, publicDemo));
-  const targetName = tourTarget(step, publicDemo);
-  if (targetName) {
-    const target = page.locator(`[data-tour="${targetName}"]`);
+  if (step.target) {
+    const target = page.locator(`[data-tour="${step.target}"]`);
     await expect(target).toHaveCount(1);
     await expect(target).toHaveClass(/driver-active-element/);
     await expect(target).toBeVisible();

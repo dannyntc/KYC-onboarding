@@ -48,7 +48,7 @@ test('a new visit (a fresh tab) offers the tour again', async ({ page, context }
   await expectStep(freshTab, 1, false);
 });
 
-test('Next walks all 25 steps across the pages and Finish ends the tour', async ({ page }) => {
+test('Next walks all 24 steps across the pages and Finish ends the tour', async ({ page }) => {
   await walkWholeTour(page, false);
 });
 

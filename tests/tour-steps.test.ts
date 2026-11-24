@@ -10,7 +10,7 @@ const read = (path: string) => readFileSync(new URL(`../${path}`, import.meta.ur
 // The source file(s) that must carry each step's data-tour attribute.
 function sourceFor(page: string): string {
   // The layout and the sidebar parts it draws appear on every page.
-  const layout = read('src/app/layout.tsx') + read('src/components/sidebar-nav.tsx') + read('src/components/reset-demo-button.tsx');
+  const layout = read('src/app/layout.tsx') + read('src/components/sidebar-nav.tsx');
   if (page === '/') return read('src/app/page.tsx') + layout;
   if (page.startsWith('/onboarding/')) return read('src/app/onboarding/[id]/page.tsx') + layout;
   if (page === '/controls') return read('src/app/controls/page.tsx') + layout;
@@ -18,9 +18,9 @@ function sourceFor(page: string): string {
 }
 
 describe('tour steps', () => {
-  it('has 25 steps, and only the first two (About this demo, Welcome) and the last are centred', () => {
-    expect(TOUR_STEPS).toHaveLength(25);
-    expect(TOUR_STEPS.map(step => step.target === null)).toEqual(TOUR_STEPS.map((_, index) => index <= 1 || index === 24));
+  it('has 24 steps, and only the first two (About this demo, Welcome) and the last are centred', () => {
+    expect(TOUR_STEPS).toHaveLength(24);
+    expect(TOUR_STEPS.map(step => step.target === null)).toEqual(TOUR_STEPS.map((_, index) => index <= 1 || index === 23));
   });
 
   it('visits every page of the app', () => {

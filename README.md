@@ -37,7 +37,7 @@ The hosted site is deployed from the lowercase Vercel project `kyc-onboarding-da
 
 ## Guided tour, saving online, and look-only mode
 
-A 25-step pop-up tour covers every part of the demo: the queue, each section of a KYC file, the decision, the memo assistant, the audit trail, Reset demo data and the regulatory library. It opens automatically each time the onboarding queue is freshly loaded (including a refresh), and can be restarted any time from **Guided tour** in the sidebar. The current step is kept in the address (`?tour=N`), so it needs no database. Its text is in `src/lib/tour-steps.ts`, and the pop-ups are drawn by [driver.js](https://driverjs.com) (MIT).
+A 24-step pop-up tour covers every part of the demo: the queue, each section of a KYC file, the decision, the memo assistant, the audit trail and the regulatory library. It opens automatically each time the onboarding queue is freshly loaded (including a refresh), and can be restarted any time from **Guided tour** in the sidebar. The current step is kept in the address (`?tour=N`), so it needs no database. Its text is in `src/lib/tour-steps.ts`, and the pop-ups are drawn by [driver.js](https://driverjs.com) (MIT).
 
 The hosted site saves like a local copy: every visitor shares one database. The save routes accept requests only from the site serving the page (`isSameOrigin` in `src/lib/origin.ts`), so other websites cannot submit changes. **Reset demo data** in the sidebar (Analyst and Senior approver roles) calls `/api/reset`, which restores the starting data in one all-or-nothing transaction (`src/lib/demo-reset.ts`, shared with `npm run db:seed`/`db:reset` and their `:postgres` versions).
 

@@ -4,7 +4,7 @@ import 'driver.js/dist/driver.css';
 import { Suspense, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { driver, type Driver } from 'driver.js';
-import { TOUR_STEPS, tourTarget, tourText } from '@/lib/tour-steps';
+import { TOUR_STEPS, tourText } from '@/lib/tour-steps';
 
 // Set in localStorage by the automated browser tests to keep the tour from opening by itself.
 export const TOUR_OFF_KEY = 'kyc-onboarding-tour-off';
@@ -72,8 +72,7 @@ function TourController({ publicDemo }: { publicDemo: boolean }) {
 
     // The page may still be drawing, so wait briefly for the element this step points at.
     const open = () => {
-      const base = tourTarget(step, publicDemo);
-      const target = base && ((window.matchMedia(PHONE_QUERY).matches && step.phoneTarget) || base);
+      const target = (window.matchMedia(PHONE_QUERY).matches && step.phoneTarget) || step.target;
       const element = target ? document.querySelector(`[data-tour="${target}"]`) : null;
       if (target && !element && Date.now() - started < TARGET_WAIT_MS) {
         timer = setTimeout(open, 50);

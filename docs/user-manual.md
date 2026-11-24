@@ -110,7 +110,7 @@ The quickest way to understand the demo is the built-in tour. It takes about 5 m
 5. Close it at any time with the **×** or the **Esc** key.
 6. To restart later, click **▶ Guided tour** in the sidebar.
 
-**The 25 steps of the tour:**
+**The 24 steps of the tour:**
 
 | Step | Page | What it shows |
 |---|---|---|
@@ -136,9 +136,8 @@ The quickest way to understand the demo is the built-in tour. It takes about 5 m
 | 20 | Daniel Lim | The KYC memo assistant |
 | 21 | Daniel Lim | Memo history |
 | 22 | Daniel Lim | The regulatory references in each section |
-| 23 | Daniel Lim | Reset demo data |
-| 24 | Regulatory library | The MAS Notice 626 references and their review status |
-| 25 | Regulatory library | The end of the tour |
+| 23 | Regulatory library | The MAS Notice 626 references and their review status |
+| 24 | Regulatory library | The end of the tour |
 
 ## 6. Step by step: the onboarding queue
 
