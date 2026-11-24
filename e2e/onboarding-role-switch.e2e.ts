@@ -55,7 +55,7 @@ test('the redirect after a role switch only ever stays on this site', async ({ p
     expect(response.status()).toBe(303);
     return response.headers().location;
   };
-  expect(await redirectFor(`${origin}/alerts?status=Open`)).toBe(`${origin}/alerts?status=Open`);
+  expect(await redirectFor(`${origin}/?status=In%20progress`)).toBe(`${origin}/?status=In%20progress`);
   expect(await redirectFor('http://evil.example/steal')).toBe(`${origin}/`);
   expect(await redirectFor(`${origin}//evil.example/steal`)).toBe(`${origin}/`);
   expect(await redirectFor(`${origin}/\\evil.example`)).toBe(`${origin}/`);

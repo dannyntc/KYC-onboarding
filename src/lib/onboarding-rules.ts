@@ -52,7 +52,6 @@ export type OnboardingFile = {
   relationships: { id: string; clientId: string; owner: string; entity: string }[];
   // Ownership records of other clients that share an owner and entity with the applicant.
   relatedRelationships: { id: string; clientId: string; owner: string; entity: string }[];
-  alerts: { id: string; status: string; priority: string }[];
 };
 
 export type RiskFactor = {
@@ -134,7 +133,7 @@ export function suggestRiskRating(file: OnboardingFile): RiskSuggestion {
     });
   }
 
-  // Same matching idea as detectScenarios() in rules.ts: a different client with the same owner and entity.
+  // A different client with the same owner and entity.
   const sharedOwnerLinks = file.relationships.flatMap(own =>
     file.relatedRelationships.filter(
       other => other.clientId !== own.clientId && other.owner === own.owner && other.entity === own.entity
@@ -148,18 +147,6 @@ export function suggestRiskRating(file: OnboardingFile): RiskSuggestion {
       evidenceIds: recordIds,
       weight: 'Medium'
     });
-  }
-
-  // An open alert counts with its own priority. A Low-priority alert adds no risk factor, but it
-  // still blocks approval until it is reviewed (see approvalBlockers).
-  for (const alert of file.alerts) {
-    if ((alert.status === 'Open' || alert.status === 'Escalated') && (alert.priority === 'High' || alert.priority === 'Medium')) {
-      factors.push({
-        description: `${alert.priority}-priority transaction alert ${alert.id} requires review`,
-        evidenceIds: [alert.id],
-        weight: alert.priority
-      });
-    }
   }
 
   const rating: RiskRating = factors.some(f => f.weight === 'High')
@@ -205,10 +192,6 @@ export function approvalBlockers(file: OnboardingFile, role: DemoRole): string[]
     if (result.disposition === SCREENING_DISPOSITION.potential) {
       blockers.push(`Screening ${result.id} needs a decision`);
     }
-  }
-
-  for (const alert of file.alerts) {
-    if (alert.status === 'Open') blockers.push(`Alert ${alert.id} has not been reviewed`);
   }
 
   const { riskRating, riskRationale } = file.onboarding;

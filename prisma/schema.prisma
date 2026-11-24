@@ -12,67 +12,11 @@ model Client {
   expectedMonthlyMax Int
   declaredWealth Int
   profile String
-  transactions Transaction[]
-  accounts Account[]
-  alerts Alert[]
   documents KYCDocument[]
   relationships Relationship[]
   onboarding OnboardingCase?
   identityDocuments IdentityDocument[]
   screeningResults ScreeningResult[]
-}
-model Account {
-  id String @id
-  clientId String @unique
-  client Client @relation(fields: [clientId], references: [id])
-  transactions Transaction[]
-}
-model Transaction {
-  id String @id
-  clientId String
-  client Client @relation(fields: [clientId], references: [id])
-  accountId String?
-  account Account? @relation(fields: [accountId], references: [id])
-  date String
-  amount Int
-  currency String
-  counterparty String
-}
-model Alert {
-  id String @id
-  clientId String
-  client Client @relation(fields: [clientId], references: [id])
-  scenario String
-  title String
-  priority String
-  status String
-  triggerTransactionId String
-  notes String @default("")
-  version Int @default(0)
-  analyses Analysis[]
-  events AuditEvent[]
-}
-model Analysis {
-  id Int @id @default(autoincrement())
-  alertId String
-  alert Alert @relation(fields: [alertId], references: [id])
-  mode String
-  model String @default("fixture")
-  promptVersion String @default("v1")
-  validation String @default("passed")
-  output String
-  rawResponse String?
-  inputSnapshot String?
-  createdAt DateTime @default(now())
-}
-model AuditEvent {
-  id Int @id @default(autoincrement())
-  alertId String
-  alert Alert @relation(fields: [alertId], references: [id])
-  actor String
-  action String
-  detail String
-  createdAt DateTime @default(now())
 }
 
 model KYCDocument {
@@ -92,6 +36,8 @@ model Relationship {
  entity String
  description String
 }
+// Stops two KYC memos being generated for the same file at once. The column is still called
+// alertId from when the table also served alert analyses; it holds an onboarding file ID.
 model AnalysisLock {
  alertId String @id
  token String

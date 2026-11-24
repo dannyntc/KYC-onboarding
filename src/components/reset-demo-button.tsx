@@ -28,7 +28,7 @@ export function ResetDemoButton() {
 
   return (
     <div className="resetdemo">
-      <button type="button" onClick={reset} disabled={pending}>
+      <button type="button" onClick={reset} disabled={pending} data-tour="reset-demo">
         {pending ? 'Resetting…' : 'Reset demo data'}
       </button>
       {error && <small role="alert">{error}</small>}

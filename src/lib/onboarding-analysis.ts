@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { checkGrounding } from './analysis';
 import {
   approvalBlockers,
   SCREENING_DISPOSITION,
@@ -9,6 +8,17 @@ import {
 } from './onboarding-rules';
 
 export const ONBOARDING_FIXTURE_VERSION = 'kyc-v1';
+
+const baseProhibited=[/\b(?:client|customer|account holder)\s+is\s+guilty\b/i,/\b(?:alert|case)\s+(?:has been|is|was)\s+(?:automatically\s+)?closed\b/i,/\b(?:funds|account)\s+(?:has been|have been|is|are|was|were)\s+frozen\b/i,/\b(?:suspicious transaction report|STR)\s+(?:has been|was|is)\s+filed\b/i];
+// Checks shared by every draft type, in this order: empty fields, prohibited determinations, unknown citations.
+export function checkGrounding(parts:{findings:{evidence_ids:string[]}[];textFields:string[];controls:{control_id:string}[]},evidenceIds:string[],controlIds:string[],extraProhibited:RegExp[]=[]) {
+ if(parts.textFields.some(value=>!value.trim())) return {success:false as const,error:'Analysis contains an empty field'};
+ const narrative=parts.textFields.join('\n');
+ if([...baseProhibited,...extraProhibited].some(pattern=>pattern.test(narrative))) return {success:false as const,error:'Analysis contains a prohibited final determination'};
+ if(parts.findings.some(f=>f.evidence_ids.some(id=>!evidenceIds.includes(id))) || parts.controls.some(c=>!controlIds.includes(c.control_id))) return {success:false as const,error:'Analysis cites an unavailable record'};
+ return {success:true as const};
+}
+
 
 const finding = z.object({ description: z.string(), evidence_ids: z.array(z.string()).min(1) });
 
@@ -125,14 +135,6 @@ export function onboardingFixture(file: OnboardingFile): OnboardingAnalysis {
       description: `Declared wealth of ${sgd(file.client.declaredWealth)} is fully corroborated by the supplied documents.`,
       evidence_ids: [file.client.id, ...wealthDocuments.filter(d => d.corroboratedAmount > 0).map(d => d.id)]
     });
-  }
-  for (const alert of file.alerts) {
-    if (alert.status !== 'Open' && alert.status !== 'Escalated') {
-      mitigating_factors.push({
-        description: `Transaction alert ${alert.id} has been reviewed by an analyst.`,
-        evidence_ids: [alert.id]
-      });
-    }
   }
 
   const needsDocuments = blockers.some(b => /^(Passport|National ID|Proof of address|Identity document)/.test(b));

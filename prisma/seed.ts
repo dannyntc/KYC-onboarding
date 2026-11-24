@@ -7,6 +7,6 @@ const prisma = new PrismaClient({adapter:new PrismaBetterSqlite3({url:databaseUr
 async function main() {
  // Explicit reset is the only workflow, besides the in-app reset button, that removes the demo audit history.
  const data = process.env.KYC_ONBOARDING_RESET === '1' ? await resetDemoData(prisma, 'sqlite') : await seedEmptyDatabase(prisma, 'npm run db:reset');
- console.log(`Seeded ${data.clients.length} clients, ${data.transactions.length} transactions and ${data.alerts.length} alerts.`);
+ console.log(`Seeded ${data.clients.length} clients and ${data.onboardingCases.length} onboarding files.`);
 }
 main().finally(()=>prisma.$disconnect());

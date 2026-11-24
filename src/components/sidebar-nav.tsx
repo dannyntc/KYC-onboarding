@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 
 const links = [
   { href: '/', icon: '▦', label: 'Onboarding queue', matches: (path: string) => path === '/' || path.startsWith('/onboarding') },
-  { href: '/alerts', icon: '⚑', label: 'Transaction alerts', matches: (path: string) => path.startsWith('/alerts') || path.startsWith('/cases') },
   { href: '/controls', icon: '▤', label: 'Regulatory library', matches: (path: string) => path.startsWith('/controls') }
 ];
 
@@ -12,7 +11,7 @@ const links = [
 export function SidebarNav() {
   const pathname = usePathname();
   return (
-    <nav>
+    <nav data-tour="sidebar-nav">
       {links.map(link => (
         <Link key={link.href} href={link.href} aria-current={link.matches(pathname) ? 'page' : undefined}>
           {link.icon} <span>{link.label}</span>

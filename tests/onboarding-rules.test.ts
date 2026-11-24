@@ -21,9 +21,6 @@ const setRating = (rating: string, text: string) => (copy: OnboardingFile) => {
   copy.onboarding.riskRating = rating;
   copy.onboarding.riskRationale = text;
 };
-const setAlertStatus = (status: string) => (copy: OnboardingFile) => {
-  for (const alert of copy.alerts) alert.status = status;
-};
 const setScreening = (id: string, disposition: string) => (copy: OnboardingFile) => {
   copy.screeningResults.find(r => r.id === id)!.disposition = disposition;
 };
@@ -39,33 +36,33 @@ describe('applicant stories from the seed', () => {
   }[] = [
     {
       caseId: 'ONB-001',
-      rating: 'High',
-      factors: ['High-priority transaction alert ALT-001 requires review'],
-      blockers: ['Alert ALT-001 has not been reviewed', needRating]
+      rating: 'Low',
+      factors: [],
+      blockers: [needRating]
     },
     {
       caseId: 'ONB-002',
       rating: 'High',
-      factors: ['SGD 5,000,000 of declared wealth not corroborated', 'High-priority transaction alert ALT-002 requires review'],
-      blockers: ['Alert ALT-002 has not been reviewed', needRating]
+      factors: ['SGD 5,000,000 of declared wealth not corroborated'],
+      blockers: [needRating]
     },
     {
       caseId: 'ONB-003',
       rating: 'Medium',
-      factors: ['Shared beneficial owner with CLI-007, CLI-011', 'Medium-priority transaction alert ALT-003 requires review'],
-      blockers: ['Alert ALT-003 has not been reviewed', needRating]
+      factors: ['Shared beneficial owner with CLI-007, CLI-011'],
+      blockers: [needRating]
     },
     {
       caseId: 'ONB-004',
       rating: 'Low',
       factors: [],
-      blockers: ['Alert ALT-004 has not been reviewed', needRating]
+      blockers: [needRating]
     },
     {
       caseId: 'ONB-005',
       rating: 'Medium',
-      factors: ['Shared beneficial owner with CLI-003, CLI-011', 'Medium-priority transaction alert ALT-007 requires review'],
-      blockers: ['Alert ALT-007 has not been reviewed', needRating]
+      factors: ['Shared beneficial owner with CLI-003, CLI-011'],
+      blockers: [needRating]
     },
     { caseId: 'ONB-006', rating: 'Low', factors: [], blockers: [needRating] },
     {
@@ -125,26 +122,12 @@ describe('applicant stories from the seed', () => {
     expect(second.evidenceIds).toEqual(['REL-002', 'REL-001', 'REL-003']);
   });
 
-  it('ONB-004 documents add up to the declared wealth, and reviewing ALT-004 lowers the suggestion to Low', () => {
+  it('ONB-004 documents add up to the declared wealth, so nothing raises the suggestion', () => {
     const file = buildFile('ONB-004');
-    const reviewed = change(file, setAlertStatus('In review'));
-    const suggestion = suggestRiskRating(reviewed);
+    const suggestion = suggestRiskRating(file);
     expect(suggestion.rating).toBe('Low');
     expect(suggestion.factors).toEqual([]);
-    expect(approvalBlockers(reviewed, 'analyst')).toEqual([needRating]);
-  });
-
-  it('ONB-001 is High from its High-priority alert, also when escalated, and drops once the alert is reviewed', () => {
-    const file = buildFile('ONB-001');
-    expect(suggestRiskRating(file).rating).toBe('High');
-    expect(suggestRiskRating(change(file, setAlertStatus('Escalated'))).rating).toBe('High');
-    expect(suggestRiskRating(change(file, setAlertStatus('In review'))).rating).toBe('Low');
-  });
-
-  it('a Low-priority alert (ONB-004) adds no risk factor but still blocks approval until reviewed', () => {
-    const file = buildFile('ONB-004');
-    expect(suggestRiskRating(file).factors).toEqual([]);
-    expect(approvalBlockers(file, 'analyst')).toContain('Alert ALT-004 has not been reviewed');
+    expect(approvalBlockers(file, 'analyst')).toEqual([needRating]);
   });
 
   it('ONB-006 can be approved once Low is recorded with reasons', () => {
@@ -225,21 +208,21 @@ describe('rule details', () => {
 });
 
 describe('edge cases', () => {
-  const reviewedOwnerFile = () => change(buildFile('ONB-003'), setAlertStatus('In review'));
+  const ownerFile = () => buildFile('ONB-003');
 
   it('blocks a downgrade without a full explanation', () => {
-    const short = change(reviewedOwnerFile(), setRating('Low', rationale25));
+    const short = change(ownerFile(), setRating('Low', rationale25));
     expect(approvalBlockers(short, 'analyst')).toEqual(['Explain why the rating is lower than suggested']);
     expect(() => onboardingTransition(short, 'approve', {}, 'analyst')).toThrow(/lower than suggested/);
 
-    const explained = change(reviewedOwnerFile(), setRating('Low', rationale60));
+    const explained = change(ownerFile(), setRating('Low', rationale60));
     expect(approvalBlockers(explained, 'analyst')).toEqual([]);
   });
 
   it('does not treat a matching or higher rating as a downgrade', () => {
-    const same = change(reviewedOwnerFile(), setRating('Medium', rationale25));
+    const same = change(ownerFile(), setRating('Medium', rationale25));
     expect(approvalBlockers(same, 'analyst')).toEqual([]);
-    const higher = change(reviewedOwnerFile(), setRating('High', rationale25));
+    const higher = change(ownerFile(), setRating('High', rationale25));
     expect(approvalBlockers(higher, 'analyst')).toEqual(['High-risk applicants need senior approval']);
   });
 
@@ -259,8 +242,8 @@ describe('edge cases', () => {
   });
 
   it('does not send a file to senior approval while other blockers remain', () => {
-    const file = change(buildFile('ONB-002'), setRating('High', rationale60));
-    expect(() => onboardingTransition(file, 'approve', {}, 'analyst')).toThrow(/Alert ALT-002/);
+    const file = change(buildFile('ONB-009'), setRating('High', rationale60));
+    expect(() => onboardingTransition(file, 'approve', {}, 'analyst')).toThrow(/Screening SCR-002/);
   });
 
   it('does not let an approved or rejected file be decided again', () => {

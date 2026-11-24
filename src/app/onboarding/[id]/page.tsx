@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation';
 import { CaseForm } from '@/components/case-form';
 import { EvidenceLink } from '@/components/evidence-link';
 import { OnboardingNote } from '@/components/onboarding-note';
-import { SwipeTable } from '@/components/swipe-table';
 import { currentRole } from '@/lib/demo-role';
 import { db } from '@/lib/db';
 import { loadOnboardingFile } from '@/lib/onboarding-file';
@@ -23,8 +22,6 @@ export const dynamic = 'force-dynamic';
 
 const money = (cents: number) =>
   new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 2 }).format(cents / 100);
-const transactionAmount = (cents: number, currency: string) =>
-  `${currency.trim() || 'Currency unavailable'} ${new Intl.NumberFormat('en-SG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(cents / 100)}`;
 
 const riskClass = (rating: string) => rating.toLowerCase();
 const identityClass = (status: string) => (status === 'Verified' ? 'low' : 'high');
@@ -102,24 +99,12 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
 
       <div className="casegrid">
         <div className="stack">
-          <section className="panel section">
+          <section className="panel section" data-tour="overview">
             <h2>Applicant overview</h2>
             <div className="meta">
               <div id={client.id}>
                 <span>CLIENT ID</span>
                 <strong>{client.id}</strong>
-              </div>
-              <div>
-                <span>ACCOUNT</span>
-                <strong>
-                  {client.accounts.length
-                    ? client.accounts.map(account => (
-                        <span id={account.id} key={account.id}>
-                          {account.id}
-                        </span>
-                      ))
-                    : 'Unavailable'}
-                </strong>
               </div>
               <div>
                 <span>APPLICATION DATE</span>
@@ -163,10 +148,12 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                 </div>
               </div>
             ))}
-            <ReferenceList keys={['identity_verification']} />
+            <div data-tour="regulatory-refs">
+              <ReferenceList keys={['identity_verification']} />
+            </div>
           </section>
 
-          <section className="panel section">
+          <section className="panel section" data-tour="ownership">
             <h2>Beneficial ownership</h2>
             {client.relationships.length === 0 && <p className="muted">No ownership relationships recorded.</p>}
             {client.relationships.map(r => (
@@ -195,15 +182,6 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
                     ) : (
                       r.client.name
                     )}
-                  </Field>
-                  <Field label="ACCOUNT">
-                    {r.client.accounts.length
-                      ? r.client.accounts.map(account => (
-                          <span id={account.id} key={account.id}>
-                            {account.id}
-                          </span>
-                        ))
-                      : 'Unavailable'}
                   </Field>
                   <Field label="DESCRIPTION" wide>
                     {r.description}
@@ -286,73 +264,10 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
             <ReferenceList keys={['source_of_wealth']} />
           </section>
 
-          <section className="panel section" data-tour="aml-funding">
-            <h2>Initial Transactions &amp; activity since application (AML)</h2>
-            <p className="muted">Transaction alerts raised on this applicant&apos;s first activity. Each opens the alert investigation page.</p>
-            {client.alerts.length === 0 ? (
-              <p className="muted">No transaction alerts raised</p>
-            ) : (
-              <SwipeTable>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>ALERT</th>
-                      <th className="title">TITLE</th>
-                      <th>PRIORITY</th>
-                      <th>STATUS</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {client.alerts.map(alert => (
-                      <tr key={alert.id} id={alert.id}>
-                        <td>
-                          <Link className="caseid" href={`/cases/${alert.id}`}>
-                            {alert.id}
-                          </Link>
-                        </td>
-                        <td className="title">{alert.title}</td>
-                        <td>
-                          <span className={`badge ${alert.priority.toLowerCase()}`}>{alert.priority}</span>
-                        </td>
-                        <td>{alert.status}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </SwipeTable>
-            )}
-            <h3>Account activity</h3>
-            <p className="muted">Amounts use the recorded currency · negative values are outgoing</p>
-            <SwipeTable>
-              <table>
-                <thead>
-                  <tr>
-                    <th>REFERENCE</th>
-                    <th>DATE</th>
-                    <th>COUNTERPARTY</th>
-                    <th className="amount">AMOUNT</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {client.transactions.map(t => (
-                    <tr key={t.id} id={t.id}>
-                      <td>
-                        <strong>{t.id}</strong>
-                        {client.alerts.some(alert => alert.triggerTransactionId === t.id) && <small>Alert trigger</small>}
-                      </td>
-                      <td>{t.date}</td>
-                      <td className="counterparty">{t.counterparty}</td>
-                      <td className="amount">{transactionAmount(t.amount, t.currency)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </SwipeTable>
-          </section>
         </div>
 
         <div className="stack">
-          <section className="panel section">
+          <section className="panel section" data-tour="risk-assessment">
             <h2>Risk assessment</h2>
             <div className="meta fields" style={{ marginBottom: 14 }}>
               <Field label="SUGGESTED RATING">
@@ -535,7 +450,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
             )}
           </section>
 
-          <section className="panel section">
+          <section className="panel section" data-tour="memo-history">
             <h2>Memo history</h2>
             {row.analyses.length === 0 ? (
               <p className="muted">No KYC memos yet.</p>
@@ -554,7 +469,7 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
             )}
           </section>
 
-          <section className="panel section">
+          <section className="panel section" data-tour="audit-history">
             <h2>Audit history</h2>
             {row.events.length === 0 ? (
               <p className="muted">No review activity recorded yet.</p>

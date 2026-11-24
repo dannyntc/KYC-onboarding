@@ -14,9 +14,6 @@ const TRANSACTION_OPTIONS = { maxWait: 15000, timeout: 60000 };
 async function insertStartingData(tx: Tx) {
   const data = createSeed();
   await tx.client.createMany({ data: data.clients });
-  await tx.account.createMany({ data: data.accounts });
-  await tx.transaction.createMany({ data: data.transactions });
-  await tx.alert.createMany({ data: data.alerts });
   await tx.kYCDocument.createMany({ data: data.documents });
   await tx.relationship.createMany({ data: data.relationships });
   await tx.onboardingCase.createMany({ data: data.onboardingCases });
@@ -27,8 +24,7 @@ async function insertStartingData(tx: Tx) {
 
 async function demoRowCount(tx: Tx): Promise<number> {
   const counts = await Promise.all([
-    tx.client.count(), tx.account.count(), tx.transaction.count(), tx.alert.count(), tx.analysis.count(),
-    tx.auditEvent.count(), tx.kYCDocument.count(), tx.relationship.count(), tx.analysisLock.count(),
+    tx.client.count(), tx.kYCDocument.count(), tx.relationship.count(), tx.analysisLock.count(),
     tx.onboardingCase.count(), tx.identityDocument.count(), tx.screeningResult.count(),
     tx.onboardingEvent.count(), tx.onboardingAnalysis.count()
   ]);
@@ -45,25 +41,17 @@ async function deleteAllDemoData(tx: Tx) {
   await tx.analysisLock.deleteMany();
   await tx.relationship.deleteMany();
   await tx.kYCDocument.deleteMany();
-  await tx.auditEvent.deleteMany();
-  await tx.analysis.deleteMany();
-  await tx.alert.deleteMany();
-  await tx.transaction.deleteMany();
-  await tx.account.deleteMany();
   await tx.client.deleteMany();
 }
 
-// The audit tables are append-only (database triggers refuse updates and deletes). A reset is the
-// only workflow allowed to clear them: it drops the triggers, deletes, and recreates them, all in
+// The audit table is append-only (database triggers refuse updates and deletes). A reset is the
+// only workflow allowed to clear it: it drops the triggers, deletes, and recreates them, all in
 // one transaction, so a failed reset leaves the triggers and the data exactly as they were.
 async function resetSqlite(tx: Tx) {
-  for (const name of ['audit_event_no_update', 'audit_event_no_delete', 'audit_event_no_replace', 'onboarding_event_no_update', 'onboarding_event_no_delete', 'onboarding_event_no_replace']) {
+  for (const name of ['onboarding_event_no_update', 'onboarding_event_no_delete', 'onboarding_event_no_replace']) {
     await tx.$executeRawUnsafe(`DROP TRIGGER IF EXISTS "${name}"`);
   }
   await deleteAllDemoData(tx);
-  await tx.$executeRawUnsafe(`CREATE TRIGGER "audit_event_no_update" BEFORE UPDATE ON "AuditEvent" BEGIN SELECT RAISE(ABORT, 'Audit events are append-only'); END`);
-  await tx.$executeRawUnsafe(`CREATE TRIGGER "audit_event_no_delete" BEFORE DELETE ON "AuditEvent" BEGIN SELECT RAISE(ABORT, 'Audit events are append-only'); END`);
-  await tx.$executeRawUnsafe(`CREATE TRIGGER "audit_event_no_replace" BEFORE INSERT ON "AuditEvent" WHEN EXISTS (SELECT 1 FROM "AuditEvent" WHERE "id" = NEW."id") BEGIN SELECT RAISE(ABORT, 'Audit events are append-only'); END`);
   await tx.$executeRawUnsafe(`CREATE TRIGGER "onboarding_event_no_update" BEFORE UPDATE ON "OnboardingEvent" BEGIN SELECT RAISE(ABORT, 'Onboarding events are append-only'); END`);
   await tx.$executeRawUnsafe(`CREATE TRIGGER "onboarding_event_no_delete" BEFORE DELETE ON "OnboardingEvent" BEGIN SELECT RAISE(ABORT, 'Onboarding events are append-only'); END`);
   await tx.$executeRawUnsafe(`CREATE TRIGGER "onboarding_event_no_replace" BEFORE INSERT ON "OnboardingEvent" WHEN EXISTS (SELECT 1 FROM "OnboardingEvent" WHERE "id" = NEW."id") BEGIN SELECT RAISE(ABORT, 'Onboarding events are append-only'); END`);

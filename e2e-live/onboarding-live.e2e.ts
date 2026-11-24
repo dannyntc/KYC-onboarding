@@ -63,3 +63,40 @@ test('live KYC drafts are labelled, bad drafts are rejected, and a provider outa
   await expect(page.getByText('Rejected', { exact: true })).toBeVisible();
   await expect(page.getByText('resp-onboarding_approve')).toBeVisible();
 });
+
+test('garbled, blank, wrongly cited and timed-out AI answers are each kept as failed attempts', async ({ page, request }) => {
+  test.setTimeout(90000);
+  async function mode(value: string) {
+    expect((await request.post('http://127.0.0.1:3106/mode', { data: { mode: value } })).ok()).toBeTruthy();
+  }
+  const caseId = 'ONB-009';
+  await mode('onboarding');
+  await page.goto(`/onboarding/${caseId}`);
+  await page.getByRole('button', { name: 'Generate AI KYC memo' }).click();
+  await expect(page.getByText('Simulated live KYC draft', { exact: true })).toBeVisible();
+
+  const cases = [
+    ['malformed', 'rejected'],
+    ['blank', 'rejected'],
+    ['invalid_citation', 'rejected'],
+    ['timeout', 'provider_error']
+  ] as const;
+  try {
+    for (const [providerMode, validation] of cases) {
+      await mode(providerMode);
+      await page.getByRole('button', { name: 'Generate AI KYC memo' }).click();
+      await expect(page.locator('p.form-error')).toContainText(/Previous memos are preserved|invalid citations|empty field/, {
+        timeout: providerMode === 'timeout' ? 45000 : 5000
+      });
+      await expect(page.getByText('Simulated live KYC draft', { exact: true })).toBeVisible();
+      const failed = (await db.onboardingAnalysis.findMany({ where: { onboardingCaseId: caseId }, orderBy: { id: 'asc' } })).at(-1)!;
+      expect(failed, providerMode).toMatchObject({ mode: 'live', validation });
+      if (providerMode === 'timeout') expect(failed.rawResponse).toBeNull();
+      else expect(JSON.parse(failed.rawResponse!).id).toBe(`resp-${providerMode}`);
+    }
+  } finally {
+    await mode('onboarding');
+  }
+  expect(await db.onboardingEvent.count({ where: { onboardingCaseId: caseId, action: 'AI KYC memo failed' } })).toBe(4);
+  expect(await db.analysisLock.count({ where: { alertId: caseId } })).toBe(0);
+});

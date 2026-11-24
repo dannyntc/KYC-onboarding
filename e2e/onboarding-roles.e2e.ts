@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('the read-only role cannot change an onboarding file', async ({ page }) => {
-  await page.goto('/alerts');
+  await page.goto('/controls');
   await page.getByLabel('Demo role (not authentication)').selectOption('read-only');
   await page.getByRole('button', { name: 'Switch role' }).click();
   const response = await page.request.post('/api/onboarding', {

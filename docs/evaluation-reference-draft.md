@@ -6,54 +6,51 @@ This draft is based on `createSeed()` in `src/lib/seed-data.ts`. Amounts below a
 
 "Suggested rating" below is what the application's simple rules produce from the seeded records, not a view on the right answer. The reviewer decides what a competent analyst should conclude.
 
-## ONB-001 — rapid initial funding (CLI-001, Amelia Tan)
+## ONB-001 — clean file, wealth from employment income (CLI-001, Amelia Tan)
 
 **Recorded facts to check**
 
 - Applied 2025-12-15 with declared wealth of SGD 4,500,000 and expected monthly activity of SGD 50,000–100,000.
 - `IDV-001` (passport) and `IDV-002` (proof of address) are verified. There are no screening hits. `DOC-101` records employment income corroborating SGD 4,500,000; `DOC-001` is a profile declaration with no corroborated amount.
-- `TXN-013` records an incoming SGD 1,200,000 from "New third party" on 2026-05-10. `TXN-014` records an outgoing SGD 850,000 to "Fictional counterparty" on 2026-05-11. Both use `ACC-CLI-001`. `ALT-001` is raised on these.
 
 **Questions and limits**
 
-- Suggested rating is High while the High-priority `ALT-001` is open, and approval is blocked until it is reviewed. The amounts and timing do not establish a connection between the two payments, their purpose, or wrongdoing.
-- The source and purpose of the incoming funds, and the recipient and purpose of the outgoing payment, need human review.
+- Suggested rating is Low with no risk factors. A clean file still needs a recorded rating with reasons before approval.
 
 ## ONB-002 — source-of-wealth gap (CLI-002, Daniel Lim)
 
 **Recorded facts to check**
 
 - Applied 2025-12-16. Declares SGD 8,000,000 from a company sale. `IDV-003` and `IDV-004` are verified; there are no screening hits.
-- `DOC-002` is a fictional company-sale extract that records SGD 3,000,000, so SGD 5,000,000 of declared wealth is not corroborated. `TXN-027` records an incoming SGD 210,000 on 2026-05-10. `ALT-002` is raised.
+- `DOC-002` is a fictional company-sale extract that records SGD 3,000,000, so SGD 5,000,000 of declared wealth is not corroborated.
 
 **Questions and limits**
 
-- Suggested rating is High because of the SGD 5,000,000 not corroborated. The difference is not proof that the amount is illicit or that no other supporting records exist. Request further evidence of the sale proceeds and the funds trail.
-- The extract supports the SGD 3,000,000 figure; it does not by itself establish the source or purpose of `TXN-027`, the buyer, the sale date or the payment trail.
+- Suggested rating is High because of the SGD 5,000,000 not corroborated. The difference is not proof that the amount is illicit or that no other supporting records exist. Request further evidence of the sale proceeds.
+- The extract supports the SGD 3,000,000 figure; it does not by itself establish the buyer, the sale date or the payment trail.
 
 ## ONB-003 and ONB-005 — shared beneficial owner (CLI-003 Priya Menon, CLI-007 Nadia Rahman)
 
 **Recorded facts to check**
 
 - `REL-001` (CLI-003), `REL-002` (CLI-007) and `REL-003` (CLI-011) each name Morgan Vale and Cedar Harbour Holdings. CLI-011 is not one of the twelve applicants.
-- Both applicants declare SGD 4,500,000. `DOC-102` (CLI-003) and `DOC-104` (CLI-007) are investment portfolio statements for SGD 4,500,000; `DOC-003` and `DOC-007` are profile declarations. `TXN-041` and `TXN-097` are incoming SGD 210,000 payments on 2026-05-10, with `ALT-003` and `ALT-007` raised.
+- Both applicants declare SGD 4,500,000. `DOC-102` (CLI-003) and `DOC-104` (CLI-007) are investment portfolio statements for SGD 4,500,000; `DOC-003` and `DOC-007` are profile declarations.
 
 **Questions and limits**
 
-- Suggested rating is Medium for the shared owner and the open alert. Matching names and entity names do not by themselves establish transfers among the clients, common control of their accounts, or wrongdoing. Verify the ownership, identities, whether the records are current, and relevance to the payment.
+- Suggested rating is Medium for the shared owner. Matching names and entity names do not by themselves establish common control or wrongdoing. Verify the ownership, identities and whether the records are current.
 
-## ONB-004 — funds explained by a property sale (CLI-004, Marcus Lee)
+## ONB-004 — wealth documented by a property sale (CLI-004, Marcus Lee)
 
 **Recorded facts to check**
 
 - Applied 2025-12-18, declared wealth SGD 4,500,000. `DOC-004` is a fictional property-sale agreement summary (seller Marcus Lee, buyer Harbour Property Buyer, completion 2026-05-10, proceeds SGD 2,500,000, settlement trail not supplied). `DOC-103` records employment income of SGD 2,000,000. Together they equal the declared wealth.
-- `TXN-055` records an incoming SGD 2,500,000 from "Harbour Property Buyer" on 2026-05-10. `ALT-004` is raised.
 
 **Questions and limits**
 
-- Suggested rating is Low: `ALT-004` is Low priority, so it adds no risk factor, but approval stays blocked until it is reviewed. The matching amount, buyer and date are potentially mitigating, but the summary alone does not prove the agreement, payer, settlement and transaction are linked. Do not claim the funds are fully explained solely because the amounts match.
+- Suggested rating is Low: the documents add up to the declared wealth. The agreement summary alone does not prove the sale or its settlement, and the settlement trail was not supplied.
 
-## ONB-006 to ONB-012 — files without transaction alerts
+## ONB-006 to ONB-012 — other files
 
 | File | Applicant | Recorded facts to check | Suggested rating before analyst decisions | Questions and limits |
 | --- | --- | --- | --- | --- |

@@ -32,8 +32,7 @@ export function buildFile(caseId: string): OnboardingFile {
       .filter(d => d.clientId === client.id)
       .map(d => ({ id: d.id, kind: d.kind, corroboratedAmount: d.corroboratedAmount })),
     relationships,
-    relatedRelationships,
-    alerts: seed.alerts.filter(a => a.clientId === client.id).map(a => ({ id: a.id, status: a.status, priority: a.priority }))
+    relatedRelationships
   };
 }
 

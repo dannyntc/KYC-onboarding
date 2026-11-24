@@ -3,13 +3,12 @@ import { db } from '../src/lib/db';
 
 const ONLINE_ORIGIN = 'https://kyc-onboarding-dannyntc.vercel.app';
 
-// Counts the tables a save would change. Look-only mode must leave all four untouched.
+// Counts the tables a save would change. Look-only mode must leave them untouched.
 async function rowCounts() {
   return {
-    analysis: await db.analysis.count(),
+    onboardingCase: await db.onboardingCase.count(),
     onboardingAnalysis: await db.onboardingAnalysis.count(),
-    onboardingEvent: await db.onboardingEvent.count(),
-    auditEvent: await db.auditEvent.count()
+    onboardingEvent: await db.onboardingEvent.count()
   };
 }
 
@@ -73,29 +72,13 @@ test('KYC file save buttons are disabled with a caption, and the draft is an uns
   expect(await rowCounts()).toEqual(before);
 });
 
-test('the alert page is look-only too, with an unsaved draft preview', async ({ page }) => {
-  const before = await rowCounts();
-  await page.goto('/cases/ALT-001');
-  await expectSaveButtonsDisabled(page);
-  await expect(page.getByRole('button', { name: 'Generate draft alert memo' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Save review' })).toBeDisabled();
-  await expect(page.locator('.notice', { hasText: 'Preview of the template memo (not saved)' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Suggested action' })).toBeVisible();
-  expect(await rowCounts()).toEqual(before);
-});
-
-test('opening every KYC file and alert page writes nothing to the database', async ({ page }) => {
+test('opening every KYC file writes nothing to the database', async ({ page }) => {
   const before = await rowCounts();
   const cases = await db.onboardingCase.findMany({ select: { id: true }, orderBy: { id: 'asc' } });
-  const alerts = await db.alert.findMany({ select: { id: true }, orderBy: { id: 'asc' } });
   expect(cases.length).toBe(12);
   for (const { id } of cases) {
     await page.goto(`/onboarding/${id}`);
     await expect(page.locator('.draft')).toContainText('Preview of the template memo (not saved)');
-  }
-  for (const { id } of alerts) {
-    await page.goto(`/cases/${id}`);
-    await expect(page.locator('.notice', { hasText: 'Preview of the template memo (not saved)' })).toBeVisible();
   }
   expect(await rowCounts()).toEqual(before);
 });
@@ -104,7 +87,6 @@ test('in look-only mode, saves and resets are refused even from the site itself'
   const before = await rowCounts();
   const own = { origin: baseURL! };
   expect((await request.post('/api/onboarding', { headers: own, form: { id: 'ONB-006', action: 'analyze' } })).status()).toBe(403);
-  expect((await request.post('/api/action', { headers: own, form: { id: 'ALT-001', action: 'analyze' } })).status()).toBe(403);
   expect((await request.post('/api/reset', { headers: own })).status()).toBe(403);
   expect(await rowCounts()).toEqual(before);
 });
@@ -116,8 +98,6 @@ test('direct saves from another website are refused', async ({ request }) => {
   expect(draft.status()).toBe(403);
   const approve = await request.post('/api/onboarding', { headers, form: { id: 'ONB-006', action: 'approve' } });
   expect(approve.status()).toBe(403);
-  const alertDraft = await request.post('/api/action', { headers, form: { id: 'ALT-001', action: 'analyze' } });
-  expect(alertDraft.status()).toBe(403);
   expect(await rowCounts()).toEqual(before);
 });
 

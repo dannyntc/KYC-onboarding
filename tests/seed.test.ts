@@ -2,45 +2,22 @@ import { createHash } from 'node:crypto';
 import { describe, it, expect } from 'vitest';
 import { createSeed } from '../src/lib/seed-data';
 
-describe('synthetic seed', () => {
-  it('is repeatable and contains 30 clients, 420 transactions and 12 alerts', () => {
+describe('demo seed', () => {
+  it('is repeatable and holds the 12 applicants plus one related existing client', () => {
     const first = createSeed();
     expect(first).toEqual(createSeed());
-    expect(first.clients).toHaveLength(30);
-    expect(first.transactions).toHaveLength(420);
-    expect(first.alerts).toHaveLength(12);
-    expect(new Set(first.alerts.map(a => a.scenario)).size).toBe(4);
-    expect(new Set(first.transactions.map(t => t.id)).size).toBe(420);
+    expect(first.clients.map(c => c.id)).toEqual([
+      'CLI-001', 'CLI-002', 'CLI-003', 'CLI-004', 'CLI-007', 'CLI-011', 'CLI-013',
+      'CLI-014', 'CLI-015', 'CLI-016', 'CLI-017', 'CLI-018', 'CLI-019'
+    ]);
+    expect(first.clients.find(c => c.id === 'CLI-011')?.name).toBe('Mei Lin Chua');
   });
 });
-it('provides stable source documents and shared ownership evidence for scenario cases', () => {
+it('provides stable source documents and shared ownership evidence', () => {
  const data=createSeed();
  expect(data.documents.find(d=>d.clientId==='CLI-002')?.corroboratedAmount).toBe(300000000);
- expect(data.relationships.filter(r=>r.owner==='Morgan Vale').length).toBeGreaterThanOrEqual(2);
+ expect(data.relationships.filter(r=>r.owner==='Morgan Vale').map(r=>r.clientId)).toEqual(['CLI-003','CLI-007','CLI-011']);
  expect(data.documents.find(d=>d.clientId==='CLI-004')?.kind).toBe('property_sale');
-});
-it('flags a rapid movement only when a large inflow is followed by an outflow within 48 hours',async()=>{
- const {isRapidMovement}=await import('../src/lib/rules');
- expect(isRapidMovement(120000000,'2026-05-10',-85000000,'2026-05-11',10000000)).toBe(true);
- expect(isRapidMovement(120000000,'2026-05-10',-85000000,'2026-05-13',10000000)).toBe(false);
- expect(isRapidMovement(9000000,'2026-05-10',-85000000,'2026-05-11',10000000)).toBe(false);
-});
-it('derives scenario alerts from the evidence rather than the client position',async()=>{
- const {detectScenarios}=await import('../src/lib/rules');
- const client={expectedMonthlyMax:100,declaredWealth:800};
- const inflow={amount:1200,date:'2026-05-10',currency:'SGD'};
- const outflow={amount:-850,date:'2026-05-11',currency:'SGD'};
- expect(detectScenarios(client,[inflow,outflow],[],[])).toEqual(['rapid_movement']);
- expect(detectScenarios(client,[{...inflow,amount:50}],[],[])).toEqual([]);
- expect(detectScenarios(client,[inflow],[{kind:'company_sale',corroboratedAmount:300}],[])).toEqual(['wealth_gap']);
- expect(detectScenarios(client,[inflow],[],[{owner:'Owner',entity:'Holding',clientId:'A'},{owner:'Owner',entity:'Holding',clientId:'B'}])).toEqual(['linked_ownership']);
- expect(detectScenarios(client,[inflow],[{kind:'property_sale',corroboratedAmount:1200}],[])).toEqual(['documented_sale']);
-});
-it('assigns every fictional transaction to an account owned by the same client',()=>{
- const {clients,accounts,transactions}=createSeed();
- expect(accounts).toHaveLength(clients.length);
- expect(new Set(accounts.map(a=>a.id)).size).toBe(accounts.length);
- for(const transaction of transactions) expect(accounts.find(a=>a.id===transaction.accountId)?.clientId).toBe(transaction.clientId);
 });
 it('records that the wealth-gap client declares the company sale as the source of SGD 8 million',()=>{
  const data=createSeed();
@@ -49,15 +26,13 @@ it('records that the wealth-gap client declares the company sale as the source o
  expect(client.profile).toMatch(/declares.*SGD 8 million.*company sale/i);
  expect(data.documents.find(d=>d.clientId===client.id)?.corroboratedAmount).toBe(300000000);
 });
-it('provides property-sale details consistent with the documented-sale transaction',()=>{
+it('records the property sale behind the documented wealth of CLI-004',()=>{
  const data=createSeed();
  const client=data.clients.find(c=>c.id==='CLI-004')!;
  const doc=data.documents.find(d=>d.id==='DOC-004')!;
- const txn=data.transactions.find(t=>t.id==='TXN-055')!;
  expect(doc.summary).toContain(client.name);
- expect(doc.summary).toContain(txn.counterparty);
- expect(doc.summary).toContain(txn.date);
- expect(doc.corroboratedAmount).toBe(txn.amount);
+ expect(doc.summary).toContain('proceeds SGD 2,500,000');
+ expect(doc.corroboratedAmount).toBe(250000000);
  expect(doc.summary).toMatch(/settlement trail.*not supplied/i);
 });
 
@@ -66,17 +41,14 @@ function fingerprint(value: unknown) {
 }
 
 describe('KYC onboarding seed', () => {
-  it('keeps the original alert seed byte-for-byte identical and only appends', () => {
+  it('keeps the demo records unchanged', () => {
     const data = createSeed();
-    // Fingerprints taken from the seed before the onboarding data was added, updated when the words
-    // "Fictional" and "Synthetic" were removed from record text (the data was otherwise byte-for-byte identical).
-    expect(fingerprint(data.clients)).toBe('0ce098e2ebba4e179fcd12b1008cfaea1f2f9d3f3ad47dbf3c4add0b216f426a');
-    expect(fingerprint(data.accounts)).toBe('1ef64955462c84be8b7e21e7a9ee2e7acf08d908103f1972ae9f5abef70bedd4');
-    expect(fingerprint(data.transactions)).toBe('5e7c68288fc0fdccda148483b808145b5a9229d36beaa4102edcef985e62fceb');
-    expect(fingerprint(data.alerts)).toBe('6bdfa9af64519fb1e14e98693dfa87a28cb4f24f9c704573037f88e9f7e41fbd');
+    // Updated when transaction alerts, transactions, accounts and the people who existed only for alerts
+    // were removed; every remaining record was checked to be byte-for-byte identical to before.
+    expect(fingerprint(data.clients)).toBe('157fa19e8478478f5892dea26ff68bcf3b13141db6fe2da599628227ed7432b3');
     expect(fingerprint(data.relationships)).toBe('a0e0d17ff21095ead7f68194a177f141e27ab0805600304707ee37ea40f1e20a');
-    expect(fingerprint(data.documents.slice(0, 12))).toBe('5924f435612ad63b80e04aa0d19b662fee2bb105d9865abe50ab9710783f270a');
-    expect(data.documents.slice(12)).toEqual(data.supplementalDocuments);
+    expect(fingerprint(data.documents.slice(0, 6))).toBe('c4bcbe5423303d833836a4f1f045ee91f28f89f3b592e35852c81e0aeba9b20b');
+    expect(data.documents.slice(6)).toEqual(data.supplementalDocuments);
   });
 
   it('has 12 onboarding cases for existing clients, with unique IDs everywhere', () => {
@@ -135,14 +107,6 @@ describe('KYC onboarding seed', () => {
     expect(data.identityDocuments.filter(d => d.kind === 'passport').every(d => d.expiresOn !== null)).toBe(true);
   });
 
-  it('applies before any activity on the account, so money never moves before the application', () => {
-    const data = createSeed();
-    for (const onboarding of data.onboardingCases) {
-      const dates = data.transactions.filter(t => t.clientId === onboarding.clientId).map(t => t.date);
-      expect(dates.every(date => date > onboarding.applicationDate), onboarding.id).toBe(true);
-    }
-  });
-
   it('uses only new document kinds for supplemental documents and matches declared wealth', () => {
     const data = createSeed();
     expect(data.supplementalDocuments.map(d => d.id)).toEqual(
@@ -160,6 +124,5 @@ describe('KYC onboarding seed', () => {
       // CLI-002 is the source-of-wealth gap story: SGD 3m documented against SGD 8m declared.
       expect(corroborated).toBe(client.id === 'CLI-002' ? 300000000 : client.declaredWealth);
     }
-    expect(data.alerts).toHaveLength(12);
   });
 });

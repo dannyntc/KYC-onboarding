@@ -178,12 +178,9 @@ export async function POST(request: Request) {
       const current = await tx.onboardingCase.findUnique({ where: { id } });
       if (!current || current.version !== version) throw new Error('stale');
 
-      // Re-read everything an action or a parallel alert review can change, so the rules see current data.
+      // Re-read the screening results, which an action can change, so the rules see current data.
       // Documents, identity records and ownership cannot be changed from the screens, so the earlier load is used.
-      const [screeningResults, alerts] = await Promise.all([
-        tx.screeningResult.findMany({ where: { clientId: current.clientId }, orderBy: { id: 'asc' } }),
-        tx.alert.findMany({ where: { clientId: current.clientId }, orderBy: { id: 'asc' } })
-      ]);
+      const screeningResults = await tx.screeningResult.findMany({ where: { clientId: current.clientId }, orderBy: { id: 'asc' } });
       const file: OnboardingFile = {
         ...loaded.file,
         onboarding: {
@@ -199,8 +196,7 @@ export async function POST(request: Request) {
           matchStrength: s.matchStrength,
           disposition: s.disposition,
           dispositionReason: s.dispositionReason
-        })),
-        alerts: alerts.map(a => ({ id: a.id, status: a.status, priority: a.priority }))
+        }))
       };
 
       const change = onboardingTransition(file, action as OnboardingAction, input, role);

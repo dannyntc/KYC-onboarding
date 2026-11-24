@@ -9,13 +9,10 @@ export async function loadOnboardingFile(id: string) {
     include: {
       client: {
         include: {
-          accounts: { orderBy: { id: 'asc' } },
-          transactions: { orderBy: [{ date: 'desc' }, { id: 'asc' }] },
           documents: { orderBy: { id: 'asc' } },
           relationships: { orderBy: { id: 'asc' } },
           identityDocuments: { orderBy: { id: 'asc' } },
-          screeningResults: { orderBy: { id: 'asc' } },
-          alerts: { orderBy: { id: 'asc' } }
+          screeningResults: { orderBy: { id: 'asc' } }
         }
       },
       events: { orderBy: { id: 'desc' } },
@@ -70,8 +67,7 @@ export async function loadOnboardingFile(id: string) {
       clientId: r.clientId,
       owner: r.owner,
       entity: r.entity
-    })),
-    alerts: client.alerts.map(a => ({ id: a.id, status: a.status, priority: a.priority }))
+    }))
   };
 
   return { file, row, related: relatedWithFile };
@@ -85,13 +81,10 @@ export function evidenceIdsFor(loaded: LoadedOnboardingFile): string[] {
   const client = row.client;
   return [
     client.id,
-    ...client.accounts.map(a => a.id),
     ...client.identityDocuments.map(d => d.id),
     ...client.screeningResults.map(s => s.id),
     ...client.documents.map(d => d.id),
     ...client.relationships.map(r => r.id),
-    ...related.flatMap(r => [r.id, ...r.client.accounts.map(a => a.id)]),
-    ...client.alerts.map(a => a.id),
-    ...client.transactions.map(t => t.id)
+    ...related.map(r => r.id)
   ];
 }

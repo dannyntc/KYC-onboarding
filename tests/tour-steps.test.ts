@@ -5,29 +5,33 @@ import { TOUR_STEPS, tourText } from '../src/lib/tour-steps';
 
 const seed = createSeed();
 const onboardingIds = seed.onboardingCases.map(c => c.id);
-const alertIds = seed.alerts.map(a => a.id);
 const read = (path: string) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
 // The source file(s) that must carry each step's data-tour attribute.
 function sourceFor(page: string): string {
-  const layout = read('src/app/layout.tsx');
+  // The layout and the sidebar parts it draws appear on every page.
+  const layout = read('src/app/layout.tsx') + read('src/components/sidebar-nav.tsx') + read('src/components/reset-demo-button.tsx');
   if (page === '/') return read('src/app/page.tsx') + layout;
   if (page.startsWith('/onboarding/')) return read('src/app/onboarding/[id]/page.tsx') + layout;
-  return read('src/app/cases/[id]/page.tsx') + layout;
+  if (page === '/controls') return read('src/app/controls/page.tsx') + layout;
+  throw new Error(`Unknown tour page ${page}`);
 }
 
 describe('tour steps', () => {
-  it('has 14 steps, and only the first two (About this demo, Welcome) are centred', () => {
-    expect(TOUR_STEPS).toHaveLength(14);
-    expect(TOUR_STEPS.map(step => step.target === null)).toEqual(TOUR_STEPS.map((_, index) => index <= 1));
+  it('has 25 steps, and only the first two (About this demo, Welcome) and the last are centred', () => {
+    expect(TOUR_STEPS).toHaveLength(25);
+    expect(TOUR_STEPS.map(step => step.target === null)).toEqual(TOUR_STEPS.map((_, index) => index <= 1 || index === 24));
+  });
+
+  it('visits every page of the app', () => {
+    expect(new Set(TOUR_STEPS.map(step => step.page.split('/')[1]))).toEqual(new Set(['', 'onboarding', 'controls']));
   });
 
   it('only visits pages that exist in the demo data', () => {
     for (const step of TOUR_STEPS) {
       const [, section, id] = step.page.split('/');
-      if (step.page === '/') continue;
+      if (step.page === '/' || step.page === '/controls') continue;
       if (section === 'onboarding') expect(onboardingIds).toContain(id);
-      else if (section === 'cases') expect(alertIds).toContain(id);
       else throw new Error(`Unknown tour page ${step.page}`);
     }
   });
@@ -81,11 +85,10 @@ describe('tour steps', () => {
     expect(tourText(step, true)).not.toContain('turned off');
   });
 
-  it('explains KYC, sanctions, PEP and AML where they first appear', () => {
+  it('explains KYC, sanctions and PEP where they first appear', () => {
     const first = (word: string) => TOUR_STEPS.findIndex(step => step.text.includes(word));
     expect(TOUR_STEPS[first('KYC')].text).toContain('know your customer');
     expect(TOUR_STEPS[first('sanctions')].text).toMatch(/sanctions list \(/);
     expect(TOUR_STEPS[first('PEP')].text).toContain('politically exposed person');
-    expect(TOUR_STEPS[first('AML')].text).toContain('anti-money-laundering');
   });
 });

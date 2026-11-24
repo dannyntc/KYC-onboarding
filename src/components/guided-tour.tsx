@@ -4,29 +4,23 @@ import 'driver.js/dist/driver.css';
 import { Suspense, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { driver, type Driver } from 'driver.js';
-import { TOUR_STEPS, tourText } from '@/lib/tour-steps';
+import { TOUR_STEPS, tourTarget, tourText } from '@/lib/tour-steps';
 
-// Remembers, for this visit only (sessionStorage), that the tour was offered, so it auto-opens once per visit.
-export const TOUR_SEEN_KEY = 'kyc-onboarding-tour-seen';
-// Set in localStorage by the automated browser tests, which cannot pre-fill sessionStorage, to keep the tour from opening.
+// Set in localStorage by the automated browser tests to keep the tour from opening by itself.
 export const TOUR_OFF_KEY = 'kyc-onboarding-tour-off';
 const TARGET_WAIT_MS = 3000;
 // Must match the phone breakpoint in globals.css.
 const PHONE_QUERY = '(max-width: 600px)';
 
-function tourSeen(): boolean {
-  try {
-    return sessionStorage.getItem(TOUR_SEEN_KEY) === '1' || localStorage.getItem(TOUR_OFF_KEY) === '1';
-  } catch {
-    return true; // No storage (private mode): never auto-open, the sidebar link still works.
-  }
-}
+// True once the tour has been offered in this page load. A refresh or a new tab reloads this code and
+// resets it, so the tour opens again; moving around inside the app keeps it, so the tour stays closed.
+let offeredThisLoad = false;
 
-function markTourSeen() {
+function testsTurnedTourOff(): boolean {
   try {
-    sessionStorage.setItem(TOUR_SEEN_KEY, '1');
+    return localStorage.getItem(TOUR_OFF_KEY) === '1';
   } catch {
-    // Nothing to do: the tour just may be offered again next time.
+    return false;
   }
 }
 
@@ -39,7 +33,7 @@ function removeTourFromAddress() {
 }
 
 function endTour() {
-  markTourSeen();
+  offeredThisLoad = true;
   removeTourFromAddress();
 }
 
@@ -52,10 +46,10 @@ function TourController({ publicDemo }: { publicDemo: boolean }) {
   const number = tourParam === null ? 0 : Number(tourParam);
   const step = Number.isInteger(number) ? TOUR_STEPS[number - 1] : undefined;
 
-  // A first-time visitor to the queue is offered step 1, once.
+  // Each fresh load of the queue page offers step 1, once.
   useEffect(() => {
-    if (pathname !== '/' || tourParam !== null || tourSeen()) return;
-    markTourSeen();
+    if (pathname !== '/' || tourParam !== null || offeredThisLoad || testsTurnedTourOff()) return;
+    offeredThisLoad = true;
     window.history.replaceState(null, '', '/?tour=1');
   }, [pathname, tourParam]);
 
@@ -78,7 +72,8 @@ function TourController({ publicDemo }: { publicDemo: boolean }) {
 
     // The page may still be drawing, so wait briefly for the element this step points at.
     const open = () => {
-      const target = (window.matchMedia(PHONE_QUERY).matches && step.phoneTarget) || step.target;
+      const base = tourTarget(step, publicDemo);
+      const target = base && ((window.matchMedia(PHONE_QUERY).matches && step.phoneTarget) || base);
       const element = target ? document.querySelector(`[data-tour="${target}"]`) : null;
       if (target && !element && Date.now() - started < TARGET_WAIT_MS) {
         timer = setTimeout(open, 50);

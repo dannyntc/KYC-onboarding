@@ -13,7 +13,7 @@ const prisma = new PrismaClient({adapter:new PrismaPg({connectionString:configur
 
 async function main() {
  const data = process.env.KYC_ONBOARDING_RESET === '1' ? await resetDemoData(prisma, 'postgres') : await seedEmptyDatabase(prisma, 'KYC_ONBOARDING_RESET=1');
- console.log(`Seeded ${data.clients.length} clients, ${data.transactions.length} transactions and ${data.alerts.length} alerts.`);
+ console.log(`Seeded ${data.clients.length} clients and ${data.onboardingCases.length} onboarding files.`);
 }
 
 main().finally(()=>prisma.$disconnect());

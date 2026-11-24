@@ -2,12 +2,12 @@ import {expect,it} from 'vitest';
 import {controlFingerprint,reviewedControlsForScenario} from '../src/lib/control-review';
 import {regulatoryReferences} from '../src/lib/regulatory-references';
 
-const reference=regulatoryReferences.find(r=>r.id==='MAS-626-6.20')!;
-const review={id:reference.id,fingerprint:controlFingerprint(reference),reviewer:'Independent reviewer',reviewedOn:'2026-01-01',expiresOn:'2026-12-31',scenarios:['rapid_movement']};
-const select=(entries:unknown,scenario='rapid_movement')=>reviewedControlsForScenario(entries,scenario,'2026-06-01');
+const reference=regulatoryReferences.find(r=>r.id==='MAS-626-6.39-6.42')!;
+const review={id:reference.id,fingerprint:controlFingerprint(reference),reviewer:'Independent reviewer',reviewedOn:'2026-01-01',expiresOn:'2026-12-31',scenarios:['screening']};
+const select=(entries:unknown,scenario='screening')=>reviewedControlsForScenario(entries,scenario,'2026-06-01');
 it('selects only a current, explicitly attested reference for its permitted scenario',()=>{
  expect(select([review]).map(r=>r.id)).toEqual([reference.id]);
- expect(select([review],'documented_sale')).toEqual([]);
+ expect(select([review],'pep')).toEqual([]);
 });
 it('fails closed for stale, future, invalid, changed or duplicate reviews',()=>{
  for(const invalid of [
@@ -16,7 +16,7 @@ it('fails closed for stale, future, invalid, changed or duplicate reviews',()=>{
   [{...review,reviewer:'  '}],
   [{...review,fingerprint:'old'}],
   [{...review,expiresOn:'2026-02-30'}],
-  [{...review,scenarios:['wealth_gap']}],
+  [{...review,scenarios:['pep']}],
   [review,review],
   {reviews:[review]},
  ]) expect(select(invalid)).toEqual([]);

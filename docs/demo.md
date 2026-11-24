@@ -1,12 +1,12 @@
 # Stakeholder demonstration
 
-This script takes approximately 8–10 minutes. It follows new applicants through KYC onboarding, with the AML funding check as one section of each file. All names, relationships, records and amounts are fictional. The prototype supports an analyst; it does not make compliance decisions, verify real identities, screen against real lists or file reports.
+This script takes approximately 8–10 minutes. It follows new applicants through KYC onboarding. All names, relationships, records and amounts are fictional. The prototype supports an analyst; it does not make compliance decisions, verify real identities, screen against real lists or file reports.
 
-The app also has a built-in guided tour (the **Guided tour** link in the sidebar) that follows the same story in about three minutes. It is a good way to introduce the demo, or to let someone explore the online look-only version by themselves.
+The app also has a built-in guided tour (the **Guided tour** link in the sidebar) that covers every part of the app in about five minutes. It is a good way to introduce the demo, or to let someone explore the online look-only version by themselves.
 
 ## Before the session
 
-1. From the project folder, run `npm run db:migrate` and `npm run dev`, then open <http://127.0.0.1:3000>. If the database has never been seeded, run `npm run db:seed` first. If it was seeded before onboarding existed, run `npm run db:seed:onboarding` once after the migration. Do not reset an existing database just to run the demo: `npm run db:reset` deliberately deletes all demo analyses, reviews and audit events.
+1. From the project folder, run `npm run db:migrate` and `npm run dev`, then open <http://127.0.0.1:3000>. If the database has never been seeded, run `npm run db:seed` first. If it was seeded by an older version that still had transaction alerts, run `npm run db:reset` after the migration. Do not reset an existing database just to run the demo: `npm run db:reset` deliberately deletes all demo analyses, reviews and audit events.
 2. The script changes the files it uses (it approves ONB-006, for example), and those decisions are stored. To repeat the demo, start from a fresh seeded database, for example `DATABASE_URL=file:demo-two.db npm run db:migrate && DATABASE_URL=file:demo-two.db npm run db:seed && DATABASE_URL=file:demo-two.db npm run dev`. A relative file name is created inside the `prisma` folder.
 3. Check the mode shown in the **KYC memo assistant** panel. **Template mode** uses prewritten text built from the checks on the page and does not call a model. **AI mode** requires a configured key and model and sends the selected synthetic file to OpenAI. AI mode has not been verified here with a real key. Do not describe a template memo as AI-generated.
 4. Confirm the demo role at the bottom of the sidebar is Analyst. The role selector is not authentication. Counts, statuses and suggested ratings come from the current database and differ from a fresh seed once files have been decided.
@@ -15,7 +15,7 @@ The app also has a built-in guided tour (the **Guided tour** link in the sidebar
 ## 0–1 minute: the onboarding queue
 
 - On **Onboarding queue**, explain that each row is a new applicant. **Suggested risk** comes from simple deterministic rules, and **Outstanding items** counts what still blocks approval. Search for `Aisha` to show the search, then clear it.
-- Explain the idea: before a bank accepts a client it checks identity and documents, who really owns the client, screening lists, where the wealth came from, and whether the first money in looks normal. The AML alerts from before are now one section inside each file.
+- Explain the idea: before a bank accepts a client it checks identity and documents, who really owns the client, screening lists, and where the wealth came from.
 
 ## 1–3 minutes: a clean approval (ONB-006, Sarah Yeo)
 
@@ -45,11 +45,10 @@ The app also has a built-in guided tour (the **Guided tour** link in the sidebar
 - Select **Add draft to note**, edit the note, and select **Request information**. The status becomes Information requested. This saves a local record; it does not send a request.
 - If a live call fails, the error appears and earlier drafts remain. The application does not substitute a template memo for a failed live call. Each attempt appears under **Memo history**.
 
-## 8–9 minutes: the transaction alert inside a file (ONB-001, Amelia Tan)
+## 8–9 minutes: a shared owner (ONB-003, Priya Menon)
 
-- Open `ONB-001`. In **Initial Transactions & activity since application (AML)**, `ALT-001` is open: `TXN-013` is an incoming SGD 1,200,000 and `TXN-014` an outgoing SGD 850,000 the next day, against expected activity of SGD 50,000–100,000 per month. These are indicators for review, not findings.
-- **Approve** is greyed out and the outstanding item reads "Alert ALT-001 has not been reviewed". Select `ALT-001` to open the existing investigation page, add a note and select **Save review**.
-- Use the link **Back to KYC file ONB-001**. The alert no longer blocks approval and the suggested rating falls from High to Low.
+- Open `ONB-003`. Under **Beneficial ownership**, `REL-001` names Morgan Vale as the owner of Cedar Harbour Holdings. The same owner and entity appear behind two other clients: Nadia Rahman (`ONB-005`) and the existing client Mei Lin Chua (`CLI-011`).
+- The shared owner is the reason for the suggested Medium rating. Follow the link to `ONB-005` to show that both files carry the same link. Matching names do not by themselves prove any wrongdoing; they tell the analyst to look at the clients together.
 
 ## 9–10 minutes: audit and boundaries
 
@@ -61,11 +60,11 @@ The app also has a built-in guided tour (the **Guided tour** link in the sidebar
 
 | File | Applicant | Story | Evidence to inspect | What the analyst does |
 | --- | --- | --- | --- | --- |
-| ONB-001 | Amelia Tan | Rapid initial funding | `ALT-001`, `TXN-013`, `TXN-014`, `DOC-101` | Review the alert first; approval is blocked while it is open |
+| ONB-001 | Amelia Tan | Clean, wealth from employment income | `DOC-101` | Set Low with reasons, then approve |
 | ONB-002 | Daniel Lim | Source-of-wealth gap | `DOC-002`, `CLI-002` | Request information on the SGD 5,000,000 not corroborated |
-| ONB-003 | Priya Menon | Shared hidden owner | `REL-001`, `REL-002`, `REL-003`, `ALT-003` | Medium; consider the linked clients together |
-| ONB-004 | Marcus Lee | Funds explained by a property sale | `DOC-004`, `DOC-103`, `TXN-055`, `ALT-004` | Review `ALT-004`, then approve as Low |
-| ONB-005 | Nadia Rahman | Other side of the shared-owner link | `REL-002`, `ALT-007`, `DOC-104` | Medium, linked to ONB-003 |
+| ONB-003 | Priya Menon | Shared hidden owner | `REL-001`, `REL-002`, `REL-003` | Medium; consider the linked clients together |
+| ONB-004 | Marcus Lee | Wealth from a property sale and salary | `DOC-004`, `DOC-103` | Set Low with reasons, then approve |
+| ONB-005 | Nadia Rahman | Other side of the shared-owner link | `REL-002`, `DOC-104` | Medium, linked to ONB-003 |
 | ONB-006 | Sarah Yeo | Clean | `DOC-105` | Set Low with reasons, then approve |
 | ONB-007 | Darren Ho | Expired passport | `IDV-013`, `DOC-106` | Blocked until a valid ID; request information |
 | ONB-008 | Aisha Malik | Potential PEP match | `SCR-001`, `DOC-107` | Confirm, rate High, senior approval |

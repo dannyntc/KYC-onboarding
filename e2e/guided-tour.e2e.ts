@@ -7,7 +7,7 @@ test.use({ storageState: { cookies: [], origins: [] } });
 
 const popover = (page: import('@playwright/test').Page) => page.locator('.driver-popover');
 
-test('a first-time visitor is offered step 1 once, and closing it keeps it closed', async ({ page }) => {
+test('the queue offers step 1 on every fresh load, including a refresh', async ({ page }) => {
   const problems = watchForProblems(page);
   await page.goto('/');
   await expectStep(page, 1, false);
@@ -18,9 +18,23 @@ test('a first-time visitor is offered step 1 once, and closing it keeps it close
   await expect(page).not.toHaveURL(/tour=/);
 
   await page.reload();
-  await expect(page.getByRole('heading', { name: 'Onboarding queue' })).toBeVisible();
-  await expect(popover(page)).toHaveCount(0);
+  await expectStep(page, 1, false);
   expect(problems).toEqual([]);
+});
+
+test('after closing, clicking back to the queue inside the app does not reopen the tour', async ({ page }) => {
+  await page.goto('/');
+  await expectStep(page, 1, false);
+  await popover(page).locator('.driver-popover-close-btn').click();
+  await expect(popover(page)).toHaveCount(0);
+
+  await page.locator('a[href="/onboarding/ONB-006"]').first().click();
+  await expect(page).toHaveURL(/\/onboarding\/ONB-006$/);
+  await page.getByRole('link', { name: '▦ Onboarding queue' }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole('heading', { name: 'Onboarding queue' })).toBeVisible();
+  await page.waitForTimeout(500);
+  await expect(popover(page)).toHaveCount(0);
 });
 
 test('a new visit (a fresh tab) offers the tour again', async ({ page, context }) => {
@@ -34,13 +48,13 @@ test('a new visit (a fresh tab) offers the tour again', async ({ page, context }
   await expectStep(freshTab, 1, false);
 });
 
-test('Next walks all 14 steps across the pages and Finish ends the tour', async ({ page }) => {
+test('Next walks all 25 steps across the pages and Finish ends the tour', async ({ page }) => {
   await walkWholeTour(page, false);
 });
 
 test('local wording invites the visitor to try the buttons, which stay enabled', async ({ page }) => {
-  await page.goto('/onboarding/ONB-006?tour=7');
-  await expectStep(page, 7, false);
+  await page.goto('/onboarding/ONB-006?tour=12');
+  await expectStep(page, 12, false);
   await expect(popover(page).locator('.driver-popover-description')).toContainText('Try it here');
   await popover(page).locator('.driver-popover-close-btn').click();
   await expect(page.getByLabel('REASONS FOR RATING')).toBeEnabled();
@@ -48,23 +62,23 @@ test('local wording invites the visitor to try the buttons, which stay enabled',
 });
 
 test('Back works within a page and across a page change', async ({ page }) => {
-  await page.goto('/onboarding/ONB-006?tour=6');
-  await expectStep(page, 6, false);
+  await page.goto('/onboarding/ONB-006?tour=9');
+  await expectStep(page, 9, false);
   await popover(page).locator('.driver-popover-prev-btn').click();
-  await expectStep(page, 5, false);
+  await expectStep(page, 8, false);
   await popover(page).locator('.driver-popover-prev-btn').click();
-  await expectStep(page, 4, false);
-  await expect(page).toHaveURL(/\/\?tour=4$/);
+  await expectStep(page, 7, false);
+  await expect(page).toHaveURL(/\/\?tour=7$/);
   // driver.js ignores arrow keys while its 0.4 s fade-in is still running, so let it finish.
   await page.waitForTimeout(700);
   await page.keyboard.press('ArrowRight');
-  await expectStep(page, 5, false);
+  await expectStep(page, 8, false);
 });
 
 test('a tour address for another page takes the visitor to that page', async ({ page }) => {
-  await page.goto('/?tour=8');
-  await expectStep(page, 8, false);
-  await expect(page).toHaveURL(/\/onboarding\/ONB-009\?tour=8$/);
+  await page.goto('/?tour=15');
+  await expectStep(page, 15, false);
+  await expect(page).toHaveURL(/\/onboarding\/ONB-009\?tour=15$/);
 });
 
 test('Escape closes the tour', async ({ page }) => {
@@ -78,7 +92,7 @@ test('Escape closes the tour', async ({ page }) => {
 test('the sidebar button restarts the tour from step 1 on any page', async ({ page }) => {
   await page.goto('/');
   await popover(page).locator('.driver-popover-close-btn').click();
-  await page.goto('/alerts');
+  await page.goto('/controls');
   await expect(popover(page)).toHaveCount(0);
   await page.getByRole('link', { name: /Guided tour/ }).click();
   await expectStep(page, 1, false);

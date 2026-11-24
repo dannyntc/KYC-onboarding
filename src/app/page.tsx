@@ -55,7 +55,7 @@ export default async function OnboardingQueue({
         </div>
       </div>
 
-      <div className="metrics">
+      <div className="metrics" data-tour="queue-metrics">
         <div>
           <span>APPLICATIONS IN PROGRESS</span>
           <strong>{count('In progress')}</strong>
@@ -87,7 +87,7 @@ export default async function OnboardingQueue({
             </p>
           </div>
         </div>
-        <form className="filters">
+        <form className="filters" data-tour="queue-filters">
           <input name="q" defaultValue={q} placeholder="Search applicant, file, or client ID" aria-label="Search applications" />
           <select name="risk" defaultValue={risk} aria-label="Suggested risk">
             <option value="">All suggested risk</option>

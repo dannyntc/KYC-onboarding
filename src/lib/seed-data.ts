@@ -1,31 +1,17 @@
-import { detectScenarios } from './rules';
 const names = ['Amelia Tan','Daniel Lim','Priya Menon','Marcus Lee','Sofia Ng','Adrian Koh','Nadia Rahman','Julian Ong','Clara Goh','Victor Teo','Mei Lin Chua','Arun Nair','Sarah Yeo','Darren Ho','Aisha Malik','Ethan Sim','Isabelle Tay','Raj Mehta','Rachel Chan','Nicholas Low','Fiona Wong','Zahir Khan','Grace Ang','Benjamin Toh','Lina Yusuf','Caleb Foo','Joanne Seah','Kiran Shah','Natalie Pang','David Lau'];
-const scenarios = ['rapid_movement','wealth_gap','linked_ownership','documented_sale'] as const;
-const descriptions = ['Large third-party transfer followed by rapid outward payments','Declared sale proceeds exceed supporting documentation','Shared beneficial owner across client relationships','Large incoming transfer supported by a property sale'];
+// Demo data. Client IDs come from each name's position, so removed people leave gaps (CLI-005 etc.).
 export function createSeed() {
- const clients = names.map((name, i) => ({id:`CLI-${String(i+1).padStart(3,'0')}`, name, expectedMonthlyMin:5000000, expectedMonthlyMax:10000000, declaredWealth: i%4===1 ? 800000000 : 450000000, profile: i<12 && i%4===1 ? 'Private banking client; Singapore resident. Client declares SGD 8 million in wealth from a company sale.' : 'Private banking client; Singapore resident.'}));
- const accounts = clients.map(c=>({id:`ACC-${c.id}`,clientId:c.id}));
- const transactions = clients.flatMap((c,i) => Array.from({length:14},(_,j)=>({id:`TXN-${String(i*14+j+1).padStart(3,'0')}`,clientId:c.id,accountId:`ACC-${c.id}`,date:j===12?'2026-05-10':j===13?'2026-05-11':`2026-${String(1+Math.floor(j/3)).padStart(2,'0')}-${String(2+(j*3)%25).padStart(2,'0')}`,amount: j===12 && i<12 ? (i%4===0?120000000:i%4===3?250000000:21000000) : (j===13 && i%4===0 && i<12 ? -85000000 : (j%3===0?-1:1)*(200000+j*20000+i*1000)),currency:'SGD',counterparty:j===12&&i%4===3?'Harbour Property Buyer':j===12&&i%4===0?'New third party':'Regular counterparty'})));
- const documents = clients.slice(0,12).map((c,i)=>({id:`DOC-${String(i+1).padStart(3,'0')}`,clientId:c.id,kind:i%4===1?'company_sale':i%4===3?'property_sale':'profile',title:i%4===1?'Company sale extract':i%4===3?'Property sale agreement':'Client profile declaration',summary:i%4===1?'Sale extract corroborates SGD 3m against SGD 8m declared.':i%4===3?`Signed agreement summary for property PROP-${String(i+1).padStart(3,'0')}: seller ${c.name}; buyer Harbour Property Buyer; completion 2026-05-10; proceeds SGD 2,500,000. Settlement trail not supplied.`:'Profile information; additional corroboration may be required.',corroboratedAmount:i%4===1?300000000:i%4===3?250000000:0}));
+ // The 12 applicants, plus CLI-011: an existing client who shares a beneficial owner with two applicants.
+ const kept = new Set([...applicants.map(a => a.clientId), 'CLI-011']);
+ const allClients = names.map((name, i) => ({id:`CLI-${String(i+1).padStart(3,'0')}`, name, expectedMonthlyMin:5000000, expectedMonthlyMax:10000000, declaredWealth: i%4===1 ? 800000000 : 450000000, profile: i<12 && i%4===1 ? 'Private banking client; Singapore resident. Client declares SGD 8 million in wealth from a company sale.' : 'Private banking client; Singapore resident.'}));
+ const clients = allClients.filter(c => kept.has(c.id));
+ const documents = allClients.slice(0,12).map((c,i)=>({id:`DOC-${String(i+1).padStart(3,'0')}`,clientId:c.id,kind:i%4===1?'company_sale':i%4===3?'property_sale':'profile',title:i%4===1?'Company sale extract':i%4===3?'Property sale agreement':'Client profile declaration',summary:i%4===1?'Sale extract corroborates SGD 3m against SGD 8m declared.':i%4===3?`Signed agreement summary for property PROP-${String(i+1).padStart(3,'0')}: seller ${c.name}; buyer Harbour Property Buyer; completion 2026-05-10; proceeds SGD 2,500,000. Settlement trail not supplied.`:'Profile information; additional corroboration may be required.',corroboratedAmount:i%4===1?300000000:i%4===3?250000000:0})).filter(d => kept.has(d.clientId));
  const relationships = [{id:'REL-001',clientId:'CLI-003',owner:'Morgan Vale',entity:'Cedar Harbour Holdings',description:'Beneficial owner of holding entity.'},{id:'REL-002',clientId:'CLI-007',owner:'Morgan Vale',entity:'Cedar Harbour Holdings',description:'Beneficial owner of holding entity.'},{id:'REL-003',clientId:'CLI-011',owner:'Morgan Vale',entity:'Cedar Harbour Holdings',description:'Beneficial owner of holding entity.'}];
- const alerts = clients.flatMap(c=>{
-  const ownTransactions=transactions.filter(t=>t.clientId===c.id);
-  const ownDocuments=documents.filter(d=>d.clientId===c.id);
-  const ownRelationships=relationships.filter(r=>r.clientId===c.id);
-  const linked=relationships.filter(r=>ownRelationships.some(own=>own.owner===r.owner&&own.entity===r.entity));
-  return detectScenarios(c,ownTransactions,ownDocuments,linked).map(scenario=>{
-   const index=scenarios.indexOf(scenario as typeof scenarios[number]);
-   const trigger=ownTransactions.find(t=>t.currency==='SGD'&&t.amount>c.expectedMonthlyMax)!;
-   return {id:`ALT-${c.id.slice(4)}`,clientId:c.id,scenario,title:descriptions[index],priority:index<2?'High':index===2?'Medium':'Low',status:'Open',triggerTransactionId:trigger.id};
-  });
- });
  const supplementalDocuments = createSupplementalDocuments();
- return {clients,accounts,transactions,alerts,documents:[...documents,...supplementalDocuments],relationships,onboardingCases:createOnboardingCases(),identityDocuments:createIdentityDocuments(),screeningResults:createScreeningResults(),supplementalDocuments};
+ return {clients,documents:[...documents,...supplementalDocuments],relationships,onboardingCases:createOnboardingCases(),identityDocuments:createIdentityDocuments(),screeningResults:createScreeningResults(),supplementalDocuments};
 }
 
-// KYC onboarding data. Everything below is appended to the original alert seed so the
-// existing clients, transactions, alerts, relationships and DOC-001..DOC-012 are unchanged.
-// Amounts are in cents, like the rest of the seed.
+// KYC onboarding data. Amounts are in cents, like the rest of the seed.
 
 type Applicant = {
   caseId: string;
@@ -135,8 +121,7 @@ function createScreeningResults() {
   ];
 }
 
-// Extra source-of-wealth evidence. Only the kinds employment_income, investment_portfolio and
-// inheritance are used, so the alert rules (which look at company_sale and property_sale) are unaffected.
+// Extra source-of-wealth evidence for the applicants.
 function createSupplementalDocuments() {
   const rows: {id: string; clientId: string; kind: string; title: string; summary: string; corroboratedAmount: number}[] = [
     {id:'DOC-101',clientId:'CLI-001',kind:'employment_income',title:'Employment income statements',summary:'Payslips and tax assessments corroborate SGD 4.5m of the SGD 4.5m declared.',corroboratedAmount:450000000},

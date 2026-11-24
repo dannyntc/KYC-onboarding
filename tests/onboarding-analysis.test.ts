@@ -16,8 +16,7 @@ function evidenceIdsOf(file: OnboardingFile): string[] {
     ...file.screeningResults.map(s => s.id),
     ...file.documents.map(d => d.id),
     ...file.relationships.map(r => r.id),
-    ...file.relatedRelationships.map(r => r.id),
-    ...file.alerts.map(a => a.id)
+    ...file.relatedRelationships.map(r => r.id)
   ];
 }
 
@@ -111,7 +110,7 @@ describe('validation', () => {
     expect(result).toEqual({ success: false, error: 'Analysis contains a prohibited final determination' });
   });
 
-  it('still rejects the determinations that the alert drafts already reject', () => {
+  it('also rejects the general determinations, such as a case being closed', () => {
     const result = check({ ...validDraft, applicant_summary: 'The case has been closed.' });
     expect(result.success).toBe(false);
   });

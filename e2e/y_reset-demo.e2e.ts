@@ -16,7 +16,6 @@ test('Reset demo data restores the starting applicants and clears saved work', a
 
   expect(await db.onboardingCase.count()).toBe(12);
   expect(await db.onboardingEvent.count()).toBe(0);
-  expect(await db.auditEvent.count()).toBe(0);
   expect((await db.onboardingCase.findUniqueOrThrow({ where: { id: 'ONB-007' } })).riskRating).toBeNull();
   await page.goto('/onboarding/ONB-007');
   await expect(page.getByTestId('final-risk')).toHaveText('Not set');
@@ -24,11 +23,11 @@ test('Reset demo data restores the starting applicants and clears saved work', a
 
 test('cancelling the confirmation changes nothing', async ({ page }) => {
   await page.goto('/');
-  const events = await db.auditEvent.count();
+  const events = await db.onboardingEvent.count();
   page.once('dialog', dialog => dialog.dismiss());
   await page.getByRole('button', { name: 'Reset demo data' }).click();
   await expect(page.getByRole('button', { name: 'Reset demo data' })).toBeEnabled();
-  expect(await db.auditEvent.count()).toBe(events);
+  expect(await db.onboardingEvent.count()).toBe(events);
   expect(await db.onboardingCase.count()).toBe(12);
 });
 
