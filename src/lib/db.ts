@@ -2,6 +2,8 @@ import { PrismaClient as SQLitePrismaClient } from '@/generated/prisma/client';
 import { PrismaClient as PostgresPrismaClient } from '@/generated/prisma-postgres/client';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaPg } from '@prisma/adapter-pg';
+import { attachDatabasePool } from '@vercel/functions';
+import { Pool } from 'pg';
 import { databaseUrl, isPostgresDatabaseUrl } from './database-url';
 import type { Engine } from './demo-reset';
 
@@ -19,7 +21,11 @@ function createDatabaseClient(): DatabaseClient {
   // On Vercel, use the pooled address when it exists: many short-lived app copies share a few
   // real connections instead of each opening direct ones and hitting the connection limit.
   const connectionString = process.env.DATABASE_URL_POOLED || configuredUrl;
-  return new PostgresPrismaClient({adapter:new PrismaPg({connectionString})}) as unknown as DatabaseClient;
+  // A connection that never answers fails after 10 s instead of hanging the page; idle connections close after 5 s.
+  const pool = new Pool({connectionString, connectionTimeoutMillis:10_000, idleTimeoutMillis:5_000});
+  // On Vercel, closes idle connections before a paused app copy is frozen, so a later visit never reuses a dead one.
+  attachDatabasePool(pool);
+  return new PostgresPrismaClient({adapter:new PrismaPg(pool)}) as unknown as DatabaseClient;
  }
  return new SQLitePrismaClient({adapter:new PrismaBetterSqlite3({url:databaseUrl(configuredUrl,process.cwd())})});
 }
