@@ -103,7 +103,7 @@ Online, every visitor shares the same data, so another visitor may already have 
 
 The quickest way to understand the demo is the built-in tour. It takes about 5 minutes.
 
-1. Open the demo. Each time the onboarding queue is opened or refreshed, an **About this demo** bubble appears automatically. (Moving back to the queue from inside the app does not reopen it.)
+1. Open the demo. Each time the onboarding queue is opened or refreshed, a **The problem** bubble appears automatically. (Moving back to the queue from inside the app does not reopen it.)
 2. Click **Start tour**.
 3. Read each bubble. The highlighted part of the screen is what the bubble is about.
 4. Click **Next** to continue, or **Back** to go back. You can also use your keyboard's arrow keys. The tour moves between pages by itself.
@@ -114,8 +114,8 @@ The quickest way to understand the demo is the built-in tour. It takes about 5 m
 
 | Step | Page | What it shows |
 |---|---|---|
-| 1 | Queue | About this demo: its purpose, faster checks with better controls, and MAS Notice 626 |
-| 2 | Queue | Welcome: what KYC is |
+| 1 | Queue | The problem: why manual KYC onboarding is slow and error-prone |
+| 2 | Queue | How this demo helps: the six gaps it closes |
 | 3 | Queue | The sidebar: queue, regulatory library and the tour link |
 | 4 | Queue | The four summary counters |
 | 5 | Queue | Search and filters |
@@ -142,6 +142,8 @@ The quickest way to understand the demo is the built-in tour. It takes about 5 m
 ## 6. Step by step: the onboarding queue
 
 The queue is the home page. Click **Onboarding queue** in the sidebar to return to it.
+
+At the top, **The problem this solves** lists six gaps in manual onboarding and how this workspace closes each one.
 
 1. **Read the four summary tiles** at the top:
    - *Applications in progress*
@@ -176,6 +178,8 @@ A KYC file has the evidence on the left and the decision tools on the right. (On
 3. **Beneficial ownership.** Who really owns or controls the money. If the same owner appears behind *other* clients, they're listed here with links to their files.
 4. **Screening.** Watch-list matches (PEP, sanctions, adverse media), each showing the match strength and the list entry. An undecided match is shown as **Potential match**, and it blocks approval until an analyst decides.
 5. **Source of wealth & funds.** The declared wealth, each supporting document and how much it backs up, the corroborated total, and any amount **not corroborated**.
+
+Four key sections (Beneficial ownership, Risk assessment, KYC memo assistant and Decision) open with a short **Solves:** line naming the gap they close.
 
 Each section lists **candidate regulatory references** (e.g. `MAS-626-6.9`). Click one to see it in the regulatory library.
 

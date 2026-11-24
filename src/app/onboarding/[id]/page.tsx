@@ -155,6 +155,9 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
 
           <section className="panel section" data-tour="ownership">
             <h2>Beneficial ownership</h2>
+            <p className="solves">
+              <strong>Solves:</strong> hidden relationships between clients. Shared owners are flagged and linked; machine learning (clustering) could surface links nobody spotted.
+            </p>
             {client.relationships.length === 0 && <p className="muted">No ownership relationships recorded.</p>}
             {client.relationships.map(r => (
               <div id={r.id} key={r.id} className="fielditem">
@@ -269,6 +272,9 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
         <div className="stack">
           <section className="panel section" data-tour="risk-assessment">
             <h2>Risk assessment</h2>
+            <p className="solves">
+              <strong>Solves:</strong> risk judged differently by each analyst. The same rules suggest a rating for everyone, with reasons.
+            </p>
             <div className="meta fields" style={{ marginBottom: 14 }}>
               <Field label="SUGGESTED RATING">
                 <span className={`badge ${riskClass(suggestion.rating)}`} data-testid="suggested-risk">
@@ -325,7 +331,9 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
             <div className="panelhead" style={{ padding: 0, marginBottom: 16 }}>
               <div>
                 <h2>KYC memo assistant</h2>
-                <p>Evidence-grounded memo for analyst review</p>
+                <p className="solves">
+                  <strong>Solves:</strong> hours spent writing up each file. A drafted memo where every statement cites its record.
+                </p>
               </div>
               <span className="badge low">{live ? 'AI' : 'TEMPLATE'}</span>
             </div>
@@ -415,6 +423,9 @@ export default async function OnboardingFilePage({ params }: { params: Promise<{
 
           <section className="panel section" data-tour="decision-panel">
             <h2>Decision</h2>
+            <p className="solves">
+              <strong>Solves:</strong> checks missed until late. Approve stays locked until nothing is outstanding.
+            </p>
             {decided ? (
               <p className="notice">Decision recorded: {row.status}. This file can no longer be changed.</p>
             ) : blockers.length === 0 ? (

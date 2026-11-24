@@ -18,9 +18,9 @@ function sourceFor(page: string): string {
 }
 
 describe('tour steps', () => {
-  it('has 24 steps, and only the first two (About this demo, Welcome) and the last are centred', () => {
+  it('has 24 steps, and only the first (The problem) and the last are centred', () => {
     expect(TOUR_STEPS).toHaveLength(24);
-    expect(TOUR_STEPS.map(step => step.target === null)).toEqual(TOUR_STEPS.map((_, index) => index <= 1 || index === 23));
+    expect(TOUR_STEPS.map(step => step.target === null)).toEqual(TOUR_STEPS.map((_, index) => index === 0 || index === 23));
   });
 
   it('visits every page of the app', () => {

@@ -17,14 +17,15 @@ export const TOUR_STEPS: TourStep[] = [
   {
     page: '/',
     target: null,
-    title: 'About this demo',
-    text: 'This demo shows how a bank\'s onboarding team can check new clients faster, with improved quality controls. Identity, ownership, watch-list and source-of-wealth checks sit in one file, and risk controls block approval until every check is done. The checks follow MAS Notice 626, Singapore\'s anti-money-laundering rules for banks.'
+    title: 'The problem',
+    text: 'KYC ("know your customer") means checking who a new client is and where their money comes from before the bank accepts them. Done by hand, it is slow and error-prone: evidence is scattered, analysts judge risk differently, checks are missed until late, hidden links go unseen, and write-ups and decision records take hours.'
   },
   {
     page: '/',
-    target: null,
-    title: 'Welcome',
-    text: 'KYC ("know your customer") means checking who a new client really is before the bank accepts them. Here an analyst works through each applicant in one place: every finding links to its evidence, and fixed rules flag what still blocks approval. The team decides faster, with fewer missed checks and a clear record for reviewers.'
+    target: 'problem',
+    title: 'How this demo helps',
+    text: 'This workspace closes those gaps: one file per applicant, the same rules for every rating, approval locked until every check is done, linked clients flagged, a drafted memo that cites its records, and a log of every decision. Machine learning (clustering) could go further and surface hidden relationships.',
+    side: 'bottom'
   },
   {
     page: '/',
@@ -138,7 +139,7 @@ export const TOUR_STEPS: TourStep[] = [
     page: '/onboarding/ONB-003',
     target: 'ownership',
     title: 'Who really owns it',
-    text: 'Beneficial owners are the people who ultimately own or control a company. Priya Menon\'s holding company shares its owner, Morgan Vale, with two other clients, so her suggested risk is Medium. The related clients are linked for checking.',
+    text: 'Beneficial owners are the people who ultimately own or control a company. Priya Menon\'s holding company shares its owner, Morgan Vale, with two other clients, so her suggested risk is Medium. The related clients are linked for checking. Machine learning (clustering) could find links like this automatically.',
     side: 'right'
   },
   {
